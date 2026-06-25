@@ -1,0 +1,98 @@
+{
+  "nav": {
+    "home": "Home",
+    "corporate": "Corporate",
+    "about": "About Us",
+    "vision": "Vision & Mission",
+    "quality": "Quality & Supply",
+    "products": "Products",
+    "blog": "Blog",
+    "catalog": "Catalog",
+    "contact": "Contact",
+    "getQuote": "Get a Quote"
+  },
+  "hero": {
+    "eyebrow": "Modern Solutions in Plastic",
+    "title": "Your Trusted Partner in Industrial Seal and Plastic Profile Supply",
+    "subtitle": "With our broad portfolio of PVC, TPE and TPU profiles produced with modern extrusion technology and our experienced engineering team, we deliver tailored solutions for every project.",
+    "ctaPrimary": "Request a Quote",
+    "ctaSecondary": "Browse Products"
+  },
+  "stats": {
+    "capacity": "Tons Annual Supply",
+    "area": "m² Stock & Logistics Area",
+    "domestic": "Domestic Approved Source",
+    "experience": "Years of Industry Experience"
+  },
+  "categories": {
+    "title": "Our Product Categories",
+    "subtitle": "Comprehensive range of products tailored to every industrial need.",
+    "viewAll": "View All Products",
+    "viewProducts": "Browse Products"
+  },
+  "about": {
+    "eyebrow": "About Us",
+    "title": "A Trusted Supply Partner for Plastic Profiles and Seals",
+    "lead": "CNRFlexis supplies plastic profiles based on PVC, TPE and TPU with modern extrusion technology and material engineering expertise.",
+    "features": {
+      "quality": {
+        "title": "Product Quality",
+        "description": "Long-lasting products with rigorous quality control at every supply stage."
+      },
+      "delivery": {
+        "title": "Fast Delivery",
+        "description": "Same-day shipping capability thanks to our broad stock network."
+      },
+      "support": {
+        "title": "Technical Support",
+        "description": "Continuous technical consulting and custom mold design throughout your project."
+      }
+    },
+    "cta": "Learn More"
+  },
+  "footer": {
+    "tagline": "Modern Solutions in Plastic",
+    "quickLinks": "Quick Links",
+    "products": "Our Products",
+    "contact": "Contact",
+    "copyright": "All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use"
+  },
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Reach out for questions, projects and custom solution requests.",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "hours": "Working Hours",
+    "hoursValue": "Monday - Saturday: 09:00 - 18:00"
+  },
+  "quote": {
+    "title": "Request a Quote",
+    "subtitle": "Fill out the form below and we'll get back to you shortly.",
+    "fields": {
+      "name": "Full Name",
+      "company": "Company Name",
+      "email": "Email",
+      "phone": "Phone",
+      "product": "Product of Interest",
+      "quantity": "Quantity",
+      "message": "Your Message",
+      "submit": "Send",
+      "submitting": "Sending..."
+    },
+    "success": "Your message has been sent successfully. We'll get back to you shortly.",
+    "error": "An error occurred. Please try again.",
+    "selectProduct": "Select a product",
+    "selectCategory": "Select a category"
+  },
+  "common": {
+    "readMore": "Read More",
+    "viewDetails": "View Details",
+    "downloadCatalog": "Download Catalog",
+    "whatsapp": "WhatsApp",
+    "back": "Back",
+    "language": "Language"
+  }
+}

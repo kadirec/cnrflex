@@ -1,0 +1,98 @@
+{
+  "nav": {
+    "home": "Ana Sayfa",
+    "corporate": "Kurumsal",
+    "about": "Hakkımızda",
+    "vision": "Vizyon & Misyon",
+    "quality": "Kalite & Tedarik",
+    "products": "Ürünler",
+    "blog": "Blog",
+    "catalog": "Katalog",
+    "contact": "İletişim",
+    "getQuote": "Teklif Al"
+  },
+  "hero": {
+    "eyebrow": "Plastikte Modern Çözümler",
+    "title": "Endüstriyel Fitil ve Plastik Profil Tedariğinde Güvenilir Çözüm Ortağınız",
+    "subtitle": "Modern ekstrüzyon teknolojisiyle üretilmiş geniş ürün portföyümüz ve deneyimli mühendislik ekibimizle her projeye özel çözümler sunuyoruz.",
+    "ctaPrimary": "Hemen Teklif Al",
+    "ctaSecondary": "Ürünleri İncele"
+  },
+  "stats": {
+    "capacity": "Ton Yıllık Tedarik",
+    "area": "m² Stok & Sevkiyat Alanı",
+    "domestic": "Yerli Onaylı Kaynak",
+    "experience": "Yıllık Sektör Tecrübesi"
+  },
+  "categories": {
+    "title": "Ürün Kategorilerimiz",
+    "subtitle": "Geniş ürün yelpazemiz ile her endüstriyel ihtiyaca uygun çözüm sunuyoruz.",
+    "viewAll": "Tüm Ürünleri Gör",
+    "viewProducts": "Ürünleri İncele"
+  },
+  "about": {
+    "eyebrow": "Hakkımızda",
+    "title": "Plastik Profil ve Fitil Tedariğinde Güvenilir Çözüm Ortağı",
+    "lead": "CNRFlexis portföyünde, modern ekstrüzyon teknolojisi ve malzeme mühendisliği uzmanlığıyla PVC, TPE ve TPU bazlı plastik profiller tedarik edilir.",
+    "features": {
+      "quality": {
+        "title": "Ürün Kalitesi",
+        "description": "Her tedarik aşamasında titiz kalite kontrolü ile uzun ömürlü ürünler."
+      },
+      "delivery": {
+        "title": "Hızlı Teslimat",
+        "description": "Geniş stok ağıyla aynı gün sevkiyat imkanı."
+      },
+      "support": {
+        "title": "Teknik Destek",
+        "description": "Proje sürecinde sürekli teknik danışmanlık ve özel kalıp tasarımı."
+      }
+    },
+    "cta": "Daha Fazla Bilgi"
+  },
+  "footer": {
+    "tagline": "Plastikte Modern Çözümler",
+    "quickLinks": "Hızlı Bağlantılar",
+    "products": "Ürünlerimiz",
+    "contact": "İletişim",
+    "copyright": "Tüm hakları saklıdır.",
+    "privacy": "Gizlilik Politikası",
+    "terms": "Kullanım Şartları"
+  },
+  "contact": {
+    "title": "İletişim",
+    "subtitle": "Sorularınız, projeleriniz ve özel çözüm talepleriniz için bize ulaşın.",
+    "email": "E-posta",
+    "phone": "Telefon",
+    "address": "Adres",
+    "hours": "Çalışma Saatleri",
+    "hoursValue": "Pazartesi - Cumartesi: 09:00 - 18:00"
+  },
+  "quote": {
+    "title": "Teklif Al",
+    "subtitle": "Aşağıdaki formu doldurun, en kısa sürede size dönüş yapalım.",
+    "fields": {
+      "name": "Ad Soyad",
+      "company": "Firma Adı",
+      "email": "E-posta",
+      "phone": "Telefon",
+      "product": "İlgilendiğiniz Ürün",
+      "quantity": "Miktar",
+      "message": "Mesajınız",
+      "submit": "Gönder",
+      "submitting": "Gönderiliyor..."
+    },
+    "success": "Mesajınız başarıyla iletildi. En kısa sürede dönüş yapacağız.",
+    "error": "Bir hata oluştu. Lütfen tekrar deneyin.",
+    "selectProduct": "Ürün seçin",
+    "selectCategory": "Kategori seçin"
+  },
+  "common": {
+    "readMore": "Devamını Oku",
+    "viewDetails": "Detayları Gör",
+    "downloadCatalog": "Katalog İndir",
+    "whatsapp": "WhatsApp",
+    "back": "Geri",
+    "language": "Dil"
+  }
+}
