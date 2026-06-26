@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowRight, ChevronRight } from "lucide-react";
 
 import { categories, getCategory } from "@/content/products";
-import { ContactCTA } from "@/components/sections/ContactCTA";
+import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
 import { getDictionary, hasLocale } from "../../dictionaries";
 import { locales } from "@/lib/site";
 
@@ -83,7 +83,7 @@ export default async function CategoryPage(props: PageProps<"/[locale]/urunler/[
         </div>
       </section>
 
-      <ContactCTA locale={locale} dict={dict} />
+      <CustomRequestSection locale={locale} dict={dict} />
     </>
   );
 }

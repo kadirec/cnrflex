@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
 
@@ -11,8 +12,17 @@ type Props = {
 
 export function Hero({ locale, dict }: Props) {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-brand-950 via-brand-900 to-brand-800 text-white">
-      <div className="absolute inset-0 opacity-30 pointer-events-none">
+    <section className="relative overflow-hidden bg-brand-950 text-white">
+      <Image
+        src="/cnr_flex_hero2.png"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover object-center"
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-brand-950/80 via-brand-950/45 to-brand-950/10 pointer-events-none" />
+      <div className="absolute inset-0 opacity-25 pointer-events-none">
         <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-accent-500 blur-3xl" />
         <div className="absolute -bottom-32 -right-32 w-[28rem] h-[28rem] rounded-full bg-brand-500 blur-3xl" />
       </div>

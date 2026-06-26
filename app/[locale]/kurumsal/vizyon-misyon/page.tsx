@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Target, Compass } from "lucide-react";
 
-import { ContactCTA } from "@/components/sections/ContactCTA";
+import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
 import { getDictionary, hasLocale } from "../../dictionaries";
 
 export async function generateMetadata(props: PageProps<"/[locale]/kurumsal/vizyon-misyon">): Promise<Metadata> {
@@ -98,7 +98,7 @@ export default async function VisionMissionPage(props: PageProps<"/[locale]/kuru
         </div>
       </section>
 
-      <ContactCTA locale={locale} dict={dict} />
+      <CustomRequestSection locale={locale} dict={dict} />
     </>
   );
 }

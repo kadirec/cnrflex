@@ -1,18 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 
 import type { Locale } from "@/lib/site";
 import type { Dictionary } from "@/app/[locale]/dictionaries";
+import { PhoneField, PHONE_REGEX } from "./PhoneField";
 
 const schema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
-  phone: z.string().optional(),
+  phone: z
+    .string()
+    .regex(PHONE_REGEX)
+    .or(z.literal(""))
+    .optional(),
   message: z.string().min(10),
   website: z.string().max(0).optional(),
 });
@@ -31,8 +36,12 @@ export function ContactForm({ locale, dict }: Props) {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
-  } = useForm<FormData>({ resolver: zodResolver(schema) });
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+    defaultValues: { phone: "" },
+  });
 
   const onSubmit = async (data: FormData) => {
     setStatus("loading");
@@ -61,7 +70,13 @@ export function ContactForm({ locale, dict }: Props) {
         <span className="block text-sm font-medium text-brand-800 mb-1.5">
           {dict.quote.fields.name} <span className="text-accent-500">*</span>
         </span>
-        <input {...register("name")} className={inputClass} type="text" autoComplete="name" />
+        <input
+          {...register("name")}
+          className={inputClass}
+          type="text"
+          autoComplete="name"
+          placeholder={dict.quote.placeholders.name}
+        />
         {errors.name && <span className="mt-1 block text-xs text-red-600">{errors.name.message}</span>}
       </label>
 
@@ -69,20 +84,43 @@ export function ContactForm({ locale, dict }: Props) {
         <span className="block text-sm font-medium text-brand-800 mb-1.5">
           {dict.quote.fields.email} <span className="text-accent-500">*</span>
         </span>
-        <input {...register("email")} className={inputClass} type="email" autoComplete="email" />
+        <input
+          {...register("email")}
+          className={inputClass}
+          type="email"
+          autoComplete="email"
+          placeholder={dict.quote.placeholders.email}
+        />
         {errors.email && <span className="mt-1 block text-xs text-red-600">{errors.email.message}</span>}
       </label>
 
       <label className="block">
         <span className="block text-sm font-medium text-brand-800 mb-1.5">{dict.quote.fields.phone}</span>
-        <input {...register("phone")} className={inputClass} type="tel" autoComplete="tel" />
+        <Controller
+          control={control}
+          name="phone"
+          render={({ field }) => (
+            <PhoneField
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+              invalid={!!errors.phone}
+            />
+          )}
+        />
+        {errors.phone && <span className="mt-1 block text-xs text-red-600">{errors.phone.message}</span>}
       </label>
 
       <label className="block">
         <span className="block text-sm font-medium text-brand-800 mb-1.5">
           {dict.quote.fields.message} <span className="text-accent-500">*</span>
         </span>
-        <textarea {...register("message")} className={`${inputClass} min-h-32 resize-y`} rows={5} />
+        <textarea
+          {...register("message")}
+          className={`${inputClass} min-h-32 resize-y`}
+          rows={5}
+          placeholder={dict.quote.placeholders.message}
+        />
         {errors.message && <span className="mt-1 block text-xs text-red-600">{errors.message.message}</span>}
       </label>
 

@@ -1,17 +1,22 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { sendEmail } from "@/lib/email";
+import { sendEmail, type EmailAttachment } from "@/lib/email";
 import { siteConfig } from "@/lib/site";
 
+const MAX_ATTACHMENTS = 4;
+const MAX_ATTACHMENT_SIZE = 1 * 1024 * 1024;
+const ALLOWED_MIME = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"];
+
 const payloadSchema = z.object({
-  type: z.enum(["quote", "contact"]),
+  type: z.enum(["quote", "contact", "custom"]),
   locale: z.enum(["tr", "en"]),
   name: z.string().min(2).max(100),
   company: z.string().max(100).optional(),
   email: z.string().email(),
-  phone: z.string().min(5).max(40).optional().or(z.string().max(0)),
-  product: z.string().max(100).optional(),
+  phone: z.string().regex(/^\+\d{7,15}$/).optional().or(z.literal("")),
+  category: z.string().max(100).optional(),
+  customCategory: z.string().max(120).optional(),
   quantity: z.string().max(60).optional(),
   message: z.string().min(10).max(5000),
   website: z.string().max(0).optional(),
@@ -41,6 +46,12 @@ function escape(html: string) {
     .replace(/'/g, "&#039;");
 }
 
+const SUBJECT_PREFIX: Record<"quote" | "contact" | "custom", string> = {
+  quote: "Teklif Talebi",
+  contact: "İletişim Formu",
+  custom: "Özel Ürün Talebi",
+};
+
 export async function POST(request: Request) {
   try {
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
@@ -48,8 +59,30 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: "rate_limited" }, { status: 429 });
     }
 
-    const body = await request.json();
-    const parsed = payloadSchema.safeParse(body);
+    const contentType = request.headers.get("content-type") ?? "";
+    const fields: Record<string, string> = {};
+    const attachments: EmailAttachment[] = [];
+
+    if (contentType.includes("multipart/form-data")) {
+      const form = await request.formData();
+      for (const [key, value] of form.entries()) {
+        if (key === "attachments") {
+          if (!(value instanceof File)) continue;
+          if (attachments.length >= MAX_ATTACHMENTS) continue;
+          if (value.size === 0 || value.size > MAX_ATTACHMENT_SIZE) continue;
+          if (!ALLOWED_MIME.includes(value.type)) continue;
+          const buf = Buffer.from(await value.arrayBuffer());
+          attachments.push({ filename: value.name, content: buf });
+        } else if (typeof value === "string") {
+          fields[key] = value;
+        }
+      }
+    } else {
+      const body = await request.json();
+      Object.assign(fields, body);
+    }
+
+    const parsed = payloadSchema.safeParse(fields);
     if (!parsed.success) {
       return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
     }
@@ -59,19 +92,24 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: true });
     }
 
-    const subjectPrefix = data.type === "quote" ? "Teklif Talebi" : "İletişim Formu";
+    const subjectPrefix = SUBJECT_PREFIX[data.type];
     const subject = `[${siteConfig.name}] ${subjectPrefix} — ${data.name}`;
+    const categoryValue = data.customCategory?.trim() || data.category;
 
     const rows: [string, string | undefined][] = [
       ["İsim / Name", data.name],
       ["Firma / Company", data.company],
       ["E-posta / Email", data.email],
       ["Telefon / Phone", data.phone],
-      ["Ürün / Product", data.product],
+      ["Kategori / Category", categoryValue],
       ["Miktar / Quantity", data.quantity],
       ["Dil / Locale", data.locale],
       ["IP", ip],
     ];
+
+    if (attachments.length > 0) {
+      rows.push(["Ek / Attachments", `${attachments.length}`]);
+    }
 
     const tableRows = rows
       .filter(([, v]) => v && v.length > 0)
@@ -89,7 +127,12 @@ export async function POST(request: Request) {
       </div>
     `;
 
-    const result = await sendEmail({ subject, html, replyTo: data.email });
+    const result = await sendEmail({
+      subject,
+      html,
+      replyTo: data.email,
+      attachments: attachments.length > 0 ? attachments : undefined,
+    });
     if (!result.ok) {
       return NextResponse.json({ ok: false, error: result.reason }, { status: 500 });
     }

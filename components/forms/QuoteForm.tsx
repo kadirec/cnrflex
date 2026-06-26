@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
@@ -9,13 +9,14 @@ import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { categories } from "@/content/products";
 import type { Locale } from "@/lib/site";
 import type { Dictionary } from "@/app/[locale]/dictionaries";
+import { PhoneField, PHONE_REGEX } from "./PhoneField";
 
 const schema = z.object({
   name: z.string().min(2),
   company: z.string().optional(),
   email: z.string().email(),
-  phone: z.string().min(7),
-  product: z.string().optional(),
+  phone: z.string().regex(PHONE_REGEX),
+  category: z.string().optional(),
   quantity: z.string().optional(),
   message: z.string().min(10),
   website: z.string().max(0).optional(),
@@ -26,21 +27,18 @@ type FormData = z.infer<typeof schema>;
 type Props = {
   locale: Locale;
   dict: Dictionary;
-  defaultProduct?: string;
+  defaultCategory?: string;
 };
 
-export function QuoteForm({ locale, dict, defaultProduct }: Props) {
+export function QuoteForm({ locale, dict, defaultCategory }: Props) {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
-  const productOptions = useMemo(
+  const categoryOptions = useMemo(
     () =>
-      categories.flatMap((c) =>
-        c.products.map((p) => ({
-          value: p.code,
-          label: `${p.code} — ${p.name[locale]}`,
-          category: c.name[locale],
-        })),
-      ),
+      categories.map((c) => ({
+        value: c.slug,
+        label: c.name[locale],
+      })),
     [locale],
   );
 
@@ -48,10 +46,11 @@ export function QuoteForm({ locale, dict, defaultProduct }: Props) {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { product: defaultProduct ?? "" },
+    defaultValues: { category: defaultCategory ?? "", phone: "" },
   });
 
   const onSubmit = async (data: FormData) => {
@@ -64,7 +63,7 @@ export function QuoteForm({ locale, dict, defaultProduct }: Props) {
       });
       if (!res.ok) throw new Error("send failed");
       setStatus("success");
-      reset({ product: defaultProduct ?? "" });
+      reset({ category: defaultCategory ?? "", phone: "" });
     } catch {
       setStatus("error");
     }
@@ -81,6 +80,7 @@ export function QuoteForm({ locale, dict, defaultProduct }: Props) {
             className="form-input"
             type="text"
             autoComplete="name"
+            placeholder={dict.quote.placeholders.name}
           />
         </Field>
         <Field label={dict.quote.fields.company} error={errors.company?.message}>
@@ -89,6 +89,7 @@ export function QuoteForm({ locale, dict, defaultProduct }: Props) {
             className="form-input"
             type="text"
             autoComplete="organization"
+            placeholder={dict.quote.placeholders.company}
           />
         </Field>
       </div>
@@ -100,23 +101,30 @@ export function QuoteForm({ locale, dict, defaultProduct }: Props) {
             className="form-input"
             type="email"
             autoComplete="email"
+            placeholder={dict.quote.placeholders.email}
           />
         </Field>
         <Field label={dict.quote.fields.phone} required error={errors.phone?.message}>
-          <input
-            {...register("phone")}
-            className="form-input"
-            type="tel"
-            autoComplete="tel"
+          <Controller
+            control={control}
+            name="phone"
+            render={({ field }) => (
+              <PhoneField
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                invalid={!!errors.phone}
+              />
+            )}
           />
         </Field>
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4">
-        <Field label={dict.quote.fields.product} error={errors.product?.message}>
-          <select {...register("product")} className="form-input">
-            <option value="">{dict.quote.selectProduct}</option>
-            {productOptions.map((opt) => (
+        <Field label={dict.quote.fields.category} error={errors.category?.message}>
+          <select {...register("category")} className="form-input">
+            <option value="">{dict.quote.selectCategory}</option>
+            {categoryOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
           </select>
@@ -126,6 +134,7 @@ export function QuoteForm({ locale, dict, defaultProduct }: Props) {
             {...register("quantity")}
             className="form-input"
             type="text"
+            placeholder={dict.quote.placeholders.quantity}
           />
         </Field>
       </div>
@@ -135,6 +144,7 @@ export function QuoteForm({ locale, dict, defaultProduct }: Props) {
           {...register("message")}
           className="form-input min-h-32 resize-y"
           rows={5}
+          placeholder={dict.quote.placeholders.message}
         />
       </Field>
 

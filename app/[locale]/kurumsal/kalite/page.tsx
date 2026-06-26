@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Factory, Settings, BadgeCheck, Recycle } from "lucide-react";
 
-import { ContactCTA } from "@/components/sections/ContactCTA";
+import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
 import { getDictionary, hasLocale } from "../../dictionaries";
 
 export async function generateMetadata(props: PageProps<"/[locale]/kurumsal/kalite">): Promise<Metadata> {
@@ -97,7 +97,7 @@ export default async function QualityPage(props: PageProps<"/[locale]/kurumsal/k
         </div>
       </section>
 
-      <ContactCTA locale={locale} dict={dict} />
+      <CustomRequestSection locale={locale} dict={dict} />
     </>
   );
 }

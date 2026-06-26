@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { QuoteForm } from "@/components/forms/QuoteForm";
+import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
 import { getDictionary, hasLocale } from "../dictionaries";
 import { siteConfig } from "@/lib/site";
 import { Mail, Phone, MessageCircle } from "lucide-react";
@@ -15,10 +16,10 @@ export async function generateMetadata(props: PageProps<"/[locale]/teklif-al">):
 
 export default async function QuotePage(props: PageProps<"/[locale]/teklif-al">) {
   const { locale } = await props.params;
-  const { product } = await props.searchParams;
+  const { category } = await props.searchParams;
   if (!hasLocale(locale)) notFound();
   const dict = await getDictionary(locale);
-  const defaultProduct = typeof product === "string" ? product : undefined;
+  const defaultCategory = typeof category === "string" ? category : undefined;
 
   return (
     <>
@@ -77,11 +78,13 @@ export default async function QuotePage(props: PageProps<"/[locale]/teklif-al">)
             </aside>
 
             <div className="lg:col-span-2">
-              <QuoteForm locale={locale} dict={dict} defaultProduct={defaultProduct} />
+              <QuoteForm locale={locale} dict={dict} defaultCategory={defaultCategory} />
             </div>
           </div>
         </div>
       </section>
+
+      <CustomRequestSection locale={locale} dict={dict} />
     </>
   );
 }

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { StatsCounter } from "@/components/sections/StatsCounter";
-import { ContactCTA } from "@/components/sections/ContactCTA";
+import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
 import { getDictionary, hasLocale } from "../../dictionaries";
 
 export async function generateMetadata(props: PageProps<"/[locale]/kurumsal/hakkimizda">): Promise<Metadata> {
@@ -76,7 +76,7 @@ export default async function AboutPage(props: PageProps<"/[locale]/kurumsal/hak
         </div>
       </section>
 
-      <ContactCTA locale={locale} dict={dict} />
+      <CustomRequestSection locale={locale} dict={dict} />
     </>
   );
 }

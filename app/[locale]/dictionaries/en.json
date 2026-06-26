@@ -76,16 +76,61 @@
       "company": "Company Name",
       "email": "Email",
       "phone": "Phone",
-      "product": "Product of Interest",
+      "category": "Category of Interest",
       "quantity": "Quantity",
       "message": "Your Message",
       "submit": "Send",
       "submitting": "Sending..."
     },
+    "placeholders": {
+      "name": "Your full name",
+      "company": "Your company name",
+      "email": "name@company.com",
+      "quantity": "e.g. 500 meters",
+      "message": "Share details about your project and request."
+    },
     "success": "Your message has been sent successfully. We'll get back to you shortly.",
     "error": "An error occurred. Please try again.",
-    "selectProduct": "Select a product",
     "selectCategory": "Select a category"
+  },
+  "custom": {
+    "eyebrow": "Custom Request",
+    "title": "Tailored Production and Solutions",
+    "lead": "Need custom dimensions, color or cross-section on our existing products? Planning a special profile for a different application? Our engineering team designs custom molds and recommends formulations based on your project — send us your request and let's build the right solution together.",
+    "cta": "Submit Custom Request",
+    "modalTitle": "Custom Product Request",
+    "modalSubtitle": "Share your project details and any reference images or technical drawings — we'll respond with a tailored solution as soon as possible.",
+    "otherCategory": "Different Category",
+    "customCategoryLabel": "Product Category Name",
+    "customCategoryPlaceholder": "e.g. Industrial sealing profile",
+    "detailsLabel": "Detailed Description",
+    "detailsPlaceholder": "Describe the change you need, target dimensions and technical specs, and the application area.",
+    "attachmentsLabel": "Image / Technical Drawing",
+    "attachmentsPrompt": "Attach image or technical drawing",
+    "attachmentsHint": "Up to 4 files, max 1 MB each. JPG, PNG, WEBP.",
+    "errors": {
+      "unsupportedType": "Unsupported file type.",
+      "fileTooLarge": "File exceeds 1 MB.",
+      "tooManyFiles": "You can attach up to 4 files."
+    },
+    "capabilities": {
+      "extrusion": {
+        "title": "Micron-Precision Manufacturing",
+        "description": "TPE, PVC and TPU profiles extruded in the exact cross-section, hardness and tolerance your project demands."
+      },
+      "mold": {
+        "title": "Turnkey From Drawing to Mold",
+        "description": "We design and manufacture custom extrusion molds from your drawing or sample — prototype to serial production, all in-house."
+      },
+      "lab": {
+        "title": "Accredited Quality Testing",
+        "description": "Every production batch passes tensile, hardness, ageing and UV tests — reported before shipment."
+      },
+      "project": {
+        "title": "Transparent Production Flow",
+        "description": "From inquiry to delivery every step runs through a single engineering contact — traceable and planned."
+      }
+    }
   },
   "common": {
     "readMore": "Read More",

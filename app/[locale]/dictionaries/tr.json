@@ -76,16 +76,61 @@
       "company": "Firma Adı",
       "email": "E-posta",
       "phone": "Telefon",
-      "product": "İlgilendiğiniz Ürün",
+      "category": "İlgilendiğiniz Kategori",
       "quantity": "Miktar",
       "message": "Mesajınız",
       "submit": "Gönder",
       "submitting": "Gönderiliyor..."
     },
+    "placeholders": {
+      "name": "Adınız Soyadınız",
+      "company": "Firma adınız",
+      "email": "ornek@firma.com",
+      "quantity": "Örn. 500 metre",
+      "message": "Projeniz ve talebiniz hakkında detay verin."
+    },
     "success": "Mesajınız başarıyla iletildi. En kısa sürede dönüş yapacağız.",
     "error": "Bir hata oluştu. Lütfen tekrar deneyin.",
-    "selectProduct": "Ürün seçin",
     "selectCategory": "Kategori seçin"
+  },
+  "custom": {
+    "eyebrow": "Özel Talep",
+    "title": "Size Özel Üretim ve Çözümler",
+    "lead": "Mevcut ürünlerimizde özel kesit, renk veya boyut değişikliği mi gerekiyor? Farklı bir uygulama alanında özel profil üretimi mi planlıyorsunuz? Mühendislik ekibimiz proje gereksinimlerinize göre özel kalıp tasarımı ve formülasyon önerisi sunar — talebinizi iletin, beraber çözüm geliştirelim.",
+    "cta": "Özel Talep Oluştur",
+    "modalTitle": "Özel Ürün Talebi",
+    "modalSubtitle": "Projeniz hakkında detayları ve varsa teknik çizim / referans görsellerinizi paylaşın, size özel çözüm önerimizle kısa sürede dönelim.",
+    "otherCategory": "Farklı Bir Kategori",
+    "customCategoryLabel": "Ürün Kategori Adı",
+    "customCategoryPlaceholder": "Örn. Endüstriyel sızdırmazlık profili",
+    "detailsLabel": "Detaylı Açıklama",
+    "detailsPlaceholder": "İstediğiniz değişiklik, hedef ölçü ve teknik özellikler, kullanım alanı hakkında detay verin.",
+    "attachmentsLabel": "Görsel / Teknik Çizim",
+    "attachmentsPrompt": "Görsel veya teknik çizim ekleyin",
+    "attachmentsHint": "En fazla 4 dosya, her biri 1 MB altında. JPG, PNG, WEBP.",
+    "errors": {
+      "unsupportedType": "Desteklenmeyen dosya türü.",
+      "fileTooLarge": "Dosya boyutu 1 MB'ı aşıyor.",
+      "tooManyFiles": "En fazla 4 dosya ekleyebilirsiniz."
+    },
+    "capabilities": {
+      "extrusion": {
+        "title": "Mikron Hassasiyetinde Üretim",
+        "description": "TPE, PVC ve TPU profilleri; istediğiniz kesit, sertlik ve toleransta — projenize milimetrik uyum sağlayan ekstrüzyon."
+      },
+      "mold": {
+        "title": "Tasarımdan Kalıba Anahtar Teslim",
+        "description": "Teknik çiziminiz veya numuneniz üzerinden özel ekstrüzyon kalıbı tasarlayıp imal ediyoruz; prototipten seriye tek elden."
+      },
+      "lab": {
+        "title": "Akredite Kalite Testleri",
+        "description": "Her üretim partisi çekme, sertlik, yaşlanma ve UV testlerinden geçer; sevkiyat öncesi raporlanır."
+      },
+      "project": {
+        "title": "Şeffaf Üretim Akışı",
+        "description": "Talepten teslimata kadar her aşama tek mühendislik temsilciniz üzerinden takip edilebilir ve planlı ilerler."
+      }
+    }
   },
   "common": {
     "readMore": "Devamını Oku",

@@ -25,6 +25,7 @@ export const categories: Category[] = [
   {
     slug: "otomatik-kepenk-fitilleri",
     name: { tr: "Otomatik Kepenk Fitilleri", en: "Automatic Shutter Seals" },
+    image: "/kategoriler/kepenk_fitilleri.png",
     shortDescription: {
       tr: "Alüminyum ve çelik sarmal kapı sistemleri için sessiz çalışma ve tam yalıtım sağlayan fitil profilleri.",
       en: "Seal profiles for aluminum and steel rolling shutter systems offering silent operation and complete insulation.",
@@ -109,8 +110,42 @@ export const categories: Category[] = [
     ],
   },
   {
+    slug: "tente-fitil-profilleri",
+    name: { tr: "Tente Fitil Profilleri", en: "Awning Seal Profiles" },
+    image: "/kategoriler/tente_fitilleri.png",
+    shortDescription: {
+      tr: "Tente sistemlerinde kumaş tutucu ve sızdırmaz birleşim profilleri.",
+      en: "Fabric retention and watertight joining profiles for awning systems.",
+    },
+    description: {
+      tr: "Endüstriyel ve mağaza tentelerinde kumaş ile alüminyum profili güvenli şekilde birleştiren, hava şartlarına dayanıklı tente fitilleri.",
+      en: "Weather-resistant awning seals that securely join fabric and aluminum profile in industrial and storefront awnings.",
+    },
+    products: [
+      {
+        code: "CNR-TN-01",
+        slug: "tente-kumas-fitili",
+        name: { tr: "Tente Kumaş Fitili", en: "Awning Fabric Seal" },
+        description: {
+          tr: "Tente kumaşını alüminyum kanala sıkıca sabitleyen profil.",
+          en: "Profile that firmly secures awning fabric to the aluminum channel.",
+        },
+      },
+      {
+        code: "CNR-TN-02",
+        slug: "tente-yan-fitili",
+        name: { tr: "Tente Yan Fitili", en: "Awning Side Seal" },
+        description: {
+          tr: "Yan profillerde su girişini engelleyen fitil.",
+          en: "Side profile seal preventing water ingress.",
+        },
+      },
+    ],
+  },
+  {
     slug: "pergola-fitilleri",
     name: { tr: "Pergola Fitilleri", en: "Pergola Seals" },
+    image: "/kategoriler/pergola_fitilleri.png",
     shortDescription: {
       tr: "Pergola sistemlerinde su, rüzgar ve UV dayanımı sağlayan özel profil çözümleri.",
       en: "Specialty profile solutions providing water, wind and UV resistance for pergola systems.",
@@ -150,40 +185,9 @@ export const categories: Category[] = [
     ],
   },
   {
-    slug: "biyoklimatik-fitiller",
-    name: { tr: "Biyoklimatik Fitiller", en: "Bioclimatic Seals" },
-    shortDescription: {
-      tr: "Biyoklimatik pergola ve panjur sistemleri için yüksek performanslı sızdırmazlık profilleri.",
-      en: "High-performance sealing profiles for bioclimatic pergola and louver systems.",
-    },
-    description: {
-      tr: "Hareketli kanatlı biyoklimatik sistemler için tasarlanan fitillerimiz, açılır-kapanır mekanizmalarda sızdırmazlığı korurken aşınma direnci ve düşük sürtünme katsayısı sunar.",
-      en: "Our seals for movable-blade bioclimatic systems maintain sealing in opening-closing mechanisms while delivering wear resistance and a low friction coefficient.",
-    },
-    products: [
-      {
-        code: "CNR-BK-01",
-        slug: "biyoklimatik-kanat-arasi",
-        name: { tr: "Kanat Arası Fitili", en: "Inter-Blade Seal" },
-        description: {
-          tr: "Kanatlar arasındaki temas noktalarında sessizlik ve sızdırmazlık.",
-          en: "Silent operation and sealing at inter-blade contact points.",
-        },
-      },
-      {
-        code: "CNR-BK-02",
-        slug: "biyoklimatik-yan-fitili",
-        name: { tr: "Yan Çerçeve Fitili", en: "Side Frame Seal" },
-        description: {
-          tr: "Çerçeve ile kanat arasında su ve hava sızdırmazlığı.",
-          en: "Water and air sealing between frame and blade.",
-        },
-      },
-    ],
-  },
-  {
     slug: "kapi-fitilleri",
     name: { tr: "Kapı Fitilleri", en: "Door Seals" },
+    image: "/kategoriler/kapi_fitilleri2.png",
     shortDescription: {
       tr: "İç ve dış mekan kapılarında hava, ses ve ısı yalıtımı sağlayan profesyonel fitiller.",
       en: "Professional seals providing air, sound and thermal insulation for interior and exterior doors.",
@@ -223,33 +227,34 @@ export const categories: Category[] = [
     ],
   },
   {
-    slug: "tente-fitil-profilleri",
-    name: { tr: "Tente Fitil Profilleri", en: "Awning Seal Profiles" },
+    slug: "biyoklimatik-fitiller",
+    name: { tr: "Biyoklimatik Fitiller", en: "Bioclimatic Seals" },
+    image: "/kategoriler/biyoklimatik_fitili.png",
     shortDescription: {
-      tr: "Tente sistemlerinde kumaş tutucu ve sızdırmaz birleşim profilleri.",
-      en: "Fabric retention and watertight joining profiles for awning systems.",
+      tr: "Biyoklimatik pergola ve panjur sistemleri için yüksek performanslı sızdırmazlık profilleri.",
+      en: "High-performance sealing profiles for bioclimatic pergola and louver systems.",
     },
     description: {
-      tr: "Endüstriyel ve mağaza tentelerinde kumaş ile alüminyum profili güvenli şekilde birleştiren, hava şartlarına dayanıklı tente fitilleri.",
-      en: "Weather-resistant awning seals that securely join fabric and aluminum profile in industrial and storefront awnings.",
+      tr: "Hareketli kanatlı biyoklimatik sistemler için tasarlanan fitillerimiz, açılır-kapanır mekanizmalarda sızdırmazlığı korurken aşınma direnci ve düşük sürtünme katsayısı sunar.",
+      en: "Our seals for movable-blade bioclimatic systems maintain sealing in opening-closing mechanisms while delivering wear resistance and a low friction coefficient.",
     },
     products: [
       {
-        code: "CNR-TN-01",
-        slug: "tente-kumas-fitili",
-        name: { tr: "Tente Kumaş Fitili", en: "Awning Fabric Seal" },
+        code: "CNR-BK-01",
+        slug: "biyoklimatik-kanat-arasi",
+        name: { tr: "Kanat Arası Fitili", en: "Inter-Blade Seal" },
         description: {
-          tr: "Tente kumaşını alüminyum kanala sıkıca sabitleyen profil.",
-          en: "Profile that firmly secures awning fabric to the aluminum channel.",
+          tr: "Kanatlar arasındaki temas noktalarında sessizlik ve sızdırmazlık.",
+          en: "Silent operation and sealing at inter-blade contact points.",
         },
       },
       {
-        code: "CNR-TN-02",
-        slug: "tente-yan-fitili",
-        name: { tr: "Tente Yan Fitili", en: "Awning Side Seal" },
+        code: "CNR-BK-02",
+        slug: "biyoklimatik-yan-fitili",
+        name: { tr: "Yan Çerçeve Fitili", en: "Side Frame Seal" },
         description: {
-          tr: "Yan profillerde su girişini engelleyen fitil.",
-          en: "Side profile seal preventing water ingress.",
+          tr: "Çerçeve ile kanat arasında su ve hava sızdırmazlığı.",
+          en: "Water and air sealing between frame and blade.",
         },
       },
     ],
@@ -257,6 +262,7 @@ export const categories: Category[] = [
   {
     slug: "lightbox-fitilleri",
     name: { tr: "Lightbox Fitilleri", en: "Lightbox Seals" },
+    image: "/kategoriler/lightbox_fitilleri.png",
     shortDescription: {
       tr: "Aydınlatmalı reklam panoları ve ışıklı tabelalar için kumaş gergi profilleri.",
       en: "Fabric tension profiles for illuminated advertising boards and lightbox signage.",
@@ -289,6 +295,7 @@ export const categories: Category[] = [
   {
     slug: "paspas-profilleri",
     name: { tr: "Paspas Profilleri", en: "Doormat Profiles" },
+    image: "/kategoriler/paspas_fitilleri.png",
     shortDescription: {
       tr: "Giriş paspas sistemleri için alüminyum çerçeve fitilleri ve birleşim profilleri.",
       en: "Aluminum frame seals and joining profiles for entrance doormat systems.",

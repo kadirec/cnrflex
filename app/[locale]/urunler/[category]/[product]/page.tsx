@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { ChevronRight, ArrowRight, CheckCircle2 } from "lucide-react";
 
 import { categories, getProduct } from "@/content/products";
-import { ContactCTA } from "@/components/sections/ContactCTA";
+import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
 import { getDictionary, hasLocale } from "../../../dictionaries";
 import { locales } from "@/lib/site";
 
@@ -92,7 +92,7 @@ export default async function ProductPage(
 
               <div className="mt-10 flex flex-wrap gap-4">
                 <Link
-                  href={`/${locale}/teklif-al?product=${encodeURIComponent(product.code)}`}
+                  href={`/${locale}/teklif-al?category=${encodeURIComponent(category.slug)}`}
                   className="group inline-flex items-center gap-2 rounded-md bg-accent-500 hover:bg-accent-600 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-accent-500/30 transition"
                 >
                   {dict.nav.getQuote}
@@ -133,7 +133,7 @@ export default async function ProductPage(
         </div>
       </section>
 
-      <ContactCTA locale={locale} dict={dict} />
+      <CustomRequestSection locale={locale} dict={dict} />
     </>
   );
 }

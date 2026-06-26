@@ -4,7 +4,7 @@ import { Hero } from "@/components/sections/Hero";
 import { StatsCounter } from "@/components/sections/StatsCounter";
 import { CategoryGrid } from "@/components/sections/CategoryGrid";
 import { AboutPreview } from "@/components/sections/AboutPreview";
-import { ContactCTA } from "@/components/sections/ContactCTA";
+import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
 
 import { getDictionary, hasLocale } from "./dictionaries";
 
@@ -19,7 +19,7 @@ export default async function HomePage(props: PageProps<"/[locale]">) {
       <StatsCounter dict={dict} />
       <CategoryGrid locale={locale} dict={dict} />
       <AboutPreview locale={locale} dict={dict} />
-      <ContactCTA locale={locale} dict={dict} />
+      <CustomRequestSection locale={locale} dict={dict} />
     </>
   );
 }

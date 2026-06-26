@@ -7,13 +7,19 @@ const resend = resendApiKey ? new Resend(resendApiKey) : null;
 const fromAddress = process.env.RESEND_FROM ?? `${siteConfig.name} <noreply@cnrflexis.com>`;
 const toAddress = process.env.RESEND_TO ?? siteConfig.contact.email;
 
+export type EmailAttachment = {
+  filename: string;
+  content: Buffer;
+};
+
 export type EmailPayload = {
   subject: string;
   html: string;
   replyTo?: string;
+  attachments?: EmailAttachment[];
 };
 
-export async function sendEmail({ subject, html, replyTo }: EmailPayload) {
+export async function sendEmail({ subject, html, replyTo, attachments }: EmailPayload) {
   if (!resend) {
     console.warn("[email] RESEND_API_KEY not configured — skipping send");
     return { ok: false, reason: "not_configured" as const };
@@ -25,6 +31,7 @@ export async function sendEmail({ subject, html, replyTo }: EmailPayload) {
       subject,
       html,
       replyTo,
+      attachments: attachments?.map((a) => ({ filename: a.filename, content: a.content })),
     });
     if (error) {
       console.error("[email] resend error:", error);
