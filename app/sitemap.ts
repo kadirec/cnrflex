@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { categories } from "@/content/products";
+import { getAllCategories } from "@/lib/products";
 import { getAllPosts } from "@/content/blog";
 import { siteConfig, locales } from "@/lib/site";
 
@@ -17,9 +17,10 @@ const STATIC_PATHS = [
   "/kullanim-sartlari",
 ];
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteConfig.url;
   const now = new Date();
+  const categories = await getAllCategories();
 
   const entries: MetadataRoute.Sitemap = [];
 

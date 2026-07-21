@@ -7,7 +7,7 @@ import { z } from "zod";
 import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 
 import type { Locale } from "@/lib/site";
-import type { Dictionary } from "@/app/[locale]/dictionaries";
+import type { Dictionary } from "@/app/(public)/[locale]/dictionaries";
 import { PhoneField, PHONE_REGEX } from "./PhoneField";
 
 const schema = z.object({

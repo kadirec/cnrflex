@@ -7,12 +7,12 @@ import { Menu, X, ChevronDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { siteConfig, type Locale, locales } from "@/lib/site";
-import { categories } from "@/content/products";
-import type { Dictionary } from "@/app/[locale]/dictionaries";
+import type { Dictionary } from "@/app/(public)/[locale]/dictionaries";
 
 type Props = {
   locale: Locale;
   dict: Dictionary;
+  categoryLinks: Array<{ slug: string; label: string }>;
 };
 
 type NavItem = {
@@ -27,7 +27,7 @@ const flagMap: Record<Locale, string> = {
   en: "🇬🇧",
 };
 
-export function Header({ locale, dict }: Props) {
+export function Header({ locale, dict, categoryLinks }: Props) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -45,9 +45,9 @@ export function Header({ locale, dict }: Props) {
     {
       label: dict.nav.products,
       href: `/${locale}/urunler`,
-      children: categories.map((c) => ({
+      children: categoryLinks.map((c) => ({
         href: `/${locale}/urunler/${c.slug}`,
-        label: c.name[locale],
+        label: c.label,
       })),
     },
     { href: `/${locale}/blog`, label: dict.nav.blog },

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ShieldCheck, Truck, Headphones, ArrowRight } from "lucide-react";
 
 import type { Locale } from "@/lib/site";
-import type { Dictionary } from "@/app/[locale]/dictionaries";
+import type { Dictionary } from "@/app/(public)/[locale]/dictionaries";
 
 type Props = {
   locale: Locale;

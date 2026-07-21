@@ -5,6 +5,7 @@ import { QuoteForm } from "@/components/forms/QuoteForm";
 import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
 import { getDictionary, hasLocale } from "../dictionaries";
 import { siteConfig } from "@/lib/site";
+import { getAllCategories } from "@/lib/products";
 import { Mail, Phone, MessageCircle } from "lucide-react";
 
 export async function generateMetadata(props: PageProps<"/[locale]/teklif-al">): Promise<Metadata> {
@@ -20,6 +21,8 @@ export default async function QuotePage(props: PageProps<"/[locale]/teklif-al">)
   if (!hasLocale(locale)) notFound();
   const dict = await getDictionary(locale);
   const defaultCategory = typeof category === "string" ? category : undefined;
+  const categories = await getAllCategories();
+  const categoryOptions = categories.map((c) => ({ value: c.slug, label: c.name[locale] }));
 
   return (
     <>
@@ -78,7 +81,12 @@ export default async function QuotePage(props: PageProps<"/[locale]/teklif-al">)
             </aside>
 
             <div className="lg:col-span-2">
-              <QuoteForm locale={locale} dict={dict} defaultCategory={defaultCategory} />
+              <QuoteForm
+                locale={locale}
+                dict={dict}
+                defaultCategory={defaultCategory}
+                categoryOptions={categoryOptions}
+              />
             </div>
           </div>
         </div>

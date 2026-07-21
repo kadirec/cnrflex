@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { notFound } from "next/navigation";
-import "../globals.css";
+import "../../globals.css";
 
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -9,6 +9,7 @@ import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { OrganizationJsonLd } from "@/components/seo/OrganizationJsonLd";
 import { getDictionary, hasLocale } from "./dictionaries";
 import { locales, siteConfig } from "@/lib/site";
+import { getAllCategories } from "@/lib/products";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -68,12 +69,14 @@ export default async function LocaleLayout(props: LayoutProps<"/[locale]">) {
   if (!hasLocale(locale)) notFound();
 
   const dict = await getDictionary(locale);
+  const categories = await getAllCategories();
+  const categoryLinks = categories.map((c) => ({ slug: c.slug, label: c.name[locale] }));
 
   return (
     <html lang={locale} className={`${inter.variable} ${jakarta.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-white text-brand-950">
         <OrganizationJsonLd locale={locale} />
-        <Header locale={locale} dict={dict} />
+        <Header locale={locale} dict={dict} categoryLinks={categoryLinks} />
         <main className="flex-1">{props.children}</main>
         <Footer locale={locale} dict={dict} />
         <WhatsAppButton phone={siteConfig.contact.whatsapp} label={dict.common.whatsapp} />

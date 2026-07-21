@@ -4,7 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowUpRight, Boxes, Square, Wind, DoorOpen, Tent, Lightbulb, Footprints } from "lucide-react";
 
-import { categories } from "@/content/products";
+import { getAllCategories } from "@/lib/products";
 import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
 import { getDictionary, hasLocale } from "../dictionaries";
 
@@ -32,6 +32,7 @@ export default async function ProductsPage(props: PageProps<"/[locale]/urunler">
   const { locale } = await props.params;
   if (!hasLocale(locale)) notFound();
   const dict = await getDictionary(locale);
+  const categories = await getAllCategories();
 
   return (
     <>

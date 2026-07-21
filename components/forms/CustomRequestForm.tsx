@@ -1,14 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2, CheckCircle2, AlertCircle, Upload, X } from "lucide-react";
 
-import { categories } from "@/content/products";
 import type { Locale } from "@/lib/site";
-import type { Dictionary } from "@/app/[locale]/dictionaries";
+import type { Dictionary } from "@/app/(public)/[locale]/dictionaries";
 import { PhoneField, PHONE_REGEX } from "./PhoneField";
 
 const CUSTOM_CATEGORY_VALUE = "__other__";
@@ -39,19 +38,15 @@ type Props = {
   locale: Locale;
   dict: Dictionary;
   onSuccess?: () => void;
+  categoryOptions: Array<{ value: string; label: string }>;
 };
 
-export function CustomRequestForm({ locale, dict, onSuccess }: Props) {
+export function CustomRequestForm({ locale, dict, onSuccess, categoryOptions }: Props) {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [files, setFiles] = useState<File[]>([]);
   const [fileError, setFileError] = useState<string>("");
   const [previews, setPreviews] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const categoryOptions = useMemo(
-    () => categories.map((c) => ({ value: c.slug, label: c.name[locale] })),
-    [locale],
-  );
 
   const {
     register,

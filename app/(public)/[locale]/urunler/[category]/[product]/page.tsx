@@ -3,12 +3,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight, ArrowRight, CheckCircle2 } from "lucide-react";
 
-import { categories, getProduct } from "@/content/products";
+import { getAllCategories, getProduct } from "@/lib/products";
 import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
 import { getDictionary, hasLocale } from "../../../dictionaries";
 import { locales } from "@/lib/site";
 
 export async function generateStaticParams() {
+  const categories = await getAllCategories();
   return locales.flatMap((locale) =>
     categories.flatMap((category) =>
       category.products.map((product) => ({
@@ -25,7 +26,7 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const { locale, category: catSlug, product: prodSlug } = await props.params;
   if (!hasLocale(locale)) return {};
-  const result = getProduct(catSlug, prodSlug);
+  const result = await getProduct(catSlug, prodSlug);
   if (!result) return {};
   return {
     title: result.product.name[locale],
@@ -38,7 +39,7 @@ export default async function ProductPage(
 ) {
   const { locale, category: catSlug, product: prodSlug } = await props.params;
   if (!hasLocale(locale)) notFound();
-  const result = getProduct(catSlug, prodSlug);
+  const result = await getProduct(catSlug, prodSlug);
   if (!result) notFound();
   const { category, product } = result;
   const dict = await getDictionary(locale);

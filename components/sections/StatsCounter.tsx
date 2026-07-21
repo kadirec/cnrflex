@@ -1,4 +1,4 @@
-import type { Dictionary } from "@/app/[locale]/dictionaries";
+import type { Dictionary } from "@/app/(public)/[locale]/dictionaries";
 
 type Props = {
   dict: Dictionary;

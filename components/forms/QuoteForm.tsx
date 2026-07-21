@@ -1,14 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 
-import { categories } from "@/content/products";
 import type { Locale } from "@/lib/site";
-import type { Dictionary } from "@/app/[locale]/dictionaries";
+import type { Dictionary } from "@/app/(public)/[locale]/dictionaries";
 import { PhoneField, PHONE_REGEX } from "./PhoneField";
 
 const schema = z.object({
@@ -28,19 +27,11 @@ type Props = {
   locale: Locale;
   dict: Dictionary;
   defaultCategory?: string;
+  categoryOptions: Array<{ value: string; label: string }>;
 };
 
-export function QuoteForm({ locale, dict, defaultCategory }: Props) {
+export function QuoteForm({ locale, dict, defaultCategory, categoryOptions }: Props) {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-
-  const categoryOptions = useMemo(
-    () =>
-      categories.map((c) => ({
-        value: c.slug,
-        label: c.name[locale],
-      })),
-    [locale],
-  );
 
   const {
     register,

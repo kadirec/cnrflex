@@ -16,13 +16,20 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-import { categories } from "@/content/products";
 import type { Locale } from "@/lib/site";
-import type { Dictionary } from "@/app/[locale]/dictionaries";
+import type { Dictionary } from "@/app/(public)/[locale]/dictionaries";
+
+type CategoryCard = {
+  slug: string;
+  name: Record<Locale, string>;
+  shortDescription: Record<Locale, string>;
+  image?: string | null;
+};
 
 type Props = {
   locale: Locale;
   dict: Dictionary;
+  categories: CategoryCard[];
 };
 
 const iconMap: Record<string, typeof Boxes> = {
@@ -35,7 +42,7 @@ const iconMap: Record<string, typeof Boxes> = {
   "paspas-profilleri": Footprints,
 };
 
-export function CategoryGrid({ locale, dict }: Props) {
+export function CategoryGrid({ locale, dict, categories }: Props) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(true);

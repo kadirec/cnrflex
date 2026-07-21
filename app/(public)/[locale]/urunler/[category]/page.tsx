@@ -3,12 +3,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, ChevronRight } from "lucide-react";
 
-import { categories, getCategory } from "@/content/products";
+import { getAllCategories, getCategory } from "@/lib/products";
 import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
 import { getDictionary, hasLocale } from "../../dictionaries";
 import { locales } from "@/lib/site";
 
 export async function generateStaticParams() {
+  const categories = await getAllCategories();
   return locales.flatMap((locale) =>
     categories.map((category) => ({ locale, category: category.slug })),
   );
@@ -17,7 +18,7 @@ export async function generateStaticParams() {
 export async function generateMetadata(props: PageProps<"/[locale]/urunler/[category]">): Promise<Metadata> {
   const { locale, category: categorySlug } = await props.params;
   if (!hasLocale(locale)) return {};
-  const category = getCategory(categorySlug);
+  const category = await getCategory(categorySlug);
   if (!category) return {};
   return {
     title: category.name[locale],
@@ -28,7 +29,7 @@ export async function generateMetadata(props: PageProps<"/[locale]/urunler/[cate
 export default async function CategoryPage(props: PageProps<"/[locale]/urunler/[category]">) {
   const { locale, category: categorySlug } = await props.params;
   if (!hasLocale(locale)) notFound();
-  const category = getCategory(categorySlug);
+  const category = await getCategory(categorySlug);
   if (!category) notFound();
   const dict = await getDictionary(locale);
 
