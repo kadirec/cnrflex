@@ -1,8 +1,11 @@
-import { pgTable, serial, text, integer, timestamp, jsonb, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, integer, timestamp, jsonb, uniqueIndex, type AnyPgColumn } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+
+export const ROOT_CATEGORY_SLUG = "urunler";
 
 export const categories = pgTable("categories", {
   id: serial("id").primaryKey(),
+  parentId: integer("parent_id").references((): AnyPgColumn => categories.id, { onDelete: "cascade" }),
   slug: text("slug").notNull().unique(),
   nameTr: text("name_tr").notNull(),
   nameEn: text("name_en").notNull(),
@@ -44,8 +47,14 @@ export const products = pgTable(
   (t) => [uniqueIndex("products_category_slug_idx").on(t.categoryId, t.slug)],
 );
 
-export const categoriesRelations = relations(categories, ({ many }) => ({
+export const categoriesRelations = relations(categories, ({ one, many }) => ({
   products: many(products),
+  parent: one(categories, {
+    fields: [categories.parentId],
+    references: [categories.id],
+    relationName: "categoryParent",
+  }),
+  children: many(categories, { relationName: "categoryParent" }),
 }));
 
 export const productsRelations = relations(products, ({ one }) => ({

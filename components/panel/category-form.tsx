@@ -10,15 +10,20 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ImageUpload } from "@/components/panel/image-upload";
 import { slugify } from "@/lib/slug";
 import type { Category } from "@/lib/db";
 import type { CategoryFormState } from "@/lib/actions-categories";
 
+export type ParentOption = { id: number; nameTr: string; depth: number };
+
 type Props = {
   category?: Category;
   action: (prev: CategoryFormState, fd: FormData) => Promise<CategoryFormState>;
   mode: "create" | "edit";
+  parentOptions: ParentOption[];
+  defaultParentId?: number | null;
 };
 
 function SubmitButton() {
@@ -31,11 +36,13 @@ function SubmitButton() {
   );
 }
 
-export function CategoryForm({ category, action, mode }: Props) {
+export function CategoryForm({ category, action, mode, parentOptions, defaultParentId }: Props) {
   const [state, formAction] = useActionState<CategoryFormState, FormData>(action, { ok: false });
   const [nameTr, setNameTr] = useState(category?.nameTr ?? "");
   const [slug, setSlug] = useState(category?.slug ?? "");
   const [slugTouched, setSlugTouched] = useState(!!category);
+  const initialParent = category?.parentId ?? defaultParentId ?? null;
+  const [parentId, setParentId] = useState<string>(initialParent === null ? "root" : String(initialParent));
 
   useEffect(() => {
     if (!slugTouched && mode === "create") {
@@ -52,6 +59,7 @@ export function CategoryForm({ category, action, mode }: Props) {
 
   return (
     <form action={formAction} className="space-y-6">
+      <input type="hidden" name="parentId" value={parentId === "root" ? "" : parentId} />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <Card>
@@ -140,6 +148,22 @@ export function CategoryForm({ category, action, mode }: Props) {
               <CardTitle>Yerleşim</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              <Field label="Üst kategori" error={fe.parentId} hint="Boş bırakılırsa üst düzey (kök altı) olur">
+                <Select value={parentId} onValueChange={(v) => setParentId(v ?? "root")}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="root">Ürünler (kök)</SelectItem>
+                    {parentOptions.map((p) => (
+                      <SelectItem key={p.id} value={String(p.id)}>
+                        {"— ".repeat(p.depth + 1)}
+                        {p.nameTr}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
               <Field label="Slug" error={fe.slug} hint="URL için: /urunler/[slug]">
                 <Input
                   name="slug"

@@ -5,10 +5,13 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getSession } from "@/lib/auth";
-import { getDb, categories } from "@/lib/db";
+import { getDb, categories, ROOT_CATEGORY_SLUG } from "@/lib/db";
 import { slugify } from "@/lib/slug";
 
 const categorySchema = z.object({
+  parentId: z
+    .union([z.coerce.number().int().positive(), z.literal("").transform(() => null), z.null()])
+    .nullable(),
   slug: z.string().min(1).max(120).regex(/^[a-z0-9-]+$/, "Slug sadece küçük harf, rakam ve tire içerebilir"),
   nameTr: z.string().min(1).max(200),
   nameEn: z.string().min(1).max(200),
@@ -34,8 +37,10 @@ function parseFormData(fd: FormData) {
   };
   const nameTr = get("nameTr");
   const slugRaw = get("slug") || slugify(nameTr);
+  const parentRaw = get("parentId");
 
   return {
+    parentId: parentRaw === "" || parentRaw === "null" ? null : parentRaw,
     slug: slugRaw,
     nameTr,
     nameEn: get("nameEn"),
@@ -47,6 +52,21 @@ function parseFormData(fd: FormData) {
     iconUrl: get("iconUrl") || null,
     sortOrder: get("sortOrder") || "0",
   };
+}
+
+async function isDescendantOf(candidateParentId: number, ancestorId: number): Promise<boolean> {
+  const db = getDb();
+  const rows = await db.select({ id: categories.id, parentId: categories.parentId }).from(categories);
+  const byId = new Map(rows.map((r) => [r.id, r.parentId] as const));
+  let current: number | null = candidateParentId;
+  const seen = new Set<number>();
+  while (current !== null) {
+    if (seen.has(current)) return false;
+    seen.add(current);
+    if (current === ancestorId) return true;
+    current = byId.get(current) ?? null;
+  }
+  return false;
 }
 
 async function requireAuth(): Promise<CategoryFormState | null> {
@@ -99,6 +119,26 @@ export async function updateCategory(id: number, _prev: CategoryFormState, fd: F
   }
 
   const db = getDb();
+
+  const [current] = await db.select().from(categories).where(eq(categories.id, id)).limit(1);
+  if (current?.slug === ROOT_CATEGORY_SLUG && parsed.data.parentId !== null) {
+    return { ok: false, error: "Kök kategori bir üst kategoriye alınamaz" };
+  }
+
+  if (parsed.data.parentId !== null) {
+    if (parsed.data.parentId === id) {
+      return { ok: false, error: "Kategori kendisinin üst kategorisi olamaz", fieldErrors: { parentId: "Geçersiz üst kategori" } };
+    }
+    const cycle = await isDescendantOf(parsed.data.parentId, id);
+    if (cycle) {
+      return {
+        ok: false,
+        error: "Bu kategori seçili üst kategorinin altında — döngü oluşturamazsınız",
+        fieldErrors: { parentId: "Döngü oluşturur" },
+      };
+    }
+  }
+
   try {
     await db
       .update(categories)
@@ -124,6 +164,10 @@ export async function deleteCategory(id: number): Promise<{ ok: boolean; error?:
   if (unauth) return { ok: false, error: unauth.error };
 
   const db = getDb();
+  const [row] = await db.select({ slug: categories.slug }).from(categories).where(eq(categories.id, id)).limit(1);
+  if (row?.slug === ROOT_CATEGORY_SLUG) {
+    return { ok: false, error: "Kök kategori silinemez" };
+  }
   await db.delete(categories).where(eq(categories.id, id));
   revalidatePath("/panel/categories");
   revalidatePath("/tr/urunler");

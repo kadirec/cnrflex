@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { FolderTree, Package, ArrowRight } from "lucide-react";
-import { count } from "drizzle-orm";
-import { getDb, categories, products } from "@/lib/db";
+import { count, ne } from "drizzle-orm";
+import { getDb, categories, products, ROOT_CATEGORY_SLUG } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 async function loadStats() {
   const db = getDb();
   const [c, p] = await Promise.all([
-    db.select({ n: count() }).from(categories),
+    db.select({ n: count() }).from(categories).where(ne(categories.slug, ROOT_CATEGORY_SLUG)),
     db.select({ n: count() }).from(products),
   ]);
   return { categories: c[0]?.n ?? 0, products: p[0]?.n ?? 0 };

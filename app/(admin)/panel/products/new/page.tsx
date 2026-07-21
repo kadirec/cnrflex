@@ -1,9 +1,8 @@
-import { asc } from "drizzle-orm";
 import { redirect } from "next/navigation";
-import { getDb, categories } from "@/lib/db";
 import { PageHeader } from "@/components/panel/page-header";
 import { ProductForm } from "@/components/panel/product-form";
 import { createProduct } from "@/lib/actions-products";
+import { getAllCategoriesFlat } from "@/lib/products";
 
 export const metadata = { title: "Yeni Ürün — Panel" };
 
@@ -12,11 +11,8 @@ export default async function NewProductPage({
 }: {
   searchParams: Promise<{ category?: string }>;
 }) {
-  const db = getDb();
-  const cats = await db
-    .select({ id: categories.id, nameTr: categories.nameTr })
-    .from(categories)
-    .orderBy(asc(categories.sortOrder), asc(categories.nameTr));
+  const flat = await getAllCategoriesFlat();
+  const cats = flat.map((c) => ({ id: c.id, nameTr: c.name.tr, depth: c.depth }));
 
   if (cats.length === 0) {
     redirect("/panel/categories/new");

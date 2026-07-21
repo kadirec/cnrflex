@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 
-type Category = { id: number; nameTr: string; slug: string };
+type Category = { id: number; nameTr: string; slug: string; depth?: number };
 
 export function ProductFilters({
   categories,
@@ -60,6 +60,7 @@ export function ProductFilters({
           <SelectItem value="all">Tüm kategoriler</SelectItem>
           {categories.map((c) => (
             <SelectItem key={c.id} value={String(c.id)}>
+              {"— ".repeat(c.depth ?? 0)}
               {c.nameTr}
             </SelectItem>
           ))}

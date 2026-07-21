@@ -1,9 +1,10 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
-import { getDb, categories } from "@/lib/db";
+import { getDb, categories, ROOT_CATEGORY_SLUG } from "@/lib/db";
 import { PageHeader } from "@/components/panel/page-header";
-import { CategoryForm } from "@/components/panel/category-form";
+import { CategoryForm, type ParentOption } from "@/components/panel/category-form";
 import { updateCategory, type CategoryFormState } from "@/lib/actions-categories";
+import { getAllCategoriesFlat } from "@/lib/products";
 
 export default async function EditCategoryPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -13,6 +14,23 @@ export default async function EditCategoryPage({ params }: { params: Promise<{ i
   const db = getDb();
   const [row] = await db.select().from(categories).where(eq(categories.id, numericId)).limit(1);
   if (!row) notFound();
+  if (row.slug === ROOT_CATEGORY_SLUG) redirect("/panel/categories");
+
+  const flat = await getAllCategoriesFlat();
+  const descendantIds = new Set<number>();
+  const collectDescendants = (targetId: number) => {
+    for (const c of flat) {
+      if (c.parentId === targetId) {
+        descendantIds.add(c.id);
+        collectDescendants(c.id);
+      }
+    }
+  };
+  collectDescendants(numericId);
+
+  const parentOptions: ParentOption[] = flat
+    .filter((c) => c.id !== numericId && !descendantIds.has(c.id))
+    .map((c) => ({ id: c.id, nameTr: c.name.tr, depth: c.depth }));
 
   const boundAction = updateCategory.bind(null, numericId) as (
     prev: CategoryFormState,
@@ -26,7 +44,12 @@ export default async function EditCategoryPage({ params }: { params: Promise<{ i
         description={`Kategori düzenleme • /${row.slug}`}
         backHref="/panel/categories"
       />
-      <CategoryForm mode="edit" category={row} action={boundAction} />
+      <CategoryForm
+        mode="edit"
+        category={row}
+        action={boundAction}
+        parentOptions={parentOptions}
+      />
     </div>
   );
 }

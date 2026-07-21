@@ -10,6 +10,7 @@
     "db:push": "dotenv -e .env.local -- drizzle-kit push --force",
     "db:studio": "dotenv -e .env.local -- drizzle-kit studio",
     "db:seed": "dotenv -e .env.local -- tsx scripts/seed.ts",
+    "db:migrate-hierarchy": "dotenv -e .env.local -- tsx scripts/migrate-hierarchy.ts",
     "admin:generate": "tsx scripts/generate-admin.ts"
   },
   "dependencies": {

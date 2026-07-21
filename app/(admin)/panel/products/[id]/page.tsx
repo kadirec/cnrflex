@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
-import { asc, eq } from "drizzle-orm";
-import { getDb, categories, products } from "@/lib/db";
+import { eq } from "drizzle-orm";
+import { getDb, products } from "@/lib/db";
 import { PageHeader } from "@/components/panel/page-header";
 import { ProductForm } from "@/components/panel/product-form";
 import { updateProduct, type ProductFormState } from "@/lib/actions-products";
+import { getAllCategoriesFlat } from "@/lib/products";
 
 export default async function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -14,10 +15,8 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
   const [row] = await db.select().from(products).where(eq(products.id, numericId)).limit(1);
   if (!row) notFound();
 
-  const cats = await db
-    .select({ id: categories.id, nameTr: categories.nameTr })
-    .from(categories)
-    .orderBy(asc(categories.sortOrder), asc(categories.nameTr));
+  const flat = await getAllCategoriesFlat();
+  const cats = flat.map((c) => ({ id: c.id, nameTr: c.name.tr, depth: c.depth }));
 
   const boundAction = updateProduct.bind(null, numericId) as (
     prev: ProductFormState,

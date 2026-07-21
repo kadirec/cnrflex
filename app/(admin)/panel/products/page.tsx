@@ -9,15 +9,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/panel/page-header";
 import { DeleteProductButton } from "./delete-button";
 import { ProductFilters } from "./filters";
+import { getAllCategoriesFlat } from "@/lib/products";
 
 type Search = { category?: string; q?: string };
 
 async function loadCategories() {
-  const db = getDb();
-  return db
-    .select({ id: categories.id, nameTr: categories.nameTr, slug: categories.slug })
-    .from(categories)
-    .orderBy(asc(categories.sortOrder), asc(categories.nameTr));
+  const flat = await getAllCategoriesFlat();
+  return flat.map((c) => ({ id: c.id, nameTr: c.name.tr, slug: c.slug, depth: c.depth }));
 }
 
 async function loadProducts(categoryId?: number) {

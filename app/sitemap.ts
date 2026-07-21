@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getAllCategories } from "@/lib/products";
+import { getAllCategoriesFlat } from "@/lib/products";
 import { getAllPosts } from "@/content/blog";
 import { siteConfig, locales } from "@/lib/site";
 
@@ -20,7 +20,7 @@ const STATIC_PATHS = [
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteConfig.url;
   const now = new Date();
-  const categories = await getAllCategories();
+  const categories = await getAllCategoriesFlat();
 
   const entries: MetadataRoute.Sitemap = [];
 

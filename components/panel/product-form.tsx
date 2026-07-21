@@ -17,7 +17,7 @@ import { slugify } from "@/lib/slug";
 import type { Product } from "@/lib/db";
 import type { ProductFormState } from "@/lib/actions-products";
 
-type CategoryOption = { id: number; nameTr: string };
+type CategoryOption = { id: number; nameTr: string; depth?: number };
 
 type Props = {
   product?: Product;
@@ -147,6 +147,7 @@ export function ProductForm({ product, categories, action, mode, defaultCategory
                   <SelectContent>
                     {categories.map((c) => (
                       <SelectItem key={c.id} value={String(c.id)}>
+                        {"— ".repeat(c.depth ?? 0)}
                         {c.nameTr}
                       </SelectItem>
                     ))}

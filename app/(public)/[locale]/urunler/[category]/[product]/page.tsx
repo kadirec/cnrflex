@@ -3,13 +3,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight, ArrowRight, CheckCircle2 } from "lucide-react";
 
-import { getAllCategories, getProduct } from "@/lib/products";
+import { getAllCategoriesFlat, getProduct } from "@/lib/products";
 import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
 import { getDictionary, hasLocale } from "../../../dictionaries";
 import { locales } from "@/lib/site";
 
 export async function generateStaticParams() {
-  const categories = await getAllCategories();
+  const categories = await getAllCategoriesFlat();
   return locales.flatMap((locale) =>
     categories.flatMap((category) =>
       category.products.map((product) => ({
