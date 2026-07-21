@@ -21,7 +21,7 @@ export function PanelSidebar() {
           C
         </div>
         <div>
-          <div className="font-bold text-white leading-tight">CNRFlexis</div>
+          <div className="font-bold text-white leading-tight">CNR Seal</div>
           <div className="text-[10px] uppercase tracking-wider text-slate-400">Panel</div>
         </div>
       </div>
@@ -46,7 +46,7 @@ export function PanelSidebar() {
         })}
       </nav>
       <div className="p-4 border-t border-white/10 text-[11px] text-slate-500">
-        © {new Date().getFullYear()} CNRFlexis
+        © {new Date().getFullYear()} CNR Seal
       </div>
     </aside>
   );

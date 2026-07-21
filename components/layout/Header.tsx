@@ -75,7 +75,7 @@ export function Header({ locale, dict, categoryLinks }: Props) {
               CNR
             </span>
             <span className="font-display text-xl font-bold tracking-tight text-brand-900">
-              Flexis
+              Seal
             </span>
           </Link>
 

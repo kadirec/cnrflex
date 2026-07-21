@@ -29,7 +29,7 @@ export default async function PrivacyPage(props: PageProps<"/[locale]/gizlilik-p
           {locale === "tr" ? (
             <>
               <p>
-                Bu Gizlilik Politikası, {siteConfig.name} (&quot;biz&quot;, &quot;bizim&quot;) tarafından cnrflexis.com web sitesi
+                Bu Gizlilik Politikası, {siteConfig.name} (&quot;biz&quot;, &quot;bizim&quot;) tarafından cnrseal.com web sitesi
                 aracılığıyla toplanan kişisel verilerin nasıl işlendiğini açıklar.
               </p>
               <h2>Toplanan Bilgiler</h2>
@@ -50,7 +50,7 @@ export default async function PrivacyPage(props: PageProps<"/[locale]/gizlilik-p
             <>
               <p>
                 This Privacy Policy explains how {siteConfig.name} processes personal data collected through the
-                cnrflexis.com website.
+                cnrseal.com website.
               </p>
               <h2>Information We Collect</h2>
               <p>Via contact, quote and catalog forms; we collect your name, email, phone, company information and message.</p>

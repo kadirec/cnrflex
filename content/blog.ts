@@ -22,7 +22,7 @@ export const posts: BlogPost[] = [
       en: "We compare the technical properties and application areas of the three core raw materials used in plastic seal and profile supply and manufacturing.",
     },
     date: "2025-12-01",
-    author: "CNRFlexis",
+    author: "CNR Seal",
     readingTime: 5,
     content: {
       tr: `## Hangi malzemeyi ne zaman seçmeli?
@@ -100,7 +100,7 @@ Contact our engineering team to choose the most suitable material for your appli
       en: "The right seal choice can double the life of your shutter system. Here are 5 critical tips from our experts.",
     },
     date: "2025-11-20",
-    author: "CNRFlexis",
+    author: "CNR Seal",
     readingTime: 4,
     content: {
       tr: `## Doğru fitil ile sistem ömrünü uzatın
@@ -121,7 +121,7 @@ Dış mekana açık sistemlerde UV ve sıcaklık dayanımı önceliklidir. Bu no
 
 ### 4. Renk ve estetik
 
-Genelde siyah veya gri tercih edilir; ancak CNRFlexis olarak özel renk talepleri karşılayabiliyoruz.
+Genelde siyah veya gri tercih edilir; ancak CNR Seal olarak özel renk talepleri karşılayabiliyoruz.
 
 ### 5. Tedarikçi güvenilirliği
 
@@ -144,7 +144,7 @@ UV and temperature resistance are priorities for outdoor systems. TPE/TPU blends
 
 ### 4. Color and aesthetics
 
-Black or gray are usually preferred, but at CNRFlexis we can accommodate custom color requests.
+Black or gray are usually preferred, but at CNR Seal we can accommodate custom color requests.
 
 ### 5. Supplier reliability
 
@@ -162,7 +162,7 @@ Stocked supply and fast shipping are critical to keep your project on schedule.`
       en: "Why seal design matters for movable-blade bioclimatic pergolas and how to choose the right one.",
     },
     date: "2025-10-12",
-    author: "CNRFlexis",
+    author: "CNR Seal",
     readingTime: 3,
     content: {
       tr: `## Biyoklimatik sistemler ne ister?
@@ -173,7 +173,7 @@ Biyoklimatik pergolalarda kanatlar açılıp kapandığı için fitil sürekli m
 - Sıkıştırma seti düşük olmalıdır
 - UV ve yağmur dayanımı olmazsa olmaz
 
-CNRFlexis biyoklimatik fitilleri, bu üç özelliği bir arada sunacak şekilde TPE bazlı yapıda sunulur.`,
+CNR Seal biyoklimatik fitilleri, bu üç özelliği bir arada sunacak şekilde TPE bazlı yapıda sunulur.`,
       en: `## What do bioclimatic systems demand?
 
 In bioclimatic pergolas the blades open and close, so the seal is under constant mechanical stress. Therefore:
@@ -182,7 +182,7 @@ In bioclimatic pergolas the blades open and close, so the seal is under constant
 - Compression set must be low
 - UV and rain resistance is a must-have
 
-CNRFlexis bioclimatic seals are offered with a TPE base, delivering all three characteristics together.`,
+CNR Seal bioclimatic seals are offered with a TPE base, delivering all three characteristics together.`,
     },
   },
 ];

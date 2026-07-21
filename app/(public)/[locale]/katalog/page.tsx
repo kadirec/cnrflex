@@ -53,7 +53,7 @@ export default async function CatalogPage(props: PageProps<"/[locale]/katalog">)
                   </span>
                   <div>
                     <div className="text-sm text-brand-600">
-                      {locale === "tr" ? "CNRFlexis Ürün Kataloğu" : "CNRFlexis Product Catalog"}
+                      {locale === "tr" ? "CNR Seal Ürün Kataloğu" : "CNR Seal Product Catalog"}
                     </div>
                     <div className="text-lg font-bold text-brand-950">
                       {locale === "tr" ? "2026 Edisyonu — PDF" : "2026 Edition — PDF"}
@@ -71,7 +71,7 @@ export default async function CatalogPage(props: PageProps<"/[locale]/katalog">)
                 </ul>
 
                 <a
-                  href="/catalog/cnrflexis-katalog.pdf"
+                  href="/catalog/cnrseal-katalog.pdf"
                   className="mt-8 inline-flex items-center gap-2 rounded-md bg-brand-900 hover:bg-brand-800 px-6 py-3 text-base font-semibold text-white transition"
                   download
                 >

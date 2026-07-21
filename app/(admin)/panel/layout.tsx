@@ -3,7 +3,7 @@ import { PanelSidebar } from "@/components/panel/sidebar";
 import { PanelTopbar } from "@/components/panel/topbar";
 import { Toaster } from "@/components/ui/sonner";
 
-export const metadata = { title: "Panel — CNRFlexis" };
+export const metadata = { title: "Panel — CNR Seal" };
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
   await requireSession();

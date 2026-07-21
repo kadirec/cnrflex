@@ -20,7 +20,7 @@ export default async function PanelDashboard() {
     <div className="max-w-5xl mx-auto space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Genel Bakış</h1>
-        <p className="text-sm text-slate-500 mt-1">CNRFlexis içerik yönetim paneli.</p>
+        <p className="text-sm text-slate-500 mt-1">CNR Seal içerik yönetim paneli.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

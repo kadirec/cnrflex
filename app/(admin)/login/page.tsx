@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { LoginForm } from "./login-form";
 
-export const metadata = { title: "Giriş — CNRFlexis Panel" };
+export const metadata = { title: "Giriş — CNR Seal Panel" };
 
 export default async function LoginPage() {
   const session = await getSession();
@@ -16,7 +16,7 @@ export default async function LoginPage() {
             <div className="w-10 h-10 rounded-lg bg-brand-900 flex items-center justify-center text-white font-bold">
               C
             </div>
-            <span className="text-2xl font-bold text-brand-950">CNRFlexis</span>
+            <span className="text-2xl font-bold text-brand-950">CNR Seal</span>
           </div>
           <p className="text-sm text-slate-600">Yönetim Paneli</p>
         </div>

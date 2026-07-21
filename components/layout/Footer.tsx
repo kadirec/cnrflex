@@ -56,7 +56,7 @@ export function Footer({ locale, dict }: Props) {
                 CNR
               </span>
               <span className="font-display text-xl font-bold tracking-tight text-white">
-                Flexis
+                Seal
               </span>
             </div>
             <p className="text-sm text-brand-300 leading-relaxed">{dict.footer.tagline}</p>

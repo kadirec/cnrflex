@@ -19,7 +19,7 @@ export default async function VisionMissionPage(props: PageProps<"/[locale]/kuru
 
   const content = locale === "tr" ? {
     title: "Vizyonumuz ve Misyonumuz",
-    intro: "CNRFlexis olarak değerlerimiz, sektördeki yerimizi ve müşterilerimize sunduğumuz hizmeti şekillendirir.",
+    intro: "CNR Seal olarak değerlerimiz, sektördeki yerimizi ve müşterilerimize sunduğumuz hizmeti şekillendirir.",
     vision: {
       title: "Vizyonumuz",
       body: "Plastik profil ve fitil tedariğinde Türkiye'nin tercih edilen markası olmak; mühendislik yetkinliğimizi sürekli geliştirerek küresel pazarlarda rekabetçi ve sürdürülebilir çözümler sunmak.",

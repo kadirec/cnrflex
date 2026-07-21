@@ -18,7 +18,7 @@ export default async function AboutPage(props: PageProps<"/[locale]/kurumsal/hak
   const dict = await getDictionary(locale);
 
   const content = locale === "tr" ? {
-    hero: "CNRFlexis, plastik profil ve fitil tedariğinde güvenilir bir çözüm ortağı olarak modern ekstrüzyon teknolojisini ve mühendislik uzmanlığını birleştiren bir markadır.",
+    hero: "CNR Seal, plastik profil ve fitil tedariğinde güvenilir bir çözüm ortağı olarak modern ekstrüzyon teknolojisini ve mühendislik uzmanlığını birleştiren bir markadır.",
     sections: [
       {
         title: "Tedarik Yaklaşımımız",
@@ -34,7 +34,7 @@ export default async function AboutPage(props: PageProps<"/[locale]/kurumsal/hak
       },
     ],
   } : {
-    hero: "CNRFlexis is a trusted supply partner for plastic profiles and seals, combining modern extrusion-based products with engineering expertise.",
+    hero: "CNR Seal is a trusted supply partner for plastic profiles and seals, combining modern extrusion-based products with engineering expertise.",
     sections: [
       {
         title: "Our Supply Approach",

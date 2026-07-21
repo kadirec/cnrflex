@@ -15,7 +15,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "CNRFlexis Panel",
+  title: "CNR Seal Panel",
   robots: { index: false, follow: false },
 };
 

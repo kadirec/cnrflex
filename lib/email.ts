@@ -4,7 +4,7 @@ import { siteConfig } from "./site";
 const resendApiKey = process.env.RESEND_API_KEY;
 const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
-const fromAddress = process.env.RESEND_FROM ?? `${siteConfig.name} <noreply@cnrflexis.com>`;
+const fromAddress = process.env.RESEND_FROM ?? `${siteConfig.name} <noreply@cnrseal.com>`;
 const toAddress = process.env.RESEND_TO ?? siteConfig.contact.email;
 
 export type EmailAttachment = {
