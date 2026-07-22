@@ -42,7 +42,7 @@ export function CategoryForm({ category, action, mode, parentOptions, defaultPar
   const [slug, setSlug] = useState(category?.slug ?? "");
   const [slugTouched, setSlugTouched] = useState(!!category);
   const initialParent = category?.parentId ?? defaultParentId ?? null;
-  const [parentId, setParentId] = useState<string>(initialParent === null ? "root" : String(initialParent));
+  const [parentId, setParentId] = useState<string>(initialParent === null ? "none" : String(initialParent));
 
   useEffect(() => {
     if (!slugTouched && mode === "create") {
@@ -59,7 +59,7 @@ export function CategoryForm({ category, action, mode, parentOptions, defaultPar
 
   return (
     <form action={formAction} className="space-y-6">
-      <input type="hidden" name="parentId" value={parentId === "root" ? "" : parentId} />
+      <input type="hidden" name="parentId" value={parentId === "none" ? "" : parentId} />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <Card>
@@ -148,13 +148,13 @@ export function CategoryForm({ category, action, mode, parentOptions, defaultPar
               <CardTitle>Yerleşim</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Field label="Üst kategori" error={fe.parentId} hint="Boş bırakılırsa üst düzey (kök altı) olur">
-                <Select value={parentId} onValueChange={(v) => setParentId(v ?? "root")}>
+              <Field label="Üst kategori" error={fe.parentId} hint="Boş bırakırsanız ana kategori olur">
+                <Select value={parentId} onValueChange={(v) => setParentId(v ?? "none")}>
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="Ana kategori (yok)" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="root">Ürünler (kök)</SelectItem>
+                    <SelectItem value="none">— Ana kategori (üst yok) —</SelectItem>
                     {parentOptions.map((p) => (
                       <SelectItem key={p.id} value={String(p.id)}>
                         {"— ".repeat(p.depth + 1)}

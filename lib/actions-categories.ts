@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getSession } from "@/lib/auth";
-import { getDb, categories, ROOT_CATEGORY_SLUG } from "@/lib/db";
+import { getDb, categories } from "@/lib/db";
 import { slugify } from "@/lib/slug";
 
 const categorySchema = z.object({
@@ -120,11 +120,6 @@ export async function updateCategory(id: number, _prev: CategoryFormState, fd: F
 
   const db = getDb();
 
-  const [current] = await db.select().from(categories).where(eq(categories.id, id)).limit(1);
-  if (current?.slug === ROOT_CATEGORY_SLUG && parsed.data.parentId !== null) {
-    return { ok: false, error: "Kök kategori bir üst kategoriye alınamaz" };
-  }
-
   if (parsed.data.parentId !== null) {
     if (parsed.data.parentId === id) {
       return { ok: false, error: "Kategori kendisinin üst kategorisi olamaz", fieldErrors: { parentId: "Geçersiz üst kategori" } };
@@ -164,10 +159,6 @@ export async function deleteCategory(id: number): Promise<{ ok: boolean; error?:
   if (unauth) return { ok: false, error: unauth.error };
 
   const db = getDb();
-  const [row] = await db.select({ slug: categories.slug }).from(categories).where(eq(categories.id, id)).limit(1);
-  if (row?.slug === ROOT_CATEGORY_SLUG) {
-    return { ok: false, error: "Kök kategori silinemez" };
-  }
   await db.delete(categories).where(eq(categories.id, id));
   revalidatePath("/panel/categories");
   revalidatePath("/tr/urunler");

@@ -1,8 +1,6 @@
 import { pgTable, serial, text, integer, timestamp, jsonb, uniqueIndex, type AnyPgColumn } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
-export const ROOT_CATEGORY_SLUG = "urunler";
-
 export const categories = pgTable("categories", {
   id: serial("id").primaryKey(),
   parentId: integer("parent_id").references((): AnyPgColumn => categories.id, { onDelete: "cascade" }),

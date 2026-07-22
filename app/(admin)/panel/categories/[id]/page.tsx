@@ -1,6 +1,6 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { eq } from "drizzle-orm";
-import { getDb, categories, ROOT_CATEGORY_SLUG } from "@/lib/db";
+import { getDb, categories } from "@/lib/db";
 import { PageHeader } from "@/components/panel/page-header";
 import { CategoryForm, type ParentOption } from "@/components/panel/category-form";
 import { updateCategory, type CategoryFormState } from "@/lib/actions-categories";
@@ -14,7 +14,6 @@ export default async function EditCategoryPage({ params }: { params: Promise<{ i
   const db = getDb();
   const [row] = await db.select().from(categories).where(eq(categories.id, numericId)).limit(1);
   if (!row) notFound();
-  if (row.slug === ROOT_CATEGORY_SLUG) redirect("/panel/categories");
 
   const flat = await getAllCategoriesFlat();
   const descendantIds = new Set<number>();

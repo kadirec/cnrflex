@@ -4,7 +4,6 @@ import {
   getDb,
   categories as catT,
   products as prodT,
-  ROOT_CATEGORY_SLUG,
   type ProductSpec,
 } from "@/lib/db";
 import type { Locale } from "@/lib/site";
@@ -65,7 +64,6 @@ async function loadAll() {
   }
 
   const childrenByParent = new Map<number, CatRow[]>();
-  const root = cats.find((c) => c.parentId === null && c.slug === ROOT_CATEGORY_SLUG);
 
   for (const c of cats) {
     if (c.parentId === null) continue;
@@ -91,15 +89,12 @@ async function loadAll() {
     };
   };
 
-  return { root, cats, build };
+  return { cats, build };
 }
 
 export async function getTopCategories(): Promise<Category[]> {
-  const { root, cats, build } = await loadAll();
-  const topRows = root
-    ? cats.filter((c) => c.parentId === root.id)
-    : cats.filter((c) => c.parentId === null);
-  return topRows.map(build);
+  const { cats, build } = await loadAll();
+  return cats.filter((c) => c.parentId === null).map(build);
 }
 
 export async function getAllCategoriesFlat(): Promise<Array<Category & { depth: number }>> {
@@ -114,10 +109,9 @@ export async function getAllCategoriesFlat(): Promise<Array<Category & { depth: 
 }
 
 export async function getCategory(slug: string): Promise<Category | undefined> {
-  const { root, cats, build } = await loadAll();
+  const { cats, build } = await loadAll();
   const target = cats.find((c) => c.slug === slug);
   if (!target) return undefined;
-  if (root && target.id === root.id) return undefined;
   return build(target);
 }
 
