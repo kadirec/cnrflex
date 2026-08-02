@@ -19,6 +19,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Sparkles,
+  Package,
+  PenSquare,
+  Upload,
 } from "lucide-react";
 
 import type { Locale } from "@/lib/site";
@@ -28,7 +31,7 @@ import { useQuoteCart, type CartItem } from "@/components/cart/QuoteCartContext"
 import { cn } from "@/lib/utils";
 import { PhoneField, PHONE_REGEX } from "./PhoneField";
 
-const schema = z.object({
+const contactSchema = z.object({
   name: z.string().min(2),
   company: z.string().optional(),
   email: z.string().email(),
@@ -37,7 +40,25 @@ const schema = z.object({
   website: z.string().max(0).optional(),
 });
 
-type FormData = z.infer<typeof schema>;
+type ContactData = z.infer<typeof contactSchema>;
+
+const customSchema = z.object({
+  name: z.string().min(2),
+  company: z.string().optional(),
+  email: z.string().email(),
+  phone: z.string().regex(PHONE_REGEX),
+  message: z.string().min(10),
+  website: z.string().max(0).optional(),
+});
+
+type CustomData = z.infer<typeof customSchema>;
+
+const MAX_FILES = 4;
+const MAX_FILE_SIZE = 1 * 1024 * 1024;
+const ACCEPTED_MIME = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+
+type Mode = "catalog" | "custom";
+type Step = "select" | "contact";
 
 type Props = {
   locale: Locale;
@@ -47,8 +68,6 @@ type Props = {
   prefillCategorySlug?: string;
 };
 
-type Step = "select" | "contact";
-
 export function QuoteForm({
   locale,
   dict,
@@ -56,21 +75,176 @@ export function QuoteForm({
   prefillProductSlug,
   prefillCategorySlug,
 }: Props) {
+  const [mode, setMode] = useState<Mode>("catalog");
+  const cart = useQuoteCart();
+  const prefillAppliedRef = useRef(false);
+
+  useEffect(() => {
+    if (!cart.hydrated || prefillAppliedRef.current) return;
+    if (prefillProductSlug) {
+      const p = products.find((x) => x.slug === prefillProductSlug);
+      if (p && !cart.isInCart(p.id)) {
+        cart.add(toCartFields(p, locale));
+      }
+    }
+    prefillAppliedRef.current = true;
+  }, [cart, prefillProductSlug, products, locale]);
+
+  return (
+    <div className="space-y-5">
+      <ModeTabs locale={locale} mode={mode} onChange={setMode} />
+      {mode === "catalog" ? (
+        <CatalogFlow
+          locale={locale}
+          dict={dict}
+          products={products}
+          prefillCategorySlug={prefillCategorySlug}
+        />
+      ) : (
+        <CustomFlow locale={locale} dict={dict} />
+      )}
+    </div>
+  );
+}
+
+function ModeTabs({
+  locale,
+  mode,
+  onChange,
+}: {
+  locale: Locale;
+  mode: Mode;
+  onChange: (m: Mode) => void;
+}) {
+  const tr = locale === "tr";
+  return (
+    <div
+      role="tablist"
+      aria-label={tr ? "Talep türü" : "Request type"}
+      className="grid gap-3 sm:grid-cols-2"
+    >
+      <TabButton
+        active={mode === "catalog"}
+        onClick={() => onChange("catalog")}
+        icon={Package}
+        label={tr ? "CNR Seal Ürünleri" : "CNR Seal Products"}
+        description={
+          tr
+            ? "Kataloğumuzdan ürün seçip teklif isteyin."
+            : "Choose products from our catalog."
+        }
+      />
+      <TabButton
+        active={mode === "custom"}
+        onClick={() => onChange("custom")}
+        icon={PenSquare}
+        label={tr ? "Özel Ürün Talebi" : "Custom Product Request"}
+        description={
+          tr
+            ? "Görselinizi paylaşın, size özel çözüm sunalım."
+            : "Share your image, get a custom solution."
+        }
+        accent
+      />
+    </div>
+  );
+}
+
+function TabButton({
+  active,
+  onClick,
+  icon: Icon,
+  label,
+  description,
+  accent,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  description: string;
+  accent?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={active}
+      onClick={onClick}
+      className={cn(
+        "group relative flex items-center gap-4 rounded-xl border-2 px-4 py-4 text-left transition shadow-sm",
+        active
+          ? accent
+            ? "border-accent-500 bg-accent-500 text-white shadow-md shadow-accent-500/20"
+            : "border-brand-950 bg-brand-950 text-white shadow-md"
+          : accent
+            ? "border-accent-200 bg-white hover:border-accent-500 hover:-translate-y-0.5 hover:shadow-md cursor-pointer"
+            : "border-brand-200 bg-white hover:border-brand-400 hover:-translate-y-0.5 hover:shadow-md cursor-pointer",
+      )}
+    >
+      <span
+        className={cn(
+          "grid place-items-center h-11 w-11 rounded-xl shrink-0 transition",
+          active
+            ? "bg-white/15 text-white"
+            : accent
+              ? "bg-accent-50 text-accent-600 group-hover:bg-accent-500 group-hover:text-white"
+              : "bg-brand-50 text-brand-700 group-hover:bg-brand-950 group-hover:text-white",
+        )}
+      >
+        <Icon className="h-5 w-5" />
+      </span>
+      <span className="flex-1 min-w-0">
+        <span
+          className={cn(
+            "block text-base font-bold leading-tight",
+            active ? "text-white" : "text-brand-950",
+          )}
+        >
+          {label}
+        </span>
+        <span
+          className={cn(
+            "block mt-1 text-xs leading-snug",
+            active ? "text-white/80" : "text-brand-600",
+          )}
+        >
+          {description}
+        </span>
+      </span>
+      <span
+        className={cn(
+          "grid place-items-center h-7 w-7 rounded-full shrink-0 transition",
+          active
+            ? "bg-white/20 text-white"
+            : accent
+              ? "bg-accent-500 text-white group-hover:translate-x-0.5"
+              : "bg-brand-950 text-white group-hover:translate-x-0.5",
+        )}
+        aria-hidden
+      >
+        {active ? <Check className="h-4 w-4" strokeWidth={3} /> : <ChevronRight className="h-4 w-4" strokeWidth={2.5} />}
+      </span>
+    </button>
+  );
+}
+
+function CatalogFlow({
+  locale,
+  dict,
+  products,
+  prefillCategorySlug,
+}: {
+  locale: Locale;
+  dict: Dictionary;
+  products: PickerProduct[];
+  prefillCategorySlug?: string;
+}) {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [step, setStep] = useState<Step>("select");
   const [activeCat, setActiveCat] = useState<string | "all">(prefillCategorySlug ?? "all");
   const [query, setQuery] = useState("");
   const cart = useQuoteCart();
-  const prefillAppliedRef = useRef(false);
-
-  useEffect(() => {
-    if (!cart.hydrated || prefillAppliedRef.current || !prefillProductSlug) return;
-    const p = products.find((x) => x.slug === prefillProductSlug);
-    if (p && !cart.isInCart(p.id)) {
-      cart.add(toCartFields(p, locale));
-    }
-    prefillAppliedRef.current = true;
-  }, [cart, prefillProductSlug, products, locale]);
 
   const categories = useMemo(() => {
     const seen = new Map<string, { name: string; image: string | null }>();
@@ -97,8 +271,8 @@ export function QuoteForm({
     reset,
     control,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(schema),
+  } = useForm<ContactData>({
+    resolver: zodResolver(contactSchema),
     defaultValues: { phone: "" },
   });
 
@@ -106,7 +280,7 @@ export function QuoteForm({
     cart.toggle(p.id, toCartFields(p, locale));
   };
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: ContactData) => {
     setStatus("loading");
     try {
       const payload = {
@@ -185,6 +359,299 @@ export function QuoteForm({
           onBack={() => setStep("select")}
         />
       </div>
+
+      <FormStyles />
+    </form>
+  );
+}
+
+function CustomFlow({
+  locale,
+  dict,
+}: {
+  locale: Locale;
+  dict: Dictionary;
+}) {
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [files, setFiles] = useState<File[]>([]);
+  const [fileError, setFileError] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    control,
+    formState: { errors },
+  } = useForm<CustomData>({
+    resolver: zodResolver(customSchema),
+    defaultValues: { phone: "" },
+  });
+
+  const previews = useMemo(() => files.map((f) => URL.createObjectURL(f)), [files]);
+  useEffect(() => {
+    return () => previews.forEach((u) => URL.revokeObjectURL(u));
+  }, [previews]);
+
+  const addFiles = (incoming: FileList | null) => {
+    if (!incoming) return;
+    setFileError("");
+    let err = "";
+    const accepted: File[] = [];
+    for (const f of Array.from(incoming)) {
+      if (!ACCEPTED_MIME.includes(f.type)) {
+        err = dict.custom.errors.unsupportedType;
+        continue;
+      }
+      if (f.size > MAX_FILE_SIZE) {
+        err = dict.custom.errors.fileTooLarge;
+        continue;
+      }
+      accepted.push(f);
+    }
+    setFiles((prev) => {
+      const next = [...prev, ...accepted];
+      if (next.length > MAX_FILES) {
+        err = dict.custom.errors.tooManyFiles;
+        return next.slice(0, MAX_FILES);
+      }
+      return next;
+    });
+    if (err) setFileError(err);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removeFile = (i: number) => {
+    setFiles((prev) => prev.filter((_, idx) => idx !== i));
+    setFileError("");
+  };
+
+  const onSubmit = async (data: CustomData) => {
+    setStatus("loading");
+    try {
+      const fd = new FormData();
+      fd.set("type", "custom");
+      fd.set("locale", locale);
+      fd.set("name", data.name);
+      if (data.company) fd.set("company", data.company);
+      fd.set("email", data.email);
+      fd.set("phone", data.phone);
+      fd.set("message", data.message);
+      if (data.website) fd.set("website", data.website);
+      files.forEach((f) => fd.append("attachments", f, f.name));
+
+      const res = await fetch("/api/contact", { method: "POST", body: fd });
+      if (!res.ok) throw new Error("send failed");
+      setStatus("success");
+      reset({ phone: "" });
+      setFiles([]);
+      setFileError("");
+    } catch {
+      setStatus("error");
+    }
+  };
+
+  useEffect(() => {
+    if (status === "success") {
+      const t = setTimeout(() => setStatus("idle"), 8000);
+      return () => clearTimeout(t);
+    }
+  }, [status]);
+
+  const tr = locale === "tr";
+  const noFiles = files.length === 0;
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <input type="text" tabIndex={-1} autoComplete="off" className="hidden" {...register("website")} />
+
+      <section className="rounded-2xl border border-brand-100 bg-white p-5 lg:p-6 space-y-6">
+        <div className="flex items-start gap-3">
+          <span className="grid place-items-center h-10 w-10 rounded-xl bg-accent-50 text-accent-600 shrink-0">
+            <PenSquare className="h-5 w-5" />
+          </span>
+          <div>
+            <h2 className="text-lg font-semibold text-brand-950">
+              {tr ? "Özel Ürün Talebi" : "Custom Product Request"}
+            </h2>
+            <p className="text-sm text-brand-600 mt-0.5">
+              {tr
+                ? "Ürün görselinizi yükleyin, açıklama ve iletişim bilgilerinizi girin. En kısa sürede size dönüş yapalım."
+                : "Upload your product image, add a description and contact info. We'll get back shortly."}
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <span className="block text-sm font-semibold text-brand-800 mb-2">
+            {tr ? "1. Ürün görseli" : "1. Product image"}
+            <span className="text-accent-500 ml-1">*</span>
+          </span>
+          <label
+            className={cn(
+              "flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed transition px-4 py-10 text-sm cursor-pointer",
+              files.length >= MAX_FILES
+                ? "border-brand-100 bg-brand-50/30 text-brand-400 cursor-not-allowed"
+                : "border-brand-200 hover:border-accent-500 bg-brand-50/40 text-brand-700",
+            )}
+          >
+            <span className="grid place-items-center h-10 w-10 rounded-full bg-white text-accent-600 shadow-sm">
+              <Upload className="h-5 w-5" />
+            </span>
+            <span className="font-semibold text-brand-950">
+              {tr ? "Görsel yüklemek için tıklayın" : "Click to upload image"}
+            </span>
+            <span className="text-xs text-brand-500 text-center max-w-xs">
+              {dict.custom.attachmentsHint}
+            </span>
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              accept={ACCEPTED_MIME.join(",")}
+              disabled={files.length >= MAX_FILES}
+              onChange={(e) => addFiles(e.target.files)}
+              className="hidden"
+            />
+          </label>
+          {fileError && <p className="mt-2 text-xs text-red-600">{fileError}</p>}
+          {noFiles && !fileError && (
+            <p className="mt-2 text-xs text-brand-500">
+              {tr
+                ? "En az bir görsel eklemenizi öneririz — üretim ekibi çok daha hızlı değerlendirir."
+                : "We recommend adding at least one image — the team can evaluate much faster."}
+            </p>
+          )}
+          {files.length > 0 && (
+            <ul className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {files.map((f, i) => (
+                <li
+                  key={`${f.name}-${f.size}-${i}`}
+                  className="relative rounded-lg border border-brand-100 bg-white overflow-hidden"
+                >
+                  {previews[i] ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={previews[i]} alt={f.name} className="block h-28 w-full object-cover" />
+                  ) : (
+                    <div className="h-28 w-full bg-brand-50" />
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => removeFile(i)}
+                    aria-label={tr ? "Kaldır" : "Remove"}
+                    className="absolute top-1.5 right-1.5 grid place-items-center h-6 w-6 rounded-md bg-accent-500 text-white hover:bg-accent-600 transition shadow"
+                  >
+                    <X className="h-3.5 w-3.5" strokeWidth={2.5} />
+                  </button>
+                  <div className="px-2 py-1.5 text-[11px]">
+                    <div className="truncate font-medium text-brand-900">{f.name}</div>
+                    <div className="text-brand-500">{(f.size / 1024).toFixed(0)} KB</div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div>
+          <span className="block text-sm font-semibold text-brand-800 mb-2">
+            {tr ? "2. Ürün açıklaması" : "2. Product description"}
+            <span className="text-accent-500 ml-1">*</span>
+          </span>
+          <Field label="" error={errors.message?.message}>
+            <textarea
+              {...register("message")}
+              className="form-input min-h-32 resize-y"
+              rows={6}
+              placeholder={dict.custom.detailsPlaceholder}
+            />
+          </Field>
+        </div>
+
+        <div>
+          <span className="block text-sm font-semibold text-brand-800 mb-3">
+            {tr ? "3. İletişim bilgileri" : "3. Contact info"}
+          </span>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <Field label={dict.quote.fields.name} required error={errors.name?.message}>
+              <input
+                {...register("name")}
+                className="form-input"
+                type="text"
+                autoComplete="name"
+                placeholder={dict.quote.placeholders.name}
+              />
+            </Field>
+            <Field label={dict.quote.fields.company} error={errors.company?.message}>
+              <input
+                {...register("company")}
+                className="form-input"
+                type="text"
+                autoComplete="organization"
+                placeholder={dict.quote.placeholders.company}
+              />
+            </Field>
+            <Field label={dict.quote.fields.email} required error={errors.email?.message}>
+              <input
+                {...register("email")}
+                className="form-input"
+                type="email"
+                autoComplete="email"
+                placeholder={dict.quote.placeholders.email}
+              />
+            </Field>
+            <Field label={dict.quote.fields.phone} required error={errors.phone?.message}>
+              <Controller
+                control={control}
+                name="phone"
+                render={({ field }) => (
+                  <PhoneField
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    invalid={!!errors.phone}
+                  />
+                )}
+              />
+            </Field>
+          </div>
+        </div>
+
+        {status === "success" && (
+          <div className="flex items-center gap-2 rounded-md bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-800">
+            <CheckCircle2 className="h-4 w-4" />
+            {dict.quote.success}
+          </div>
+        )}
+        {status === "error" && (
+          <div className="flex items-center gap-2 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800">
+            <AlertCircle className="h-4 w-4" />
+            {dict.quote.error}
+          </div>
+        )}
+
+        <div className="pt-2">
+          <button
+            type="submit"
+            disabled={status === "loading"}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-md bg-accent-500 hover:bg-accent-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-accent-500/25 transition disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {status === "loading" ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Sparkles className="h-4 w-4" />
+            )}
+            {status === "loading"
+              ? tr
+                ? "Gönderiliyor…"
+                : "Sending…"
+              : tr
+                ? "Talebi Gönder"
+                : "Send Request"}
+          </button>
+        </div>
+      </section>
 
       <FormStyles />
     </form>
@@ -525,11 +992,11 @@ function BasketPanel({
                       <button
                         type="button"
                         onClick={() => onRemove(item.key)}
-                        className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white ring-1 ring-brand-100 text-brand-500 hover:bg-red-500 hover:text-white hover:ring-red-500 transition shrink-0"
+                        className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-accent-500 text-white hover:bg-accent-600 transition shrink-0"
                         aria-label={locale === "tr" ? "Kaldır" : "Remove"}
                         title={locale === "tr" ? "Ürünü kaldır" : "Remove"}
                       >
-                        <X className="h-4 w-4" strokeWidth={2.5} />
+                        <X className="h-3 w-3" strokeWidth={2.5} />
                       </button>
                     </div>
                     <div className="mt-1.5">
@@ -617,9 +1084,9 @@ function BasketPanel({
   );
 }
 
-type RegisterFn = ReturnType<typeof useForm<FormData>>["register"];
-type ControlFn = ReturnType<typeof useForm<FormData>>["control"];
-type ErrorsMap = ReturnType<typeof useForm<FormData>>["formState"]["errors"];
+type RegisterFn = ReturnType<typeof useForm<ContactData>>["register"];
+type ControlFn = ReturnType<typeof useForm<ContactData>>["control"];
+type ErrorsMap = ReturnType<typeof useForm<ContactData>>["formState"]["errors"];
 
 function ContactPanel({
   locale,
@@ -855,10 +1322,12 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="block text-sm font-medium text-brand-800 mb-1.5">
-        {label}
-        {required && <span className="text-accent-500 ml-0.5">*</span>}
-      </span>
+      {label && (
+        <span className="block text-sm font-medium text-brand-800 mb-1.5">
+          {label}
+          {required && <span className="text-accent-500 ml-0.5">*</span>}
+        </span>
+      )}
       {children}
       {error && <span className="mt-1 block text-xs text-red-600">{error}</span>}
     </label>

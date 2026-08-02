@@ -157,10 +157,10 @@ export function CartMenu({ locale, variant = "desktop" }: Props) {
                     <button
                       type="button"
                       onClick={() => remove(item.key)}
-                      className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white ring-1 ring-brand-100 text-brand-500 hover:bg-red-500 hover:text-white hover:ring-red-500 transition shrink-0"
+                      className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-accent-500 text-white hover:bg-accent-600 transition shrink-0"
                       aria-label={locale === "tr" ? "Kaldır" : "Remove"}
                     >
-                      <X className="h-4 w-4" strokeWidth={2.5} />
+                      <X className="h-3 w-3" strokeWidth={2.5} />
                     </button>
                   </div>
                   {item.quantity && (
