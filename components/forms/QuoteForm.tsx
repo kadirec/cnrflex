@@ -99,9 +99,14 @@ export function QuoteForm({
           dict={dict}
           products={products}
           prefillCategorySlug={prefillCategorySlug}
+          onSwitchToCustom={() => setMode("custom")}
         />
       ) : (
-        <CustomFlow locale={locale} dict={dict} />
+        <CustomFlow
+          locale={locale}
+          dict={dict}
+          onSwitchToCatalog={() => setMode("catalog")}
+        />
       )}
     </div>
   );
@@ -234,11 +239,13 @@ function CatalogFlow({
   dict,
   products,
   prefillCategorySlug,
+  onSwitchToCustom,
 }: {
   locale: Locale;
   dict: Dictionary;
   products: PickerProduct[];
   prefillCategorySlug?: string;
+  onSwitchToCustom: () => void;
 }) {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [step, setStep] = useState<Step>("select");
@@ -304,12 +311,15 @@ function CatalogFlow({
     }
   };
 
-  useEffect(() => {
-    if (status === "success") {
-      const t = setTimeout(() => setStatus("idle"), 8000);
-      return () => clearTimeout(t);
-    }
-  }, [status]);
+  if (status === "success") {
+    return (
+      <SuccessScreen
+        locale={locale}
+        onNewQuote={() => setStatus("idle")}
+        onSwitchToCustom={onSwitchToCustom}
+      />
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -353,6 +363,8 @@ function CatalogFlow({
           basket={cart.items}
           onRemove={cart.remove}
           onUpdate={cart.update}
+          onClear={cart.clear}
+          onSwitchToCustom={onSwitchToCustom}
           step={step}
           status={status}
           onContinue={() => setStep("contact")}
@@ -368,9 +380,11 @@ function CatalogFlow({
 function CustomFlow({
   locale,
   dict,
+  onSwitchToCatalog,
 }: {
   locale: Locale;
   dict: Dictionary;
+  onSwitchToCatalog: () => void;
 }) {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [files, setFiles] = useState<File[]>([]);
@@ -451,15 +465,19 @@ function CustomFlow({
     }
   };
 
-  useEffect(() => {
-    if (status === "success") {
-      const t = setTimeout(() => setStatus("idle"), 8000);
-      return () => clearTimeout(t);
-    }
-  }, [status]);
-
   const tr = locale === "tr";
   const noFiles = files.length === 0;
+
+  if (status === "success") {
+    return (
+      <SuccessScreen
+        locale={locale}
+        variant="custom"
+        onNewQuote={() => setStatus("idle")}
+        onSwitchToCatalog={onSwitchToCatalog}
+      />
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -618,12 +636,6 @@ function CustomFlow({
           </div>
         </div>
 
-        {status === "success" && (
-          <div className="flex items-center gap-2 rounded-md bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-800">
-            <CheckCircle2 className="h-4 w-4" />
-            {dict.quote.success}
-          </div>
-        )}
         {status === "error" && (
           <div className="flex items-center gap-2 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800">
             <AlertCircle className="h-4 w-4" />
@@ -916,6 +928,8 @@ function BasketPanel({
   basket,
   onRemove,
   onUpdate,
+  onClear,
+  onSwitchToCustom,
   step,
   status,
   onContinue,
@@ -925,23 +939,37 @@ function BasketPanel({
   basket: CartItem[];
   onRemove: (key: string) => void;
   onUpdate: (key: string, patch: Partial<CartItem>) => void;
+  onClear: () => void;
+  onSwitchToCustom: () => void;
   step: Step;
   status: "idle" | "loading" | "success" | "error";
   onContinue: () => void;
   onBack: () => void;
 }) {
+  const tr = locale === "tr";
   const empty = basket.length === 0;
   return (
     <aside className="lg:sticky lg:top-6">
       <div className="rounded-2xl border border-brand-100 bg-white overflow-hidden shadow-sm">
-        <div className="flex items-center gap-2 px-5 py-4 bg-brand-950 text-white">
-          <ShoppingCart className="h-4 w-4 text-accent-400" />
-          <h3 className="text-sm font-semibold flex-1">
-            {locale === "tr" ? "Teklif Listesi" : "Quote List"}
+        <div className="flex items-center gap-3 px-5 py-4 bg-brand-950 text-white">
+          <ShoppingCart className="h-5 w-5 text-accent-400" />
+          <h3 className="text-lg font-bold flex-1 tracking-tight">
+            {tr ? "Teklif Listesi" : "Quote List"}
           </h3>
-          <span className="inline-flex items-center justify-center min-w-[24px] h-6 px-2 rounded-full bg-accent-500 text-white text-xs font-bold">
+          <span className="inline-flex items-center justify-center min-w-[28px] h-7 px-2 rounded-full bg-accent-500 text-white text-sm font-bold">
             {basket.length}
           </span>
+          {!empty && (
+            <button
+              type="button"
+              onClick={onClear}
+              className="inline-flex items-center gap-1 rounded-md border border-white/20 bg-white/5 px-2.5 py-1 text-xs font-medium text-white/90 hover:bg-white/10 hover:border-white/40 transition"
+              aria-label={tr ? "Seçimleri temizle" : "Clear selections"}
+            >
+              <X className="h-3.5 w-3.5" strokeWidth={2.5} />
+              {tr ? "Temizle" : "Clear"}
+            </button>
+          )}
         </div>
 
         <div className="max-h-[520px] overflow-y-auto">
@@ -950,10 +978,32 @@ function BasketPanel({
               <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-brand-50 text-brand-400 mb-3">
                 <ShoppingCart className="h-5 w-5" />
               </div>
-              <p className="text-sm text-brand-600">
-                {locale === "tr"
-                  ? "Listeniz boş. Sol taraftan ürün ekleyin veya doğrudan devam edin."
-                  : "List is empty. Add products or continue without."}
+              <p className="text-sm text-brand-600 leading-relaxed">
+                {tr ? (
+                  <>
+                    Listeniz boş. Sol taraftan ürün ekleyin veya özel talebiniz için{" "}
+                    <button
+                      type="button"
+                      onClick={onSwitchToCustom}
+                      className="font-semibold text-accent-600 underline underline-offset-2 hover:text-accent-700 transition"
+                    >
+                      Özel Talep
+                    </button>{" "}
+                    bölümünden talebinizi iletin.
+                  </>
+                ) : (
+                  <>
+                    List is empty. Add products from the left or use{" "}
+                    <button
+                      type="button"
+                      onClick={onSwitchToCustom}
+                      className="font-semibold text-accent-600 underline underline-offset-2 hover:text-accent-700 transition"
+                    >
+                      Custom Request
+                    </button>{" "}
+                    for a personalized quote.
+                  </>
+                )}
               </p>
             </div>
           ) : (
@@ -1172,12 +1222,6 @@ function ContactPanel({
         />
       </Field>
 
-      {status === "success" && (
-        <div className="flex items-center gap-2 rounded-md bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-800">
-          <CheckCircle2 className="h-4 w-4" />
-          {dict.quote.success}
-        </div>
-      )}
       {status === "error" && (
         <div className="flex items-center gap-2 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800">
           <AlertCircle className="h-4 w-4" />
@@ -1306,6 +1350,86 @@ function pillClass(active: boolean) {
     active
       ? "border-accent-500 bg-accent-500 text-white"
       : "border-brand-200 bg-white text-brand-700 hover:border-brand-300",
+  );
+}
+
+function SuccessScreen({
+  locale,
+  variant = "catalog",
+  onNewQuote,
+  onSwitchToCustom,
+  onSwitchToCatalog,
+}: {
+  locale: Locale;
+  variant?: "catalog" | "custom";
+  onNewQuote: () => void;
+  onSwitchToCustom?: () => void;
+  onSwitchToCatalog?: () => void;
+}) {
+  const tr = locale === "tr";
+  const isCustom = variant === "custom";
+  return (
+    <section className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-white p-8 lg:p-12 text-center shadow-sm">
+      <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-emerald-500 text-white mb-6 shadow-lg shadow-emerald-500/30">
+        <CheckCircle2 className="h-10 w-10" strokeWidth={2.5} />
+      </div>
+      <h2 className="text-2xl lg:text-3xl font-bold text-brand-950">
+        {tr ? "Teşekkürler!" : "Thank you!"}
+      </h2>
+      <p className="mt-3 text-base lg:text-lg text-brand-700 max-w-md mx-auto leading-relaxed">
+        {tr
+          ? isCustom
+            ? "Özel ürün talebiniz alındı. En kısa sürede size ulaşacağız."
+            : "Teklif talebiniz alındı. En kısa sürede size ulaşacağız."
+          : isCustom
+            ? "Your custom request has been received. We'll get back to you shortly."
+            : "Your quote request has been received. We'll get back to you shortly."}
+      </p>
+      <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <Link
+          href={`/${locale}/urunler`}
+          className="inline-flex items-center gap-2 rounded-md border border-brand-200 bg-white px-5 py-3 text-sm font-semibold text-brand-800 hover:border-brand-400 hover:text-brand-950 transition"
+        >
+          <Package className="h-4 w-4" />
+          {tr ? "Ürünleri İncele" : "Browse Products"}
+        </Link>
+        <button
+          type="button"
+          onClick={onNewQuote}
+          className="inline-flex items-center gap-2 rounded-md bg-accent-500 hover:bg-accent-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-accent-500/25 transition"
+        >
+          <Sparkles className="h-4 w-4" />
+          {tr
+            ? isCustom
+              ? "Yeni Özel Ürün Talebi"
+              : "Yeni Bir Teklif Oluştur"
+            : isCustom
+              ? "New Custom Request"
+              : "Create Another Quote"}
+        </button>
+        {isCustom
+          ? onSwitchToCatalog && (
+              <button
+                type="button"
+                onClick={onSwitchToCatalog}
+                className="inline-flex items-center gap-2 rounded-md border border-brand-950 bg-brand-950 hover:bg-brand-800 px-5 py-3 text-sm font-semibold text-white transition"
+              >
+                <Package className="h-4 w-4" />
+                {tr ? "Katalogdan Teklif Al" : "Get Catalog Quote"}
+              </button>
+            )
+          : onSwitchToCustom && (
+              <button
+                type="button"
+                onClick={onSwitchToCustom}
+                className="inline-flex items-center gap-2 rounded-md border border-brand-950 bg-brand-950 hover:bg-brand-800 px-5 py-3 text-sm font-semibold text-white transition"
+              >
+                <PenSquare className="h-4 w-4" />
+                {tr ? "Özel Ürün Talebi Gönder" : "Send Custom Request"}
+              </button>
+            )}
+      </div>
+    </section>
   );
 }
 
