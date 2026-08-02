@@ -108,6 +108,7 @@ export async function POST(request: Request) {
 
     const userAgent = request.headers.get("user-agent") ?? undefined;
 
+    let savedToDb = false;
     try {
       await getDb().insert(quotes).values({
         type: data.type,
@@ -125,6 +126,7 @@ export async function POST(request: Request) {
         userAgent,
         items: data.items ?? [],
       });
+      savedToDb = true;
     } catch (dbErr) {
       console.error("[contact api] quote insert failed", dbErr);
     }
@@ -199,7 +201,10 @@ export async function POST(request: Request) {
       attachments: attachments.length > 0 ? attachments : undefined,
     });
     if (!result.ok) {
-      return NextResponse.json({ ok: false, error: result.reason }, { status: 500 });
+      console.warn("[contact api] email delivery failed", { reason: result.reason, savedToDb });
+      if (!savedToDb) {
+        return NextResponse.json({ ok: false, error: result.reason }, { status: 500 });
+      }
     }
     return NextResponse.json({ ok: true });
   } catch (err) {
