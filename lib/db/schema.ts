@@ -37,6 +37,7 @@ export const products = pgTable(
     descriptionTr: text("description_tr"),
     descriptionEn: text("description_en"),
     imageUrl: text("image_url"),
+    images: jsonb("images").$type<string[]>(),
     specs: jsonb("specs").$type<ProductSpec[]>(),
     sortOrder: integer("sort_order").notNull().default(0),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

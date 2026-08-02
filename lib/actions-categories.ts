@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import "@/lib/zod-tr";
 import { getSession } from "@/lib/auth";
 import { getDb, categories } from "@/lib/db";
 import { slugify } from "@/lib/slug";

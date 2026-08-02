@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ArrowRight, ChevronRight, ArrowUpRight } from "lucide-react";
 
 import { getAllCategoriesFlat, getCategory } from "@/lib/products";
+import { stripHtml } from "@/lib/sanitize";
 import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
 import { getDictionary, hasLocale } from "../../dictionaries";
 import { locales } from "@/lib/site";
@@ -122,8 +123,8 @@ export default async function CategoryPage(props: PageProps<"/[locale]/urunler/[
                     <h3 className="mt-1 text-base font-semibold text-brand-950">
                       {product.name[locale]}
                     </h3>
-                    <p className="mt-2 text-sm text-brand-700 leading-relaxed flex-1">
-                      {product.description[locale]}
+                    <p className="mt-2 text-sm text-brand-700 leading-relaxed flex-1 line-clamp-3">
+                      {stripHtml(product.description[locale])}
                     </p>
                     <span className="mt-4 inline-flex items-center text-sm font-semibold text-accent-600">
                       {dict.common.viewDetails}

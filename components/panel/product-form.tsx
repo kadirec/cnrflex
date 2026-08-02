@@ -7,17 +7,31 @@ import { Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ImageUpload } from "@/components/panel/image-upload";
+import { MultiImageUpload } from "@/components/panel/multi-image-upload";
 import { SpecsEditor } from "@/components/panel/specs-editor";
+import { RichTextEditor } from "@/components/panel/rich-text-editor";
 import { slugify } from "@/lib/slug";
 import type { Product } from "@/lib/db";
 import type { ProductFormState } from "@/lib/actions-products";
 
 type CategoryOption = { id: number; nameTr: string; depth?: number };
+
+const PRODUCT_FIELD_LABELS: Record<string, string> = {
+  categoryId: "Kategori",
+  code: "Ürün kodu",
+  slug: "Slug",
+  nameTr: "Ürün adı (TR)",
+  nameEn: "Ürün adı (EN)",
+  descriptionTr: "Açıklama (TR)",
+  descriptionEn: "Açıklama (EN)",
+  imageUrl: "Kapak görseli",
+  images: "Görseller",
+  sortOrder: "Sıra",
+  specs: "Teknik özellikler",
+};
 
 type Props = {
   product?: Product;
@@ -61,6 +75,20 @@ export function ProductForm({ product, categories, action, mode, defaultCategory
     <form action={formAction} className="space-y-6">
       <input type="hidden" name="categoryId" value={categoryId} />
 
+      <Card>
+        <CardHeader>
+          <CardTitle>Görseller</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <MultiImageUpload
+            name="imagesJson"
+            defaultValue={product?.images ?? (product?.imageUrl ? [product.imageUrl] : [])}
+            max={8}
+            hint="PNG/JPG/WebP, max 5MB • İlk görsel kapak olarak kullanılır"
+          />
+        </CardContent>
+      </Card>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <Card>
@@ -85,10 +113,10 @@ export function ProductForm({ product, categories, action, mode, defaultCategory
                     />
                   </Field>
                   <Field label="Açıklama (TR)" error={fe.descriptionTr}>
-                    <Textarea
+                    <RichTextEditor
                       name="descriptionTr"
-                      rows={4}
                       defaultValue={product?.descriptionTr ?? ""}
+                      placeholder="Ürün hakkında detaylı açıklama…"
                     />
                   </Field>
                 </TabsContent>
@@ -103,10 +131,10 @@ export function ProductForm({ product, categories, action, mode, defaultCategory
                     />
                   </Field>
                   <Field label="Description (EN)" error={fe.descriptionEn}>
-                    <Textarea
+                    <RichTextEditor
                       name="descriptionEn"
-                      rows={4}
                       defaultValue={product?.descriptionEn ?? ""}
+                      placeholder="Detailed product description…"
                     />
                   </Field>
                 </TabsContent>
@@ -127,22 +155,20 @@ export function ProductForm({ product, categories, action, mode, defaultCategory
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Görsel</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ImageUpload name="imageUrl" defaultValue={product?.imageUrl} hint="PNG/JPG/WebP, max 5MB" />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
               <CardTitle>Kategori & Yerleşim</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <Field label="Kategori" error={fe.categoryId}>
                 <Select value={categoryId} onValueChange={(v) => setCategoryId(v ?? "")}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Kategori seçin" />
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Kategori seçin">
+                      {(value) => {
+                        const match = categories.find((c) => String(c.id) === String(value));
+                        return match
+                          ? `${"— ".repeat(match.depth ?? 0)}${match.nameTr}`
+                          : "Kategori seçin";
+                      }}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {categories.map((c) => (
@@ -182,8 +208,17 @@ export function ProductForm({ product, categories, action, mode, defaultCategory
       </div>
 
       {state.error && (
-        <div className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-md px-3 py-2">
-          {state.error}
+        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <div className="font-semibold">{state.error}</div>
+          {state.fieldErrors && Object.keys(state.fieldErrors).length > 0 && (
+            <ul className="mt-2 list-disc space-y-0.5 pl-5 text-xs">
+              {Object.entries(state.fieldErrors).map(([field, msg]) => (
+                <li key={field}>
+                  <span className="font-semibold">{PRODUCT_FIELD_LABELS[field] ?? field}</span>: {msg}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       )}
 

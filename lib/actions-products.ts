@@ -4,8 +4,10 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import "@/lib/zod-tr";
 import { getSession } from "@/lib/auth";
 import { getDb, products, type ProductSpec } from "@/lib/db";
+import { sanitizeHtml } from "@/lib/sanitize";
 import { slugify } from "@/lib/slug";
 
 const specSchema = z.object({
@@ -19,9 +21,10 @@ const productSchema = z.object({
   slug: z.string().min(1).max(140).regex(/^[a-z0-9-]+$/, "Slug sadece küçük harf, rakam ve tire içerebilir"),
   nameTr: z.string().min(1).max(200),
   nameEn: z.string().min(1).max(200),
-  descriptionTr: z.string().max(3000).optional().nullable(),
-  descriptionEn: z.string().max(3000).optional().nullable(),
+  descriptionTr: z.string().max(20000).optional().nullable(),
+  descriptionEn: z.string().max(20000).optional().nullable(),
   imageUrl: z.string().optional().nullable(),
+  images: z.array(z.string().url()).max(8).optional().nullable(),
   sortOrder: z.coerce.number().int().default(0),
   specs: z.array(specSchema).max(30).optional().nullable(),
 });
@@ -52,15 +55,30 @@ function parseFormData(fd: FormData) {
     }
   }
 
+  let images: string[] | null = null;
+  const imagesJson = get("imagesJson");
+  if (imagesJson) {
+    try {
+      const parsed = JSON.parse(imagesJson);
+      if (Array.isArray(parsed)) {
+        images = parsed.filter((x): x is string => typeof x === "string" && x.length > 0).slice(0, 8);
+        if (images.length === 0) images = null;
+      }
+    } catch {
+      // ignore
+    }
+  }
+
   return {
     categoryId: get("categoryId"),
     code: get("code"),
     slug: slugRaw,
     nameTr,
     nameEn: get("nameEn"),
-    descriptionTr: get("descriptionTr") || null,
-    descriptionEn: get("descriptionEn") || null,
-    imageUrl: get("imageUrl") || null,
+    descriptionTr: sanitizeHtml(get("descriptionTr")) || null,
+    descriptionEn: sanitizeHtml(get("descriptionEn")) || null,
+    imageUrl: images?.[0] ?? null,
+    images,
     sortOrder: get("sortOrder") || "0",
     specs,
   };

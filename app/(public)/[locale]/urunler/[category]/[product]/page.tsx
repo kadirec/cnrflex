@@ -4,7 +4,9 @@ import { notFound } from "next/navigation";
 import { ChevronRight, ArrowRight, CheckCircle2 } from "lucide-react";
 
 import { getAllCategoriesFlat, getProduct } from "@/lib/products";
+import { stripHtml } from "@/lib/sanitize";
 import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
+import { ProductGallery } from "@/components/product/product-gallery";
 import { getDictionary, hasLocale } from "../../../dictionaries";
 import { locales } from "@/lib/site";
 
@@ -30,7 +32,7 @@ export async function generateMetadata(
   if (!result) return {};
   return {
     title: result.product.name[locale],
-    description: result.product.description[locale],
+    description: stripHtml(result.product.description[locale]).slice(0, 200),
   };
 }
 
@@ -67,9 +69,11 @@ export default async function ProductPage(
       <section className="bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
           <div className="grid lg:grid-cols-2 gap-12 items-start">
-            <div className="aspect-square rounded-2xl bg-gradient-to-br from-brand-100 to-brand-50 grid place-items-center">
-              <span className="font-display font-bold text-5xl text-brand-300">{product.code}</span>
-            </div>
+            <ProductGallery
+              images={product.images}
+              alt={product.name[locale]}
+              fallbackCode={product.code}
+            />
 
             <div>
               <div className="text-sm font-semibold uppercase tracking-wider text-accent-600">
@@ -78,9 +82,12 @@ export default async function ProductPage(
               <h1 className="mt-2 text-3xl lg:text-4xl font-bold text-brand-950">
                 {product.name[locale]}
               </h1>
-              <p className="mt-5 text-lg text-brand-700 leading-relaxed">
-                {product.description[locale]}
-              </p>
+              {product.description[locale] && (
+                <div
+                  className="prose-content mt-5"
+                  dangerouslySetInnerHTML={{ __html: product.description[locale] }}
+                />
+              )}
 
               <ul className="mt-8 space-y-3">
                 {features.map((feature) => (

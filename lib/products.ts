@@ -17,6 +17,7 @@ export type Product = {
   name: Translated;
   description: Translated;
   image?: string | null;
+  images: string[];
   specs?: ProductSpec[] | null;
 };
 
@@ -38,13 +39,16 @@ type CatRow = typeof catT.$inferSelect;
 type ProdRow = typeof prodT.$inferSelect;
 
 function toProduct(p: ProdRow): Product {
+  const gallery = Array.isArray(p.images) ? p.images.filter(Boolean) : [];
+  const cover = gallery[0] ?? p.imageUrl ?? null;
   return {
     id: p.id,
     code: p.code,
     slug: p.slug,
     name: { tr: p.nameTr, en: p.nameEn },
     description: { tr: p.descriptionTr ?? "", en: p.descriptionEn ?? "" },
-    image: p.imageUrl,
+    image: cover,
+    images: gallery.length > 0 ? gallery : cover ? [cover] : [],
     specs: p.specs,
   };
 }

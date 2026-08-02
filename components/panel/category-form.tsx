@@ -18,6 +18,20 @@ import type { CategoryFormState } from "@/lib/actions-categories";
 
 export type ParentOption = { id: number; nameTr: string; depth: number };
 
+const CATEGORY_FIELD_LABELS: Record<string, string> = {
+  parentId: "Üst kategori",
+  slug: "Slug",
+  nameTr: "Kategori adı (TR)",
+  nameEn: "Kategori adı (EN)",
+  shortDescriptionTr: "Kısa açıklama (TR)",
+  shortDescriptionEn: "Kısa açıklama (EN)",
+  descriptionTr: "Uzun açıklama (TR)",
+  descriptionEn: "Uzun açıklama (EN)",
+  imageUrl: "Kapak görseli",
+  iconUrl: "İkon",
+  sortOrder: "Sıra",
+};
+
 type Props = {
   category?: Category;
   action: (prev: CategoryFormState, fd: FormData) => Promise<CategoryFormState>;
@@ -190,8 +204,17 @@ export function CategoryForm({ category, action, mode, parentOptions, defaultPar
       </div>
 
       {state.error && (
-        <div className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-md px-3 py-2">
-          {state.error}
+        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <div className="font-semibold">{state.error}</div>
+          {state.fieldErrors && Object.keys(state.fieldErrors).length > 0 && (
+            <ul className="mt-2 list-disc space-y-0.5 pl-5 text-xs">
+              {Object.entries(state.fieldErrors).map(([field, msg]) => (
+                <li key={field}>
+                  <span className="font-semibold">{CATEGORY_FIELD_LABELS[field] ?? field}</span>: {msg}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       )}
 
