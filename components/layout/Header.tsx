@@ -159,6 +159,13 @@ export function Header({ locale, dict, categoryLinks }: Props) {
           </nav>
 
           <div className="hidden lg:flex items-center gap-3">
+            <Link
+              href={`/${locale}/teklif-al`}
+              className="inline-flex items-center justify-center rounded-md bg-accent-500 hover:bg-accent-600 px-4 py-2 text-sm font-semibold text-white transition"
+            >
+              {dict.nav.getQuote}
+            </Link>
+            <CartMenu locale={locale} variant="desktop" />
             <div className="flex items-center gap-1 rounded-full bg-brand-50 p-1 ring-1 ring-brand-100">
               {locales.map((l) => (
                 <Link
@@ -177,13 +184,6 @@ export function Header({ locale, dict, categoryLinks }: Props) {
                 </Link>
               ))}
             </div>
-            <Link
-              href={`/${locale}/teklif-al`}
-              className="inline-flex items-center justify-center rounded-md bg-accent-500 hover:bg-accent-600 px-4 py-2 text-sm font-semibold text-white transition"
-            >
-              {dict.nav.getQuote}
-            </Link>
-            <CartMenu locale={locale} variant="desktop" />
           </div>
 
           <div className="flex items-center gap-2 lg:hidden">

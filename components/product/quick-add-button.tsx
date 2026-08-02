@@ -1,9 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
-import { ArrowRight, Check, ShoppingCart } from "lucide-react";
+import { Check, Plus } from "lucide-react";
 import { useQuoteCart } from "@/components/cart/QuoteCartContext";
 import { RollCountDialog, buildRollQuantity } from "@/components/product/roll-count-dialog";
 import { cn } from "@/lib/utils";
@@ -19,10 +18,9 @@ type Props = {
   categoryName: string;
   categorySlug: string;
   rollLength: number | null;
-  label: string;
 };
 
-export function AddToQuoteButton({
+export function QuickAddButton({
   locale,
   productId,
   code,
@@ -32,11 +30,8 @@ export function AddToQuoteButton({
   categoryName,
   categorySlug,
   rollLength,
-  label,
 }: Props) {
-  const router = useRouter();
   const { add, isInCart, hydrated } = useQuoteCart();
-  const [, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
   const inCart = hydrated && isInCart(productId);
 
@@ -60,16 +55,16 @@ export function AddToQuoteButton({
     setOpen(false);
   };
 
-  const onClick = () => {
-    if (inCart) {
-      startTransition(() => router.push(`/${locale}/teklif-al`));
-      return;
-    }
-    if (rollLength) {
-      setOpen(true);
-    } else {
-      commit(null);
-    }
+  const stop = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const onClick = (e: React.MouseEvent) => {
+    stop(e);
+    if (inCart) return;
+    if (rollLength) setOpen(true);
+    else commit(null);
   };
 
   return (
@@ -77,35 +72,48 @@ export function AddToQuoteButton({
       <button
         type="button"
         onClick={onClick}
-        className={cn(
-          "group inline-flex items-center gap-2 rounded-md px-6 py-3 text-base font-semibold text-white shadow-lg transition",
+        aria-label={
           inCart
-            ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/30"
-            : "bg-accent-500 hover:bg-accent-600 shadow-accent-500/30",
+            ? locale === "tr"
+              ? "Zaten listede"
+              : "Already in list"
+            : locale === "tr"
+              ? "Teklif listesine ekle"
+              : "Add to quote list"
+        }
+        title={inCart
+          ? locale === "tr" ? "Listede" : "In list"
+          : locale === "tr" ? "Teklif listesine ekle" : "Add to quote list"}
+        className={cn(
+          "inline-flex items-center gap-1.5 rounded-full px-3 h-8 text-xs font-semibold shadow-md transition",
+          inCart
+            ? "bg-emerald-500 text-white cursor-default"
+            : "bg-white text-brand-900 hover:bg-accent-500 hover:text-white",
         )}
       >
         {inCart ? (
           <>
-            <Check className="h-4 w-4" />
-            {locale === "tr" ? "Listede · Listeyi Gör" : "In List · View"}
+            <Check className="w-3.5 h-3.5" />
+            {locale === "tr" ? "Listede" : "In List"}
           </>
         ) : (
           <>
-            <ShoppingCart className="h-4 w-4" />
-            {label}
+            <Plus className="w-3.5 h-3.5" />
+            {locale === "tr" ? "Listeye ekle" : "Add"}
           </>
         )}
-        <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
       </button>
 
       {rollLength && (
-        <RollCountDialog
-          open={open}
-          onOpenChange={setOpen}
-          locale={locale}
-          product={{ code, name, image, categoryName, rollLength }}
-          onConfirm={commit}
-        />
+        <div onClick={stop}>
+          <RollCountDialog
+            open={open}
+            onOpenChange={setOpen}
+            locale={locale}
+            product={{ code, name, image, categoryName, rollLength }}
+            onConfirm={commit}
+          />
+        </div>
       )}
     </>
   );

@@ -7,6 +7,8 @@ import { ArrowRight, ChevronRight, ArrowUpRight } from "lucide-react";
 import { getAllCategoriesFlat, getCategory } from "@/lib/products";
 import { stripHtml } from "@/lib/sanitize";
 import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
+import { QuickAddButton } from "@/components/product/quick-add-button";
+import { RollIcon } from "@/components/product/roll-icon";
 import { getDictionary, hasLocale } from "../../dictionaries";
 import { locales } from "@/lib/site";
 
@@ -108,12 +110,11 @@ export default async function CategoryPage(props: PageProps<"/[locale]/urunler/[
             )}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {category.products.map((product) => (
-                <Link
-                  key={product.code}
-                  href={`/${locale}/urunler/${category.slug}/${product.slug}`}
-                  className="group flex flex-col rounded-xl border border-brand-100 bg-white hover:border-accent-500 hover:shadow-lg hover:shadow-brand-900/5 transition overflow-hidden"
-                >
-                  <div className="relative aspect-[4/3] bg-gradient-to-br from-brand-100 to-brand-50 grid place-items-center overflow-hidden">
+                <div key={product.code} className="group relative flex flex-col rounded-xl border border-brand-100 bg-white hover:border-accent-500 hover:shadow-lg hover:shadow-brand-900/5 transition overflow-hidden">
+                  <Link
+                    href={`/${locale}/urunler/${category.slug}/${product.slug}`}
+                    className="relative aspect-[4/3] bg-gradient-to-br from-brand-100 to-brand-50 grid place-items-center overflow-hidden"
+                  >
                     {product.image ? (
                       <Image
                         src={product.image}
@@ -126,10 +127,34 @@ export default async function CategoryPage(props: PageProps<"/[locale]/urunler/[
                     ) : (
                       <span className="font-display font-bold text-2xl text-brand-300">{product.code}</span>
                     )}
+                  </Link>
+                  <div className="absolute top-2.5 right-2.5 z-10">
+                    <QuickAddButton
+                      locale={locale}
+                      productId={product.id}
+                      code={product.code}
+                      name={product.name[locale]}
+                      image={product.image ?? null}
+                      slug={product.slug}
+                      categoryName={category.name[locale]}
+                      categorySlug={category.slug}
+                      rollLength={product.rollLength ?? null}
+                    />
                   </div>
-                  <div className="p-5 flex-1 flex flex-col">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-accent-600">
-                      {product.code}
+                  <Link
+                    href={`/${locale}/urunler/${category.slug}/${product.slug}`}
+                    className="p-5 flex-1 flex flex-col"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="text-xs font-semibold uppercase tracking-wider text-accent-600">
+                        {product.code}
+                      </div>
+                      {product.rollLength && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 border border-brand-100 px-2 py-0.5 text-[10px] font-semibold text-brand-700">
+                          <RollIcon className="w-3 h-3 text-accent-600" />
+                          {product.rollLength} MT
+                        </span>
+                      )}
                     </div>
                     <h3 className="mt-1 text-base font-semibold text-brand-950">
                       {product.name[locale]}
@@ -141,8 +166,8 @@ export default async function CategoryPage(props: PageProps<"/[locale]/urunler/[
                       {dict.common.viewDetails}
                       <ArrowRight className="ml-1 h-4 w-4 transition group-hover:translate-x-1" />
                     </span>
-                  </div>
-                </Link>
+                  </Link>
+                </div>
               ))}
             </div>
           </div>
