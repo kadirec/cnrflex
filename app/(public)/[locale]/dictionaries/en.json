@@ -107,10 +107,10 @@
     "detailsPlaceholder": "Describe the change you need, target dimensions and technical specs, and the application area.",
     "attachmentsLabel": "Image / Technical Drawing",
     "attachmentsPrompt": "Attach image or technical drawing",
-    "attachmentsHint": "Up to 4 files, max 1 MB each. JPG, PNG, WEBP.",
+    "attachmentsHint": "Up to 4 files, max 5 MB each. JPG, PNG, WEBP.",
     "errors": {
       "unsupportedType": "Unsupported file type.",
-      "fileTooLarge": "File exceeds 1 MB.",
+      "fileTooLarge": "File exceeds 5 MB.",
       "tooManyFiles": "You can attach up to 4 files."
     },
     "capabilities": {

@@ -4,13 +4,24 @@ import { Card, CardContent } from "@/components/ui/card";
 import { QuoteStatusBadge } from "@/components/panel/quote-status-badge";
 import { QuoteFilters } from "./filters";
 import { DeleteQuoteButton } from "./delete-button";
-import { listQuotes, countByStatus } from "@/lib/quotes";
-import { QUOTE_STATUS_LABELS, isQuoteStatus, QUOTE_TYPE_LABELS } from "@/lib/quote-status";
+import { listQuotes, countByStatus, countByGroup, isQuoteGroup, type QuoteGroup } from "@/lib/quotes";
+import { isQuoteStatus, QUOTE_TYPE_LABELS } from "@/lib/quote-status";
 import type { QuoteStatus } from "@/lib/db";
 
 export const metadata = { title: "Teklifler — Panel" };
 
-type Search = { status?: string; unread?: string; q?: string };
+type Search = { status?: string; unread?: string; q?: string; group?: string };
+
+const GROUP_META: Record<QuoteGroup, { title: string; description: string }> = {
+  list: {
+    title: "Teklif Listesi",
+    description: "Katalog üzerinden gelen teklif ve iletişim talepleri",
+  },
+  custom: {
+    title: "Özel Üretim Talebi",
+    description: "Kendi ürünüm hakkında formundan gelen özel üretim talepleri",
+  },
+};
 
 function formatDate(d: Date) {
   return new Intl.DateTimeFormat("tr-TR", {
@@ -28,25 +39,31 @@ export default async function QuotesListPage({
   searchParams: Promise<Search>;
 }) {
   const sp = await searchParams;
+  const group: QuoteGroup = sp.group && isQuoteGroup(sp.group) ? sp.group : "list";
   const statusFilter: QuoteStatus | undefined =
     sp.status && isQuoteStatus(sp.status) ? sp.status : undefined;
   const onlyUnread = sp.unread === "1";
   const q = sp.q?.trim() || undefined;
 
-  const [rows, counts] = await Promise.all([
-    listQuotes({ status: statusFilter, onlyUnread, q }),
-    countByStatus(),
+  const [rows, counts, groupCounts] = await Promise.all([
+    listQuotes({ group, status: statusFilter, onlyUnread, q }),
+    countByStatus(group),
+    countByGroup(),
   ]);
+
+  const meta = GROUP_META[group];
 
   return (
     <div className="max-w-7xl mx-auto">
       <PageHeader
-        title="Teklifler"
-        description={`Toplam ${rows.length} kayıt${statusFilter || onlyUnread || q ? " (filtrelenmiş)" : ""}`}
+        title={meta.title}
+        description={`${meta.description} · ${rows.length} kayıt${statusFilter || onlyUnread || q ? " (filtrelenmiş)" : ""}`}
       />
 
       <div className="mb-4">
         <QuoteFilters
+          group={group}
+          groupCounts={groupCounts}
           defaultStatus={statusFilter}
           defaultUnread={onlyUnread}
           defaultQuery={q}

@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { Search, Inbox } from "lucide-react";
+import { Search, Inbox, Package, PenSquare } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -13,15 +13,25 @@ import {
   QUOTE_STATUS_STYLES,
 } from "@/lib/quote-status";
 import type { QuoteStatus } from "@/lib/db";
+import type { QuoteGroup } from "@/lib/quotes";
 
 type Props = {
+  group: QuoteGroup;
+  groupCounts: Record<QuoteGroup, number>;
   defaultStatus?: QuoteStatus;
   defaultUnread?: boolean;
   defaultQuery?: string;
   counts: Record<QuoteStatus, number>;
 };
 
-export function QuoteFilters({ defaultStatus, defaultUnread, defaultQuery, counts }: Props) {
+export function QuoteFilters({
+  group,
+  groupCounts,
+  defaultStatus,
+  defaultUnread,
+  defaultQuery,
+  counts,
+}: Props) {
   const router = useRouter();
   const sp = useSearchParams();
   const [q, setQ] = useState(defaultQuery ?? "");
@@ -43,10 +53,39 @@ export function QuoteFilters({ defaultStatus, defaultUnread, defaultQuery, count
     return s ? `/panel/quotes?${s}` : "/panel/quotes";
   };
 
+  const buildGroupHref = (g: QuoteGroup) => {
+    const params = new URLSearchParams();
+    if (g !== "list") params.set("group", g);
+    const s = params.toString();
+    return s ? `/panel/quotes?${s}` : "/panel/quotes";
+  };
+
   const totalActive = Object.values(counts).reduce((a, b) => a + b, 0);
 
   return (
     <div className="space-y-3">
+      <div
+        role="tablist"
+        aria-label="Talep türü"
+        className="inline-flex rounded-xl border border-slate-200 bg-slate-100 p-1"
+      >
+        <GroupTab
+          href={buildGroupHref("list")}
+          active={group === "list"}
+          icon={Package}
+          label="Teklif Listesi"
+          count={groupCounts.list}
+        />
+        <GroupTab
+          href={buildGroupHref("custom")}
+          active={group === "custom"}
+          icon={PenSquare}
+          label="Özel Üretim Talebi"
+          count={groupCounts.custom}
+          accent
+        />
+      </div>
+
       <div className="flex flex-wrap items-center gap-2">
         <Link
           href={buildHref({ status: undefined, unread: undefined })}
@@ -105,5 +144,52 @@ export function QuoteFilters({ defaultStatus, defaultUnread, defaultQuery, count
         <Button onClick={applySearch}>Ara</Button>
       </div>
     </div>
+  );
+}
+
+function GroupTab({
+  href,
+  active,
+  icon: Icon,
+  label,
+  count,
+  accent,
+}: {
+  href: string;
+  active: boolean;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  count: number;
+  accent?: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      role="tab"
+      aria-selected={active}
+      className={cn(
+        "inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition",
+        active
+          ? accent
+            ? "bg-white text-accent-700 shadow-sm ring-1 ring-accent-200"
+            : "bg-white text-brand-950 shadow-sm ring-1 ring-slate-200"
+          : "text-slate-600 hover:text-slate-900",
+      )}
+    >
+      <Icon className={cn("h-4 w-4", active && accent && "text-accent-600")} />
+      <span>{label}</span>
+      <span
+        className={cn(
+          "inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold",
+          active
+            ? accent
+              ? "bg-accent-500 text-white"
+              : "bg-brand-950 text-white"
+            : "bg-slate-200 text-slate-700",
+        )}
+      >
+        {count}
+      </span>
+    </Link>
   );
 }

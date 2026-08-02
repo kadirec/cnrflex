@@ -107,10 +107,10 @@
     "detailsPlaceholder": "İstediğiniz değişiklik, hedef ölçü ve teknik özellikler, kullanım alanı hakkında detay verin.",
     "attachmentsLabel": "Görsel / Teknik Çizim",
     "attachmentsPrompt": "Görsel veya teknik çizim ekleyin",
-    "attachmentsHint": "En fazla 4 dosya, her biri 1 MB altında. JPG, PNG, WEBP.",
+    "attachmentsHint": "En fazla 4 dosya, her biri 5 MB altında. JPG, PNG, WEBP.",
     "errors": {
       "unsupportedType": "Desteklenmeyen dosya türü.",
-      "fileTooLarge": "Dosya boyutu 1 MB'ı aşıyor.",
+      "fileTooLarge": "Dosya boyutu 5 MB'ı aşıyor.",
       "tooManyFiles": "En fazla 4 dosya ekleyebilirsiniz."
     },
     "capabilities": {

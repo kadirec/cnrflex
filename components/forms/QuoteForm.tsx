@@ -54,7 +54,7 @@ const customSchema = z.object({
 type CustomData = z.infer<typeof customSchema>;
 
 const MAX_FILES = 4;
-const MAX_FILE_SIZE = 1 * 1024 * 1024;
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ACCEPTED_MIME = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
 type Mode = "catalog" | "custom";

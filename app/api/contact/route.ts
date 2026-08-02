@@ -6,7 +6,7 @@ import { getDb, quotes } from "@/lib/db";
 import { siteConfig } from "@/lib/site";
 
 const MAX_ATTACHMENTS = 4;
-const MAX_ATTACHMENT_SIZE = 1 * 1024 * 1024;
+const MAX_ATTACHMENT_SIZE = 5 * 1024 * 1024;
 const ALLOWED_MIME = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"];
 
 const itemSchema = z.object({
