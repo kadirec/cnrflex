@@ -70,9 +70,10 @@ export function AddToQuoteButton({
       rollLength: rollLength ?? null,
       rollCount: count ?? null,
     });
-    toast.success(locale === "tr" ? "Sepete eklendi" : "Added to basket");
+    toast.success(
+      locale === "tr" ? "Teklif listesine eklendi" : "Added to quote list",
+    );
     setOpen(false);
-    startTransition(() => router.push(`/${locale}/teklif-al`));
   };
 
   const onClick = () => {
@@ -107,7 +108,7 @@ export function AddToQuoteButton({
         {inCart ? (
           <>
             <Check className="h-4 w-4" />
-            {locale === "tr" ? "Sepete Ekli · Sepeti Gör" : "In Basket · View"}
+            {locale === "tr" ? "Listede · Listeyi Gör" : "In List · View"}
           </>
         ) : (
           <>
@@ -199,7 +200,7 @@ export function AddToQuoteButton({
               className="gap-2 bg-accent-500 hover:bg-accent-600"
             >
               <ShoppingCart className="w-4 h-4" />
-              {locale === "tr" ? "Sepete Ekle" : "Add to Basket"}
+              {locale === "tr" ? "Teklif Listesine Ekle" : "Add to Quote List"}
             </Button>
           </DialogFooter>
         </DialogContent>

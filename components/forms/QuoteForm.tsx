@@ -296,7 +296,7 @@ function PickerPanel({
         </h2>
         <p className="text-sm text-brand-600 mt-0.5">
           {locale === "tr"
-            ? "Ürüne tıklayarak sepete ekleyin. Tekrar tıklarsanız kaldırılır."
+            ? "Ürüne tıklayarak listeye ekleyin. Tekrar tıklarsanız kaldırılır."
             : "Tap a product to add it. Tap again to remove."}
         </p>
       </div>
@@ -367,7 +367,7 @@ function PickerPanel({
                     <div className="absolute inset-0 bg-emerald-500/10 backdrop-blur-[1px] grid place-items-center">
                       <span className="inline-flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 shadow">
                         <Check className="h-3.5 w-3.5" />
-                        {locale === "tr" ? "Sepette" : "In basket"}
+                        {locale === "tr" ? "Listede" : "In list"}
                       </span>
                     </div>
                   )}
@@ -432,7 +432,7 @@ function BasketPanel({
         <div className="flex items-center gap-2 px-5 py-4 bg-brand-950 text-white">
           <ShoppingCart className="h-4 w-4 text-accent-400" />
           <h3 className="text-sm font-semibold flex-1">
-            {locale === "tr" ? "Teklif sepeti" : "Quote basket"}
+            {locale === "tr" ? "Teklif Listesi" : "Quote List"}
           </h3>
           <span className="inline-flex items-center justify-center min-w-[24px] h-6 px-2 rounded-full bg-accent-500 text-white text-xs font-bold">
             {basket.length}
@@ -447,8 +447,8 @@ function BasketPanel({
               </div>
               <p className="text-sm text-brand-600">
                 {locale === "tr"
-                  ? "Sepetiniz boş. Sol taraftan ürün ekleyin veya doğrudan devam edin."
-                  : "Basket is empty. Add products or continue without."}
+                  ? "Listeniz boş. Sol taraftan ürün ekleyin veya doğrudan devam edin."
+                  : "List is empty. Add products or continue without."}
               </p>
             </div>
           ) : (
@@ -544,7 +544,7 @@ function BasketPanel({
           )}
           <p className="mt-2 text-[11px] text-brand-500 text-center">
             {locale === "tr"
-              ? "Boş sepet ile de gönderebilirsiniz."
+              ? "Boş liste ile de gönderebilirsiniz."
               : "You can also send with an empty basket."}
           </p>
         </div>

@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Menu, X, ChevronDown, ShoppingCart } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { siteConfig, type Locale, locales } from "@/lib/site";
 import type { Dictionary } from "@/app/(public)/[locale]/dictionaries";
-import { useQuoteCart } from "@/components/cart/QuoteCartContext";
+import { CartMenu } from "@/components/cart/CartMenu";
 
 type Props = {
   locale: Locale;
@@ -32,7 +32,6 @@ export function Header({ locale, dict, categoryLinks }: Props) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
-  const { count: cartCount, hydrated: cartHydrated } = useQuoteCart();
 
   const navItems: NavItem[] = [
     { href: `/${locale}`, label: dict.nav.home },
@@ -180,37 +179,15 @@ export function Header({ locale, dict, categoryLinks }: Props) {
             </div>
             <Link
               href={`/${locale}/teklif-al`}
-              aria-label={locale === "tr" ? "Teklif sepeti" : "Quote basket"}
-              className="relative inline-flex items-center justify-center h-9 w-9 rounded-md text-brand-800 hover:text-accent-600 hover:bg-brand-50 transition"
-            >
-              <ShoppingCart className="h-5 w-5" />
-              {cartHydrated && cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-accent-500 text-white text-[10px] font-bold ring-2 ring-white">
-                  {cartCount > 99 ? "99+" : cartCount}
-                </span>
-              )}
-            </Link>
-            <Link
-              href={`/${locale}/teklif-al`}
               className="inline-flex items-center justify-center rounded-md bg-accent-500 hover:bg-accent-600 px-4 py-2 text-sm font-semibold text-white transition"
             >
               {dict.nav.getQuote}
             </Link>
+            <CartMenu locale={locale} variant="desktop" />
           </div>
 
           <div className="flex items-center gap-2 lg:hidden">
-            <Link
-              href={`/${locale}/teklif-al`}
-              aria-label={locale === "tr" ? "Teklif sepeti" : "Quote basket"}
-              className="relative inline-flex items-center justify-center h-10 w-10 rounded-md text-brand-800 hover:bg-brand-50"
-            >
-              <ShoppingCart className="h-5 w-5" />
-              {cartHydrated && cartCount > 0 && (
-                <span className="absolute top-1 right-1 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-accent-500 text-white text-[10px] font-bold ring-2 ring-white">
-                  {cartCount > 99 ? "99+" : cartCount}
-                </span>
-              )}
-            </Link>
+            <CartMenu locale={locale} variant="mobile" />
             <button
               type="button"
               aria-label="Menu"
