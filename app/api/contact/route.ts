@@ -31,7 +31,7 @@ const payloadSchema = z.object({
   category: z.string().max(100).optional(),
   customCategory: z.string().max(120).optional(),
   quantity: z.string().max(60).optional(),
-  message: z.string().min(10).max(5000),
+  message: z.string().max(5000).optional().default(""),
   website: z.string().max(0).optional(),
   items: z.array(itemSchema).max(50).optional(),
 });
@@ -175,15 +175,20 @@ export async function POST(request: Request) {
         </div>`
         : "";
 
+    const messageHtml = data.message?.trim()
+      ? `
+        <div style="margin-top:20px">
+          <div style="font-weight:600;color:#555;margin-bottom:8px">Mesaj / Message</div>
+          <div style="background:#f5f5f5;padding:16px;border-radius:8px;white-space:pre-wrap">${escape(data.message)}</div>
+        </div>`
+      : "";
+
     const html = `
       <div style="font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;max-width:640px;margin:0 auto">
         <h2 style="color:#122648">${escape(subjectPrefix)}</h2>
         <table style="border-collapse:collapse;width:100%;background:#fafafa;border-radius:8px;overflow:hidden">${tableRows}</table>
         ${itemsHtml}
-        <div style="margin-top:20px">
-          <div style="font-weight:600;color:#555;margin-bottom:8px">Mesaj / Message</div>
-          <div style="background:#f5f5f5;padding:16px;border-radius:8px;white-space:pre-wrap">${escape(data.message)}</div>
-        </div>
+        ${messageHtml}
       </div>
     `;
 

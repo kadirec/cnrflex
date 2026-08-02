@@ -130,24 +130,24 @@ export function CartMenu({ locale, variant = "desktop" }: Props) {
           <ul className="max-h-[360px] overflow-y-auto divide-y divide-brand-100">
             {items.map((item) => (
               <li key={item.key} className="flex gap-3 p-3">
-                <div className="relative w-12 h-12 shrink-0 rounded-md overflow-hidden bg-brand-50">
+                <div className="relative w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-white ring-1 ring-brand-100">
                   {item.image ? (
                     <Image
                       src={item.image}
                       alt={item.name}
                       fill
-                      sizes="48px"
+                      sizes="64px"
                       className="object-cover"
                       unoptimized
                     />
                   ) : (
-                    <div className="w-full h-full grid place-items-center text-[9px] text-brand-400 font-mono">
+                    <div className="w-full h-full grid place-items-center text-[10px] text-brand-400 font-mono">
                       {item.code}
                     </div>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-1">
+                  <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <div className="text-xs font-medium text-brand-950 truncate">
                         {item.name}
@@ -157,10 +157,10 @@ export function CartMenu({ locale, variant = "desktop" }: Props) {
                     <button
                       type="button"
                       onClick={() => remove(item.key)}
-                      className="text-brand-400 hover:text-red-600 transition"
+                      className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white ring-1 ring-brand-100 text-brand-500 hover:bg-red-500 hover:text-white hover:ring-red-500 transition shrink-0"
                       aria-label={locale === "tr" ? "Kaldır" : "Remove"}
                     >
-                      <X className="h-3.5 w-3.5" />
+                      <X className="h-4 w-4" strokeWidth={2.5} />
                     </button>
                   </div>
                   {item.quantity && (

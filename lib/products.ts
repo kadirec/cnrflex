@@ -146,6 +146,7 @@ export type PickerProduct = {
   categoryId: number;
   categorySlug: string;
   categoryName: Translated;
+  categoryImage: string | null;
 };
 
 export async function getPickerProducts(): Promise<PickerProduct[]> {
@@ -164,6 +165,7 @@ export async function getPickerProducts(): Promise<PickerProduct[]> {
         categoryId: c.id,
         categorySlug: c.slug,
         categoryName: c.name,
+        categoryImage: c.image ?? c.icon ?? null,
       });
     }
     for (const ch of c.children) walk(ch);

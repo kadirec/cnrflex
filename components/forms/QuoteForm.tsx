@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,6 +11,7 @@ import {
   CheckCircle2,
   AlertCircle,
   Plus,
+  Minus,
   Check,
   X,
   Search,
@@ -31,7 +33,7 @@ const schema = z.object({
   company: z.string().optional(),
   email: z.string().email(),
   phone: z.string().regex(PHONE_REGEX),
-  message: z.string().min(10),
+  message: z.string().optional(),
   website: z.string().max(0).optional(),
 });
 
@@ -71,11 +73,13 @@ export function QuoteForm({
   }, [cart, prefillProductSlug, products, locale]);
 
   const categories = useMemo(() => {
-    const seen = new Map<string, string>();
+    const seen = new Map<string, { name: string; image: string | null }>();
     for (const p of products) {
-      if (!seen.has(p.categorySlug)) seen.set(p.categorySlug, p.categoryName[locale]);
+      if (!seen.has(p.categorySlug)) {
+        seen.set(p.categorySlug, { name: p.categoryName[locale], image: p.categoryImage });
+      }
     }
-    return Array.from(seen, ([slug, name]) => ({ slug, name }));
+    return Array.from(seen, ([slug, meta]) => ({ slug, name: meta.name, image: meta.image }));
   }, [products, locale]);
 
   const filtered = useMemo(() => {
@@ -178,6 +182,7 @@ export function QuoteForm({
           step={step}
           status={status}
           onContinue={() => setStep("contact")}
+          onBack={() => setStep("select")}
         />
       </div>
 
@@ -280,7 +285,7 @@ function PickerPanel({
 }: {
   locale: Locale;
   filtered: PickerProduct[];
-  categories: Array<{ slug: string; name: string }>;
+  categories: Array<{ slug: string; name: string; image: string | null }>;
   activeCat: string | "all";
   setActiveCat: (v: string | "all") => void;
   query: string;
@@ -312,19 +317,50 @@ function PickerPanel({
       </div>
 
       <div className="mt-3 flex flex-wrap gap-1.5">
-        <button type="button" onClick={() => setActiveCat("all")} className={pillClass(activeCat === "all")}>
+        <button
+          type="button"
+          onClick={() => setActiveCat("all")}
+          className={pillClass(activeCat === "all")}
+        >
+          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-brand-200 text-brand-700 text-[10px] font-bold">
+            ★
+          </span>
           {locale === "tr" ? "Tümü" : "All"}
         </button>
-        {categories.map((c) => (
-          <button
-            key={c.slug}
-            type="button"
-            onClick={() => setActiveCat(c.slug)}
-            className={pillClass(activeCat === c.slug)}
-          >
-            {c.name}
-          </button>
-        ))}
+        {categories.map((c) => {
+          const active = activeCat === c.slug;
+          return (
+            <button
+              key={c.slug}
+              type="button"
+              onClick={() => setActiveCat(c.slug)}
+              className={pillClass(active)}
+            >
+              <span
+                className={cn(
+                  "relative inline-block w-6 h-6 rounded-full overflow-hidden ring-1",
+                  active ? "ring-white/40" : "ring-brand-100",
+                )}
+              >
+                {c.image ? (
+                  <Image
+                    src={c.image}
+                    alt=""
+                    fill
+                    sizes="24px"
+                    className="object-cover"
+                    unoptimized
+                  />
+                ) : (
+                  <span className="w-full h-full grid place-items-center bg-brand-100 text-brand-500 text-[9px] font-semibold uppercase">
+                    {c.name.slice(0, 2)}
+                  </span>
+                )}
+              </span>
+              {c.name}
+            </button>
+          );
+        })}
       </div>
 
       {filtered.length === 0 ? (
@@ -416,6 +452,7 @@ function BasketPanel({
   step,
   status,
   onContinue,
+  onBack,
 }: {
   locale: Locale;
   basket: CartItem[];
@@ -424,6 +461,7 @@ function BasketPanel({
   step: Step;
   status: "idle" | "loading" | "success" | "error";
   onContinue: () => void;
+  onBack: () => void;
 }) {
   const empty = basket.length === 0;
   return (
@@ -455,24 +493,24 @@ function BasketPanel({
             <ul className="divide-y divide-brand-100">
               {basket.map((item) => (
                 <li key={item.key} className="p-3 flex gap-3">
-                  <div className="relative w-14 h-14 shrink-0 rounded-md overflow-hidden bg-brand-50">
+                  <div className="relative w-20 h-20 shrink-0 rounded-lg overflow-hidden bg-white ring-1 ring-brand-100">
                     {item.image ? (
                       <Image
                         src={item.image}
                         alt={item.name}
                         fill
-                        sizes="56px"
+                        sizes="80px"
                         className="object-cover"
                         unoptimized
                       />
                     ) : (
-                      <div className="w-full h-full grid place-items-center text-[9px] text-brand-400 font-mono">
+                      <div className="w-full h-full grid place-items-center text-[10px] text-brand-400 font-mono">
                         {item.code}
                       </div>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-1">
+                    <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
                         {item.categoryName && (
                           <div className="text-[9px] font-semibold uppercase tracking-wide text-accent-600 truncate">
@@ -487,10 +525,11 @@ function BasketPanel({
                       <button
                         type="button"
                         onClick={() => onRemove(item.key)}
-                        className="text-brand-400 hover:text-red-600 transition"
+                        className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white ring-1 ring-brand-100 text-brand-500 hover:bg-red-500 hover:text-white hover:ring-red-500 transition shrink-0"
                         aria-label={locale === "tr" ? "Kaldır" : "Remove"}
+                        title={locale === "tr" ? "Ürünü kaldır" : "Remove"}
                       >
-                        <X className="h-3.5 w-3.5" />
+                        <X className="h-4 w-4" strokeWidth={2.5} />
                       </button>
                     </div>
                     <div className="mt-1.5">
@@ -514,33 +553,58 @@ function BasketPanel({
 
         <div className="border-t border-brand-100 bg-brand-50/60 p-4">
           {step === "select" ? (
-            <button
-              type="button"
-              onClick={onContinue}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-md bg-accent-500 hover:bg-accent-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-accent-500/25 transition"
-            >
-              {locale === "tr" ? "Teklifi Tamamla" : "Continue"}
-              <ChevronRight className="h-4 w-4" />
-            </button>
+            <div className="flex items-stretch gap-2">
+              <Link
+                href={`/${locale}/urunler`}
+                className="inline-flex items-center justify-center gap-1 rounded-md border border-brand-200 bg-white px-3 text-sm font-medium text-brand-700 hover:border-accent-500 hover:text-accent-600 transition"
+                aria-label={locale === "tr" ? "Ürünlere dön" : "Back to products"}
+              >
+                <ChevronLeft className="h-4 w-4" />
+                <span className="hidden sm:inline">
+                  {locale === "tr" ? "Ürünlere dön" : "Back"}
+                </span>
+              </Link>
+              <button
+                type="button"
+                onClick={onContinue}
+                className="flex-1 inline-flex items-center justify-center gap-2 rounded-md bg-accent-500 hover:bg-accent-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-accent-500/25 transition"
+              >
+                {locale === "tr" ? "Teklifi Tamamla" : "Continue"}
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
           ) : (
-            <button
-              type="submit"
-              disabled={status === "loading"}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-md bg-accent-500 hover:bg-accent-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-accent-500/25 transition disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {status === "loading" ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Sparkles className="h-4 w-4" />
-              )}
-              {locale === "tr"
-                ? status === "loading"
-                  ? "Gönderiliyor…"
-                  : "Teklif Talebini Gönder"
-                : status === "loading"
-                  ? "Sending…"
-                  : "Send Quote Request"}
-            </button>
+            <div className="flex items-stretch gap-2">
+              <button
+                type="button"
+                onClick={onBack}
+                className="inline-flex items-center justify-center gap-1 rounded-md border border-brand-200 bg-white px-3 text-sm font-medium text-brand-700 hover:border-accent-500 hover:text-accent-600 transition"
+                aria-label={locale === "tr" ? "Ürünlere dön" : "Back to products"}
+              >
+                <ChevronLeft className="h-4 w-4" />
+                <span className="hidden sm:inline">
+                  {locale === "tr" ? "Ürünlere dön" : "Back"}
+                </span>
+              </button>
+              <button
+                type="submit"
+                disabled={status === "loading"}
+                className="flex-1 inline-flex items-center justify-center gap-2 rounded-md bg-accent-500 hover:bg-accent-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-accent-500/25 transition disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {status === "loading" ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Sparkles className="h-4 w-4" />
+                )}
+                {locale === "tr"
+                  ? status === "loading"
+                    ? "Gönderiliyor…"
+                    : "Talebi Tamamla"
+                  : status === "loading"
+                    ? "Sending…"
+                    : "Complete Request"}
+              </button>
+            </div>
           )}
           <p className="mt-2 text-[11px] text-brand-500 text-center">
             {locale === "tr"
@@ -632,7 +696,7 @@ function ContactPanel({
         </Field>
       </div>
 
-      <Field label={dict.quote.fields.message} required error={errors.message?.message}>
+      <Field label={dict.quote.fields.message} error={errors.message?.message}>
         <textarea
           {...register("message")}
           className="form-input min-h-32 resize-y"
@@ -730,16 +794,16 @@ function RollCounter({
   };
   const total = count * length;
   return (
-    <div className="space-y-1">
-      <div className="flex items-stretch gap-1">
+    <div className="inline-flex items-center gap-1.5 flex-wrap">
+      <div className="inline-flex items-stretch h-8 rounded-md border border-brand-200 overflow-hidden bg-white">
         <button
           type="button"
           onClick={() => setCount(count - 1)}
           disabled={count <= 1}
-          className="w-7 rounded-md border border-brand-200 text-brand-700 hover:border-accent-500 disabled:opacity-40 grid place-items-center text-xs"
-          aria-label="-"
+          className="w-6 grid place-items-center text-brand-600 hover:bg-brand-50 hover:text-accent-600 disabled:opacity-40 disabled:pointer-events-none transition"
+          aria-label={locale === "tr" ? "Azalt" : "Decrease"}
         >
-          −
+          <Minus className="w-3.5 h-3.5" strokeWidth={2.5} />
         </button>
         <input
           type="number"
@@ -747,30 +811,31 @@ function RollCounter({
           max={999}
           value={count}
           onChange={(e) => setCount(Number(e.target.value))}
-          className="form-input text-xs !py-1 text-center flex-1"
+          style={{ width: `${Math.max(2.4, String(count).length * 0.7 + 1.6)}rem` }}
+          className="no-spin border-x border-brand-200 text-sm !py-0 !px-1 text-center font-semibold text-brand-950 focus:border-accent-500 outline-none tabular-nums"
         />
         <button
           type="button"
           onClick={() => setCount(count + 1)}
-          className="w-7 rounded-md border border-brand-200 text-brand-700 hover:border-accent-500 grid place-items-center text-xs"
-          aria-label="+"
+          className="w-6 grid place-items-center text-brand-600 hover:bg-brand-50 hover:text-accent-600 transition"
+          aria-label={locale === "tr" ? "Arttır" : "Increase"}
         >
-          +
+          <Plus className="w-3.5 h-3.5" strokeWidth={2.5} />
         </button>
-        <span className="inline-flex items-center px-2 rounded-md bg-brand-50 border border-brand-100 text-[10px] font-medium text-brand-700 whitespace-nowrap">
-          × {length} MT
-        </span>
       </div>
-      <div className="text-[10px] font-semibold text-accent-700 text-right">
+      <span className="inline-flex items-center h-8 px-2 rounded-md bg-brand-50 text-xs font-medium text-brand-600 whitespace-nowrap tabular-nums">
+        × {length} MT
+      </span>
+      <span className="inline-flex items-center h-8 text-xs font-bold text-accent-700 whitespace-nowrap tabular-nums">
         = {total} MT
-      </div>
+      </span>
     </div>
   );
 }
 
 function pillClass(active: boolean) {
   return cn(
-    "inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium transition",
+    "inline-flex items-center gap-2 rounded-full border pl-1 pr-3 py-1 text-xs font-medium transition",
     active
       ? "border-accent-500 bg-accent-500 text-white"
       : "border-brand-200 bg-white text-brand-700 hover:border-brand-300",
