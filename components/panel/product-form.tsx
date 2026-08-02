@@ -1,9 +1,9 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
 import { toast } from "sonner";
-import { Save } from "lucide-react";
+import { Save, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,7 +13,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { MultiImageUpload } from "@/components/panel/multi-image-upload";
 import { SpecsEditor } from "@/components/panel/specs-editor";
 import { RichTextEditor } from "@/components/panel/rich-text-editor";
+import { translateToEn } from "@/lib/actions-translate";
 import { slugify } from "@/lib/slug";
+import { cn } from "@/lib/utils";
 import type { Product } from "@/lib/db";
 import type { ProductFormState } from "@/lib/actions-products";
 
@@ -29,6 +31,7 @@ const PRODUCT_FIELD_LABELS: Record<string, string> = {
   descriptionEn: "Açıklama (EN)",
   imageUrl: "Kapak görseli",
   images: "Görseller",
+  rollLength: "Top sarımı (MT)",
   sortOrder: "Sıra",
   specs: "Teknik özellikler",
 };
@@ -54,11 +57,16 @@ function SubmitButton() {
 export function ProductForm({ product, categories, action, mode, defaultCategoryId }: Props) {
   const [state, formAction] = useActionState<ProductFormState, FormData>(action, { ok: false });
   const [nameTr, setNameTr] = useState(product?.nameTr ?? "");
+  const [nameEn, setNameEn] = useState(product?.nameEn ?? "");
+  const [descriptionTr, setDescriptionTr] = useState(product?.descriptionTr ?? "");
+  const [descriptionEn, setDescriptionEn] = useState(product?.descriptionEn ?? "");
   const [slug, setSlug] = useState(product?.slug ?? "");
   const [slugTouched, setSlugTouched] = useState(!!product);
   const [categoryId, setCategoryId] = useState<string>(
     String(product?.categoryId ?? defaultCategoryId ?? categories[0]?.id ?? ""),
   );
+  const [translatingName, startTranslatingName] = useTransition();
+  const [translatingDesc, startTranslatingDesc] = useTransition();
 
   useEffect(() => {
     if (!slugTouched && mode === "create") setSlug(slugify(nameTr));
@@ -70,6 +78,38 @@ export function ProductForm({ product, categories, action, mode, defaultCategory
   }, [state]);
 
   const fe = state.fieldErrors ?? {};
+
+  const handleTranslateName = () => {
+    if (!nameTr.trim()) {
+      toast.error("Önce TR ürün adını girin");
+      return;
+    }
+    startTranslatingName(async () => {
+      const res = await translateToEn(nameTr, "text");
+      if (res.ok) {
+        setNameEn(res.text);
+        toast.success("Ürün adı çevrildi");
+      } else {
+        toast.error(res.error);
+      }
+    });
+  };
+
+  const handleTranslateDescription = () => {
+    if (!descriptionTr.trim() || descriptionTr === "<p></p>") {
+      toast.error("Önce TR açıklamayı girin");
+      return;
+    }
+    startTranslatingDesc(async () => {
+      const res = await translateToEn(descriptionTr, "html");
+      if (res.ok) {
+        setDescriptionEn(res.text);
+        toast.success("Açıklama çevrildi");
+      } else {
+        toast.error(res.error);
+      }
+    });
+  };
 
   return (
     <form action={formAction} className="space-y-6">
@@ -115,25 +155,47 @@ export function ProductForm({ product, categories, action, mode, defaultCategory
                   <Field label="Açıklama (TR)" error={fe.descriptionTr}>
                     <RichTextEditor
                       name="descriptionTr"
-                      defaultValue={product?.descriptionTr ?? ""}
+                      value={descriptionTr}
+                      onChange={setDescriptionTr}
                       placeholder="Ürün hakkında detaylı açıklama…"
                     />
                   </Field>
                 </TabsContent>
 
                 <TabsContent value="en" className="space-y-4 pt-4">
-                  <Field label="Product name (EN)" error={fe.nameEn}>
+                  <Field
+                    label="Product name (EN)"
+                    error={fe.nameEn}
+                    action={
+                      <TranslateButton
+                        pending={translatingName}
+                        onClick={handleTranslateName}
+                        disabled={!nameTr.trim()}
+                      />
+                    }
+                  >
                     <Input
                       name="nameEn"
-                      defaultValue={product?.nameEn ?? ""}
-                      required
-                      placeholder="Brushed Vertical Shutter Seal"
+                      value={nameEn}
+                      onChange={(e) => setNameEn(e.target.value)}
+                      placeholder="Boş bırakılırsa TR değeri kullanılır"
                     />
                   </Field>
-                  <Field label="Description (EN)" error={fe.descriptionEn}>
+                  <Field
+                    label="Description (EN)"
+                    error={fe.descriptionEn}
+                    action={
+                      <TranslateButton
+                        pending={translatingDesc}
+                        onClick={handleTranslateDescription}
+                        disabled={!descriptionTr.trim() || descriptionTr === "<p></p>"}
+                      />
+                    }
+                  >
                     <RichTextEditor
                       name="descriptionEn"
-                      defaultValue={product?.descriptionEn ?? ""}
+                      value={descriptionEn}
+                      onChange={setDescriptionEn}
                       placeholder="Detailed product description…"
                     />
                   </Field>
@@ -199,6 +261,20 @@ export function ProductForm({ product, categories, action, mode, defaultCategory
                   required
                 />
               </Field>
+              <Field
+                label="Top sarımı (MT)"
+                error={fe.rollLength}
+                hint="Bir topta kaç metre olduğunu girin. Boş bırakılabilir."
+              >
+                <Input
+                  name="rollLength"
+                  type="number"
+                  min={1}
+                  step={1}
+                  defaultValue={product?.rollLength ?? ""}
+                  placeholder="Örn. 50"
+                />
+              </Field>
               <Field label="Sıra">
                 <Input name="sortOrder" type="number" min={0} defaultValue={product?.sortOrder ?? 0} />
               </Field>
@@ -233,19 +309,59 @@ function Field({
   label,
   error,
   hint,
+  action,
   children,
 }: {
   label: string;
   error?: string;
   hint?: string;
+  action?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
     <div className="space-y-1.5">
-      <Label>{label}</Label>
+      <div className="flex items-center justify-between gap-2">
+        <Label>{label}</Label>
+        {action}
+      </div>
       {children}
       {error && <p className="text-xs text-red-600">{error}</p>}
       {hint && !error && <p className="text-xs text-slate-500">{hint}</p>}
     </div>
+  );
+}
+
+function TranslateButton({
+  pending,
+  disabled,
+  onClick,
+}: {
+  pending: boolean;
+  disabled?: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={pending || disabled}
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-md border border-brand-200 bg-white px-2.5 py-1 text-xs font-medium text-brand-700 shadow-sm transition",
+        "hover:border-brand-300 hover:bg-brand-50 disabled:opacity-50 disabled:pointer-events-none",
+      )}
+      title="TR alanından otomatik çevir"
+    >
+      {pending ? (
+        <>
+          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+          Çevriliyor…
+        </>
+      ) : (
+        <>
+          <Sparkles className="w-3.5 h-3.5" />
+          TR&apos;den çevir
+        </>
+      )}
+    </button>
   );
 }

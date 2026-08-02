@@ -2,17 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, FolderTree, Package } from "lucide-react";
+import { LayoutDashboard, FolderTree, Package, MessageSquareText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const items = [
   { href: "/panel", label: "Genel Bakış", icon: LayoutDashboard, match: (p: string) => p === "/panel" },
+  { href: "/panel/quotes", label: "Teklifler", icon: MessageSquareText, match: (p: string) => p.startsWith("/panel/quotes"), badgeKey: "unreadQuotes" as const },
   { href: "/panel/categories", label: "Kategoriler", icon: FolderTree, match: (p: string) => p.startsWith("/panel/categories") },
   { href: "/panel/products", label: "Ürünler", icon: Package, match: (p: string) => p.startsWith("/panel/products") },
 ];
 
-export function PanelSidebar() {
+export function PanelSidebar({ unreadQuotes = 0 }: { unreadQuotes?: number }) {
   const pathname = usePathname();
+  const badges: Record<string, number> = { unreadQuotes };
 
   return (
     <aside className="hidden lg:flex w-64 shrink-0 bg-brand-950 text-slate-100 flex-col">
@@ -26,8 +28,10 @@ export function PanelSidebar() {
         </div>
       </div>
       <nav className="flex-1 p-3 space-y-1">
-        {items.map(({ href, label, icon: Icon, match }) => {
+        {items.map((item) => {
+          const { href, label, icon: Icon, match } = item;
           const active = match(pathname);
+          const badge = "badgeKey" in item && item.badgeKey ? badges[item.badgeKey] : 0;
           return (
             <Link
               key={href}
@@ -40,7 +44,12 @@ export function PanelSidebar() {
               )}
             >
               <Icon className="w-4 h-4 shrink-0" />
-              <span>{label}</span>
+              <span className="flex-1">{label}</span>
+              {badge > 0 && (
+                <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-accent-500 text-white text-[10px] font-bold">
+                  {badge > 99 ? "99+" : badge}
+                </span>
+              )}
             </Link>
           );
         })}

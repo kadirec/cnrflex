@@ -1,16 +1,22 @@
 import Link from "next/link";
-import { FolderTree, Package, ArrowRight } from "lucide-react";
+import { FolderTree, Package, ArrowRight, MessageSquareText } from "lucide-react";
 import { count } from "drizzle-orm";
 import { getDb, categories, products } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { countUnread } from "@/lib/quotes";
 
 async function loadStats() {
   const db = getDb();
-  const [c, p] = await Promise.all([
+  const [c, p, unread] = await Promise.all([
     db.select({ n: count() }).from(categories),
     db.select({ n: count() }).from(products),
+    countUnread().catch(() => 0),
   ]);
-  return { categories: c[0]?.n ?? 0, products: p[0]?.n ?? 0 };
+  return {
+    categories: c[0]?.n ?? 0,
+    products: p[0]?.n ?? 0,
+    unreadQuotes: unread,
+  };
 }
 
 export default async function PanelDashboard() {
@@ -23,7 +29,14 @@ export default async function PanelDashboard() {
         <p className="text-sm text-slate-500 mt-1">CNR Seal içerik yönetim paneli.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <StatCard
+          href="/panel/quotes?unread=1"
+          icon={MessageSquareText}
+          label="Okunmamış teklif"
+          value={stats.unreadQuotes}
+          accent={stats.unreadQuotes > 0}
+        />
         <StatCard
           href="/panel/categories"
           icon={FolderTree}
@@ -56,23 +69,37 @@ function StatCard({
   icon: Icon,
   label,
   value,
+  accent = false,
 }: {
   href: string;
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   value: number;
+  accent?: boolean;
 }) {
   return (
     <Link
       href={href}
-      className="group bg-white border border-slate-200 rounded-xl p-5 hover:border-brand-300 hover:shadow-sm transition"
+      className={
+        accent
+          ? "group bg-white border border-accent-300 ring-2 ring-accent-100 rounded-xl p-5 hover:border-accent-500 hover:shadow-sm transition"
+          : "group bg-white border border-slate-200 rounded-xl p-5 hover:border-brand-300 hover:shadow-sm transition"
+      }
     >
       <div className="flex items-start justify-between">
         <div>
           <div className="text-sm font-medium text-slate-500">{label}</div>
-          <div className="text-3xl font-bold text-slate-900 mt-2">{value}</div>
+          <div className={accent ? "text-3xl font-bold text-accent-600 mt-2" : "text-3xl font-bold text-slate-900 mt-2"}>
+            {value}
+          </div>
         </div>
-        <div className="w-10 h-10 rounded-lg bg-brand-50 flex items-center justify-center text-brand-700">
+        <div
+          className={
+            accent
+              ? "w-10 h-10 rounded-lg bg-accent-100 flex items-center justify-center text-accent-600"
+              : "w-10 h-10 rounded-lg bg-brand-50 flex items-center justify-center text-brand-700"
+          }
+        >
           <Icon className="w-5 h-5" />
         </div>
       </div>

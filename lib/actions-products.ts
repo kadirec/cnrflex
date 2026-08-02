@@ -22,9 +22,12 @@ const productSchema = z.object({
   nameTr: z.string().min(1).max(200),
   nameEn: z.string().min(1).max(200),
   descriptionTr: z.string().max(20000).optional().nullable(),
-  descriptionEn: z.string().max(20000).optional().nullable(),
+  descriptionEn: z.string().max(20000).nullable(),
   imageUrl: z.string().optional().nullable(),
   images: z.array(z.string().url()).max(8).optional().nullable(),
+  rollLength: z
+    .union([z.coerce.number().int().min(1).max(100000), z.literal("").transform(() => null), z.null()])
+    .nullable(),
   sortOrder: z.coerce.number().int().default(0),
   specs: z.array(specSchema).max(30).optional().nullable(),
 });
@@ -69,16 +72,21 @@ function parseFormData(fd: FormData) {
     }
   }
 
+  const nameEnRaw = get("nameEn");
+  const descTr = sanitizeHtml(get("descriptionTr"));
+  const descEn = sanitizeHtml(get("descriptionEn"));
+
   return {
     categoryId: get("categoryId"),
     code: get("code"),
     slug: slugRaw,
     nameTr,
-    nameEn: get("nameEn"),
-    descriptionTr: sanitizeHtml(get("descriptionTr")) || null,
-    descriptionEn: sanitizeHtml(get("descriptionEn")) || null,
+    nameEn: nameEnRaw || nameTr,
+    descriptionTr: descTr || null,
+    descriptionEn: descEn || descTr || null,
     imageUrl: images?.[0] ?? null,
     images,
+    rollLength: get("rollLength") || null,
     sortOrder: get("sortOrder") || "0",
     specs,
   };
@@ -119,8 +127,8 @@ export async function createProduct(_prev: ProductFormState, fd: FormData): Prom
   }
 
   revalidatePath("/panel/products");
-  revalidatePath("/tr/urunler");
-  revalidatePath("/en/urunler");
+  revalidatePath("/tr/urunler", "layout");
+  revalidatePath("/en/urunler", "layout");
   redirect("/panel/products");
 }
 
@@ -161,8 +169,8 @@ export async function updateProduct(
 
   revalidatePath("/panel/products");
   revalidatePath(`/panel/products/${id}`);
-  revalidatePath("/tr/urunler");
-  revalidatePath("/en/urunler");
+  revalidatePath("/tr/urunler", "layout");
+  revalidatePath("/en/urunler", "layout");
   return { ok: true };
 }
 
@@ -173,7 +181,7 @@ export async function deleteProduct(id: number): Promise<{ ok: boolean; error?: 
   const db = getDb();
   await db.delete(products).where(eq(products.id, id));
   revalidatePath("/panel/products");
-  revalidatePath("/tr/urunler");
-  revalidatePath("/en/urunler");
+  revalidatePath("/tr/urunler", "layout");
+  revalidatePath("/en/urunler", "layout");
   return { ok: true };
 }

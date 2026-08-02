@@ -113,8 +113,19 @@ export default async function CategoryPage(props: PageProps<"/[locale]/urunler/[
                   href={`/${locale}/urunler/${category.slug}/${product.slug}`}
                   className="group flex flex-col rounded-xl border border-brand-100 bg-white hover:border-accent-500 hover:shadow-lg hover:shadow-brand-900/5 transition overflow-hidden"
                 >
-                  <div className="aspect-[4/3] bg-gradient-to-br from-brand-100 to-brand-50 grid place-items-center">
-                    <span className="font-display font-bold text-2xl text-brand-300">{product.code}</span>
+                  <div className="relative aspect-[4/3] bg-gradient-to-br from-brand-100 to-brand-50 grid place-items-center overflow-hidden">
+                    {product.image ? (
+                      <Image
+                        src={product.image}
+                        alt={product.name[locale]}
+                        fill
+                        sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                        className="object-cover transition group-hover:scale-105"
+                        unoptimized
+                      />
+                    ) : (
+                      <span className="font-display font-bold text-2xl text-brand-300">{product.code}</span>
+                    )}
                   </div>
                   <div className="p-5 flex-1 flex flex-col">
                     <div className="text-xs font-semibold uppercase tracking-wider text-accent-600">

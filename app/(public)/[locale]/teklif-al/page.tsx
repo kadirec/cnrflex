@@ -5,7 +5,7 @@ import { QuoteForm } from "@/components/forms/QuoteForm";
 import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
 import { getDictionary, hasLocale } from "../dictionaries";
 import { siteConfig } from "@/lib/site";
-import { getAllCategoriesFlat } from "@/lib/products";
+import { getPickerProducts } from "@/lib/products";
 import { Mail, Phone, MessageCircle } from "lucide-react";
 
 export async function generateMetadata(props: PageProps<"/[locale]/teklif-al">): Promise<Metadata> {
@@ -17,15 +17,12 @@ export async function generateMetadata(props: PageProps<"/[locale]/teklif-al">):
 
 export default async function QuotePage(props: PageProps<"/[locale]/teklif-al">) {
   const { locale } = await props.params;
-  const { category } = await props.searchParams;
+  const { product, category } = await props.searchParams;
   if (!hasLocale(locale)) notFound();
   const dict = await getDictionary(locale);
-  const defaultCategory = typeof category === "string" ? category : undefined;
-  const categories = await getAllCategoriesFlat();
-  const categoryOptions = categories.map((c) => ({
-    value: c.slug,
-    label: `${"— ".repeat(c.depth)}${c.name[locale]}`,
-  }));
+  const prefillProduct = typeof product === "string" ? product : undefined;
+  const prefillCategory = typeof category === "string" ? category : undefined;
+  const products = await getPickerProducts();
 
   return (
     <>
@@ -37,65 +34,87 @@ export default async function QuotePage(props: PageProps<"/[locale]/teklif-al">)
       </div>
 
       <section className="bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
-          <div className="grid lg:grid-cols-3 gap-10">
-            <aside className="lg:col-span-1 space-y-6">
-              <div className="rounded-2xl bg-brand-50 p-6">
-                <h2 className="text-lg font-semibold text-brand-950">
-                  {locale === "tr" ? "Doğrudan İletişim" : "Direct Contact"}
-                </h2>
-                <ul className="mt-4 space-y-4 text-sm">
-                  <li className="flex items-start gap-3">
-                    <Mail className="h-5 w-5 text-accent-500 mt-0.5" />
-                    <a href={`mailto:${siteConfig.contact.email}`} className="text-brand-800 hover:text-accent-600 break-all">
-                      {siteConfig.contact.email}
-                    </a>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <Phone className="h-5 w-5 text-accent-500 mt-0.5" />
-                    <a href={`tel:${siteConfig.contact.phone.replace(/\s/g, "")}`} className="text-brand-800 hover:text-accent-600">
-                      {siteConfig.contact.phone}
-                    </a>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <MessageCircle className="h-5 w-5 text-accent-500 mt-0.5" />
-                    <a
-                      href={`https://wa.me/${siteConfig.contact.whatsapp}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-brand-800 hover:text-accent-600"
-                    >
-                      WhatsApp
-                    </a>
-                  </li>
-                </ul>
-              </div>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+          <QuoteForm
+            locale={locale}
+            dict={dict}
+            products={products}
+            prefillProductSlug={prefillProduct}
+            prefillCategorySlug={prefillCategory}
+          />
+        </div>
+      </section>
 
-              <div className="rounded-2xl bg-brand-900 text-white p-6">
-                <h2 className="text-lg font-semibold">
-                  {locale === "tr" ? "Hızlı Yanıt Sözü" : "Fast Response Promise"}
-                </h2>
-                <p className="mt-3 text-sm text-brand-200 leading-relaxed">
-                  {locale === "tr"
-                    ? "Mesai saatleri içinde gönderilen teklif taleplerine en geç 4 saat içinde dönüş yapıyoruz."
-                    : "We respond to quote requests received during business hours within 4 hours."}
-                </p>
-              </div>
-            </aside>
-
-            <div className="lg:col-span-2">
-              <QuoteForm
-                locale={locale}
-                dict={dict}
-                defaultCategory={defaultCategory}
-                categoryOptions={categoryOptions}
-              />
+      <section className="bg-brand-50 border-y border-brand-100">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-14">
+          <div className="grid gap-6 lg:grid-cols-4">
+            <div className="lg:col-span-1">
+              <h2 className="text-xl font-bold text-brand-950">
+                {locale === "tr" ? "Doğrudan İletişim" : "Direct Contact"}
+              </h2>
+              <p className="mt-2 text-sm text-brand-600">
+                {locale === "tr"
+                  ? "Mesai saatleri içinde en geç 4 saat içinde dönüş yapıyoruz."
+                  : "We respond within 4 hours during business hours."}
+              </p>
             </div>
+            <ContactCard
+              icon={Mail}
+              label="E-posta"
+              value={siteConfig.contact.email}
+              href={`mailto:${siteConfig.contact.email}`}
+            />
+            <ContactCard
+              icon={Phone}
+              label={locale === "tr" ? "Telefon" : "Phone"}
+              value={siteConfig.contact.phone}
+              href={`tel:${siteConfig.contact.phone.replace(/\s/g, "")}`}
+            />
+            <ContactCard
+              icon={MessageCircle}
+              label="WhatsApp"
+              value={locale === "tr" ? "Anında yazışın" : "Chat now"}
+              href={`https://wa.me/${siteConfig.contact.whatsapp}`}
+              external
+            />
           </div>
         </div>
       </section>
 
       <CustomRequestSection locale={locale} dict={dict} />
     </>
+  );
+}
+
+function ContactCard({
+  icon: Icon,
+  label,
+  value,
+  href,
+  external,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  value: string;
+  href: string;
+  external?: boolean;
+}) {
+  return (
+    <a
+      href={href}
+      target={external ? "_blank" : undefined}
+      rel={external ? "noopener noreferrer" : undefined}
+      className="group rounded-2xl bg-white border border-brand-100 p-5 flex items-start gap-4 hover:border-accent-500 hover:shadow-sm transition"
+    >
+      <div className="w-10 h-10 rounded-lg bg-accent-50 grid place-items-center text-accent-600 group-hover:bg-accent-500 group-hover:text-white transition">
+        <Icon className="w-5 h-5" />
+      </div>
+      <div className="min-w-0">
+        <div className="text-xs font-semibold uppercase tracking-wide text-brand-500">{label}</div>
+        <div className="mt-0.5 text-sm font-medium text-brand-950 group-hover:text-accent-600 transition break-all">
+          {value}
+        </div>
+      </div>
+    </a>
   );
 }

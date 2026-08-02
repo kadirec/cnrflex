@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronRight, ArrowRight, CheckCircle2 } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 import { getAllCategoriesFlat, getProduct } from "@/lib/products";
 import { stripHtml } from "@/lib/sanitize";
 import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
 import { ProductGallery } from "@/components/product/product-gallery";
+import { AddToQuoteButton } from "@/components/product/add-to-quote-button";
+import { RollIcon } from "@/components/product/roll-icon";
 import { getDictionary, hasLocale } from "../../../dictionaries";
 import { locales } from "@/lib/site";
 
@@ -46,10 +48,6 @@ export default async function ProductPage(
   const { category, product } = result;
   const dict = await getDictionary(locale);
 
-  const features = locale === "tr"
-    ? ["Yüksek dayanım ve uzun ömür", "Hava ve su sızdırmazlığı", "Sessiz çalışma performansı", "Esnek özel ölçü ve renk seçenekleri"]
-    : ["High durability and long service life", "Air and water-tight sealing", "Silent operation performance", "Flexible custom size and color options"];
-
   return (
     <>
       <div className="bg-brand-50 border-b border-brand-100">
@@ -82,6 +80,18 @@ export default async function ProductPage(
               <h1 className="mt-2 text-3xl lg:text-4xl font-bold text-brand-950">
                 {product.name[locale]}
               </h1>
+              {product.rollLength && (
+                <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-brand-50 border border-brand-100 px-3.5 py-1.5 text-sm">
+                  <RollIcon className="w-4 h-4 text-accent-600" />
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-brand-500">
+                    {locale === "tr" ? "Top Sarımı" : "Roll Length"}
+                  </span>
+                  <span className="text-brand-950 font-semibold">
+                    {product.rollLength} MT
+                  </span>
+                </div>
+              )}
+
               {product.description[locale] && (
                 <div
                   className="prose-content mt-5"
@@ -89,23 +99,19 @@ export default async function ProductPage(
                 />
               )}
 
-              <ul className="mt-8 space-y-3">
-                {features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-accent-500 mt-0.5 shrink-0" />
-                    <span className="text-brand-800">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-
               <div className="mt-10 flex flex-wrap gap-4">
-                <Link
-                  href={`/${locale}/teklif-al?category=${encodeURIComponent(category.slug)}`}
-                  className="group inline-flex items-center gap-2 rounded-md bg-accent-500 hover:bg-accent-600 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-accent-500/30 transition"
-                >
-                  {dict.nav.getQuote}
-                  <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
-                </Link>
+                <AddToQuoteButton
+                  locale={locale}
+                  productId={product.id}
+                  code={product.code}
+                  name={product.name[locale]}
+                  image={product.image ?? null}
+                  slug={product.slug}
+                  categoryName={category.name[locale]}
+                  categorySlug={category.slug}
+                  rollLength={product.rollLength ?? null}
+                  label={dict.nav.getQuote}
+                />
                 <Link
                   href={`/${locale}/iletisim`}
                   className="inline-flex items-center gap-2 rounded-md bg-brand-100 hover:bg-brand-200 px-6 py-3 text-base font-semibold text-brand-900 transition"

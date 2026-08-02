@@ -18,6 +18,7 @@ export type Product = {
   description: Translated;
   image?: string | null;
   images: string[];
+  rollLength?: number | null;
   specs?: ProductSpec[] | null;
 };
 
@@ -49,6 +50,7 @@ function toProduct(p: ProdRow): Product {
     description: { tr: p.descriptionTr ?? "", en: p.descriptionEn ?? "" },
     image: cover,
     images: gallery.length > 0 ? gallery : cover ? [cover] : [],
+    rollLength: p.rollLength,
     specs: p.specs,
   };
 }
@@ -132,4 +134,40 @@ export async function getProduct(
 
 export async function getAllCategories(): Promise<Category[]> {
   return getTopCategories();
+}
+
+export type PickerProduct = {
+  id: number;
+  code: string;
+  slug: string;
+  name: Translated;
+  image: string | null;
+  rollLength: number | null;
+  categoryId: number;
+  categorySlug: string;
+  categoryName: Translated;
+};
+
+export async function getPickerProducts(): Promise<PickerProduct[]> {
+  const { cats, build } = await loadAll();
+  const topLevel = cats.filter((c) => c.parentId === null).map(build);
+  const out: PickerProduct[] = [];
+  const walk = (c: Category) => {
+    for (const p of c.products) {
+      out.push({
+        id: p.id,
+        code: p.code,
+        slug: p.slug,
+        name: p.name,
+        image: p.image ?? null,
+        rollLength: p.rollLength ?? null,
+        categoryId: c.id,
+        categorySlug: c.slug,
+        categoryName: c.name,
+      });
+    }
+    for (const ch of c.children) walk(ch);
+  };
+  for (const t of topLevel) walk(t);
+  return out;
 }

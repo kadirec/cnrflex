@@ -7,6 +7,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { OrganizationJsonLd } from "@/components/seo/OrganizationJsonLd";
+import { QuoteCartProvider } from "@/components/cart/QuoteCartContext";
 import { getDictionary, hasLocale } from "./dictionaries";
 import { locales, siteConfig } from "@/lib/site";
 import { getAllCategories } from "@/lib/products";
@@ -76,10 +77,12 @@ export default async function LocaleLayout(props: LayoutProps<"/[locale]">) {
     <html lang={locale} className={`${inter.variable} ${jakarta.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-white text-brand-950">
         <OrganizationJsonLd locale={locale} />
-        <Header locale={locale} dict={dict} categoryLinks={categoryLinks} />
-        <main className="flex-1">{props.children}</main>
-        <Footer locale={locale} dict={dict} />
-        <WhatsAppButton phone={siteConfig.contact.whatsapp} label={dict.common.whatsapp} />
+        <QuoteCartProvider>
+          <Header locale={locale} dict={dict} categoryLinks={categoryLinks} />
+          <main className="flex-1">{props.children}</main>
+          <Footer locale={locale} dict={dict} />
+          <WhatsAppButton phone={siteConfig.contact.whatsapp} label={dict.common.whatsapp} />
+        </QuoteCartProvider>
       </body>
     </html>
   );

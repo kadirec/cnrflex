@@ -119,8 +119,7 @@ export function CategoryForm({ category, action, mode, parentOptions, defaultPar
                     <Input
                       name="nameEn"
                       defaultValue={category?.nameEn ?? ""}
-                      required
-                      placeholder="Automatic Shutter Seals"
+                      placeholder="Boş bırakılırsa TR değeri kullanılır"
                     />
                   </Field>
                   <Field label="Short description (EN)" error={fe.shortDescriptionEn}>

@@ -40,15 +40,21 @@ function parseFormData(fd: FormData) {
   const slugRaw = get("slug") || slugify(nameTr);
   const parentRaw = get("parentId");
 
+  const nameEn = get("nameEn");
+  const shortTr = get("shortDescriptionTr");
+  const shortEn = get("shortDescriptionEn");
+  const longTr = get("descriptionTr");
+  const longEn = get("descriptionEn");
+
   return {
     parentId: parentRaw === "" || parentRaw === "null" ? null : parentRaw,
     slug: slugRaw,
     nameTr,
-    nameEn: get("nameEn"),
-    shortDescriptionTr: get("shortDescriptionTr") || null,
-    shortDescriptionEn: get("shortDescriptionEn") || null,
-    descriptionTr: get("descriptionTr") || null,
-    descriptionEn: get("descriptionEn") || null,
+    nameEn: nameEn || nameTr,
+    shortDescriptionTr: shortTr || null,
+    shortDescriptionEn: shortEn || shortTr || null,
+    descriptionTr: longTr || null,
+    descriptionEn: longEn || longTr || null,
     imageUrl: get("imageUrl") || null,
     iconUrl: get("iconUrl") || null,
     sortOrder: get("sortOrder") || "0",
@@ -101,8 +107,8 @@ export async function createCategory(_prev: CategoryFormState, fd: FormData): Pr
   }
 
   revalidatePath("/panel/categories");
-  revalidatePath("/tr/urunler");
-  revalidatePath("/en/urunler");
+  revalidatePath("/tr/urunler", "layout");
+  revalidatePath("/en/urunler", "layout");
   redirect("/panel/categories");
 }
 
@@ -150,8 +156,8 @@ export async function updateCategory(id: number, _prev: CategoryFormState, fd: F
 
   revalidatePath("/panel/categories");
   revalidatePath(`/panel/categories/${id}`);
-  revalidatePath("/tr/urunler");
-  revalidatePath("/en/urunler");
+  revalidatePath("/tr/urunler", "layout");
+  revalidatePath("/en/urunler", "layout");
   return { ok: true };
 }
 
@@ -162,7 +168,7 @@ export async function deleteCategory(id: number): Promise<{ ok: boolean; error?:
   const db = getDb();
   await db.delete(categories).where(eq(categories.id, id));
   revalidatePath("/panel/categories");
-  revalidatePath("/tr/urunler");
-  revalidatePath("/en/urunler");
+  revalidatePath("/tr/urunler", "layout");
+  revalidatePath("/en/urunler", "layout");
   return { ok: true };
 }

@@ -2,8 +2,6 @@
 
 import { useEditor, EditorContent, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Link from "@tiptap/extension-link";
-import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useEffect, useState } from "react";
 import {
@@ -29,26 +27,35 @@ import { cn } from "@/lib/utils";
 type Props = {
   name: string;
   defaultValue?: string;
+  value?: string;
+  onChange?: (html: string) => void;
   placeholder?: string;
 };
 
-export function RichTextEditor({ name, defaultValue = "", placeholder }: Props) {
-  const [html, setHtml] = useState(defaultValue);
+export function RichTextEditor({
+  name,
+  defaultValue = "",
+  value,
+  onChange,
+  placeholder,
+}: Props) {
+  const isControlled = value !== undefined;
+  const [internalHtml, setInternalHtml] = useState(defaultValue);
+  const html = isControlled ? (value ?? "") : internalHtml;
 
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
         heading: { levels: [2, 3] },
-      }),
-      Underline,
-      Link.configure({
-        openOnClick: false,
-        autolink: true,
-        HTMLAttributes: { rel: "noopener noreferrer", target: "_blank" },
+        link: {
+          openOnClick: false,
+          autolink: true,
+          HTMLAttributes: { rel: "noopener noreferrer", target: "_blank" },
+        },
       }),
       Placeholder.configure({ placeholder: placeholder ?? "Yazmaya başlayın…" }),
     ],
-    content: defaultValue || "",
+    content: isControlled ? value || "" : defaultValue || "",
     immediatelyRender: false,
     editorProps: {
       attributes: {
@@ -57,10 +64,22 @@ export function RichTextEditor({ name, defaultValue = "", placeholder }: Props) 
       },
     },
     onUpdate({ editor }) {
-      const value = editor.isEmpty ? "" : editor.getHTML();
-      setHtml(value);
+      const next = editor.isEmpty ? "" : editor.getHTML();
+      if (isControlled) {
+        onChange?.(next);
+      } else {
+        setInternalHtml(next);
+        onChange?.(next);
+      }
     },
   });
+
+  useEffect(() => {
+    if (!editor || !isControlled) return;
+    const current = editor.isEmpty ? "" : editor.getHTML();
+    if ((value ?? "") === current) return;
+    editor.commands.setContent(value || "", { emitUpdate: false });
+  }, [value, isControlled, editor]);
 
   useEffect(() => {
     return () => {
