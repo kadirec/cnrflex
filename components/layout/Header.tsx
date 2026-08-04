@@ -10,16 +10,24 @@ import { siteConfig, type Locale, locales } from "@/lib/site";
 import type { Dictionary } from "@/app/(public)/[locale]/dictionaries";
 import { CartMenu } from "@/components/cart/CartMenu";
 
+type CategoryLink = {
+  slug: string;
+  label: string;
+  children: { slug: string; label: string }[];
+};
+
 type Props = {
   locale: Locale;
   dict: Dictionary;
-  categoryLinks: Array<{ slug: string; label: string }>;
+  categoryLinks: CategoryLink[];
 };
+
+type NavChild = { href: string; label: string; children?: { href: string; label: string }[] };
 
 type NavItem = {
   label: string;
   href?: string;
-  children?: { href: string; label: string }[];
+  children?: NavChild[];
   footer?: { href: string; label: string };
 };
 
@@ -49,6 +57,10 @@ export function Header({ locale, dict, categoryLinks }: Props) {
       children: categoryLinks.map((c) => ({
         href: `/${locale}/urunler/${c.slug}`,
         label: c.label,
+        children: c.children.map((ch) => ({
+          href: `/${locale}/urunler/${ch.slug}`,
+          label: ch.label,
+        })),
       })),
     },
     { href: `/${locale}/blog`, label: dict.nav.blog },
@@ -116,13 +128,27 @@ export function Header({ locale, dict, categoryLinks }: Props) {
                       <div className="absolute left-0 top-full pt-1 w-64">
                         <div className="bg-white rounded-lg shadow-lg border border-brand-100 py-2">
                           {item.children.map((child) => (
-                            <Link
-                              key={child.href}
-                              href={child.href}
-                              className="block px-4 py-2 text-sm text-brand-800 hover:bg-brand-50 hover:text-accent-600"
-                            >
-                              {child.label}
-                            </Link>
+                            <div key={child.href}>
+                              <Link
+                                href={child.href}
+                                className="block px-4 py-2 text-sm font-medium text-brand-800 hover:bg-brand-50 hover:text-accent-600"
+                              >
+                                {child.label}
+                              </Link>
+                              {child.children && child.children.length > 0 && (
+                                <div className="border-l-2 border-brand-100 ml-6 mb-1">
+                                  {child.children.map((sub) => (
+                                    <Link
+                                      key={sub.href}
+                                      href={sub.href}
+                                      className="block pl-4 pr-4 py-1.5 text-xs text-brand-600 hover:bg-brand-50 hover:text-accent-600"
+                                    >
+                                      {sub.label}
+                                    </Link>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
                           ))}
                           {item.footer && (
                             <div className="px-3 pt-2 mt-2 border-t border-brand-100">
@@ -210,14 +236,29 @@ export function Header({ locale, dict, categoryLinks }: Props) {
                     {item.label}
                   </div>
                   {item.children.map((child) => (
-                    <Link
-                      key={child.href}
-                      href={child.href}
-                      onClick={() => setOpen(false)}
-                      className="block px-3 py-2 rounded-md text-base font-medium text-brand-800 hover:bg-brand-50"
-                    >
-                      {child.label}
-                    </Link>
+                    <div key={child.href}>
+                      <Link
+                        href={child.href}
+                        onClick={() => setOpen(false)}
+                        className="block px-3 py-2 rounded-md text-base font-medium text-brand-800 hover:bg-brand-50"
+                      >
+                        {child.label}
+                      </Link>
+                      {child.children && child.children.length > 0 && (
+                        <div className="border-l-2 border-brand-100 ml-6 my-1 space-y-0.5">
+                          {child.children.map((sub) => (
+                            <Link
+                              key={sub.href}
+                              href={sub.href}
+                              onClick={() => setOpen(false)}
+                              className="block pl-4 pr-3 py-1.5 rounded-md text-sm text-brand-600 hover:bg-brand-50 hover:text-accent-600"
+                            >
+                              {sub.label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   ))}
                   {item.footer && (
                     <Link

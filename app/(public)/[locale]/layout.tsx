@@ -71,7 +71,11 @@ export default async function LocaleLayout(props: LayoutProps<"/[locale]">) {
 
   const dict = await getDictionary(locale);
   const categories = await getAllCategories();
-  const categoryLinks = categories.map((c) => ({ slug: c.slug, label: c.name[locale] }));
+  const categoryLinks = categories.map((c) => ({
+    slug: c.slug,
+    label: c.name[locale],
+    children: c.children.map((ch) => ({ slug: ch.slug, label: ch.name[locale] })),
+  }));
 
   return (
     <html lang={locale} className={`${inter.variable} ${jakarta.variable} h-full antialiased`}>
