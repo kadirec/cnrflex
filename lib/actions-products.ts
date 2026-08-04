@@ -1,6 +1,6 @@
 "use server";
 
-import { eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -92,6 +92,33 @@ function parseFormData(fd: FormData) {
   };
 }
 
+async function ensureUniqueSlug(
+  db: ReturnType<typeof getDb>,
+  categoryId: number,
+  baseSlug: string,
+  excludeId?: number,
+): Promise<string> {
+  let candidate = baseSlug;
+  for (let n = 2; n < 1000; n++) {
+    const clash = await db
+      .select({ id: products.id })
+      .from(products)
+      .where(
+        excludeId !== undefined
+          ? and(
+              eq(products.categoryId, categoryId),
+              eq(products.slug, candidate),
+              ne(products.id, excludeId),
+            )
+          : and(eq(products.categoryId, categoryId), eq(products.slug, candidate)),
+      )
+      .limit(1);
+    if (clash.length === 0) return candidate;
+    candidate = `${baseSlug}-${n}`;
+  }
+  return `${baseSlug}-${Date.now()}`;
+}
+
 function revalidatePublicProductPaths() {
   revalidatePath("/[locale]/urunler", "page");
   revalidatePath("/[locale]/urunler/[category]", "page");
@@ -118,17 +145,10 @@ export async function createProduct(_prev: ProductFormState, fd: FormData): Prom
   }
 
   const db = getDb();
+  const slug = await ensureUniqueSlug(db, parsed.data.categoryId, parsed.data.slug);
   try {
-    await db.insert(products).values(parsed.data);
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err);
-    if (msg.includes("unique") || msg.includes("duplicate")) {
-      return {
-        ok: false,
-        error: "Aynı kategoride bu slug zaten kullanımda",
-        fieldErrors: { slug: "Bu kategoride kullanımda" },
-      };
-    }
+    await db.insert(products).values({ ...parsed.data, slug });
+  } catch {
     return { ok: false, error: "Kayıt sırasında hata oluştu" };
   }
 
@@ -155,20 +175,13 @@ export async function updateProduct(
   }
 
   const db = getDb();
+  const slug = await ensureUniqueSlug(db, parsed.data.categoryId, parsed.data.slug, id);
   try {
     await db
       .update(products)
-      .set({ ...parsed.data, updatedAt: new Date() })
+      .set({ ...parsed.data, slug, updatedAt: new Date() })
       .where(eq(products.id, id));
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err);
-    if (msg.includes("unique") || msg.includes("duplicate")) {
-      return {
-        ok: false,
-        error: "Aynı kategoride bu slug zaten kullanımda",
-        fieldErrors: { slug: "Bu kategoride kullanımda" },
-      };
-    }
+  } catch {
     return { ok: false, error: "Güncelleme sırasında hata oluştu" };
   }
 
