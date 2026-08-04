@@ -8,6 +8,8 @@ import { getAllCategories } from "@/lib/products";
 import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
 import { getDictionary, hasLocale } from "../dictionaries";
 
+export const dynamic = "force-dynamic";
+
 const iconMap: Record<string, typeof Boxes> = {
   "otomatik-kepenk-fitilleri": Boxes,
   "pergola-fitilleri": Square,

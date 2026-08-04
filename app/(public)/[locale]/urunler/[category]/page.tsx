@@ -4,20 +4,14 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { ArrowRight, ChevronRight, ArrowUpRight } from "lucide-react";
 
-import { getAllCategoriesFlat, getCategory } from "@/lib/products";
+import { getCategory } from "@/lib/products";
 import { stripHtml } from "@/lib/sanitize";
 import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
 import { QuickAddButton } from "@/components/product/quick-add-button";
 import { RollIcon } from "@/components/product/roll-icon";
 import { getDictionary, hasLocale } from "../../dictionaries";
-import { locales } from "@/lib/site";
 
-export async function generateStaticParams() {
-  const categories = await getAllCategoriesFlat();
-  return locales.flatMap((locale) =>
-    categories.map((category) => ({ locale, category: category.slug })),
-  );
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata(props: PageProps<"/[locale]/urunler/[category]">): Promise<Metadata> {
   const { locale, category: categorySlug } = await props.params;

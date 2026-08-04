@@ -3,27 +3,15 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 
-import { getAllCategoriesFlat, getProduct } from "@/lib/products";
+import { getProduct } from "@/lib/products";
 import { stripHtml } from "@/lib/sanitize";
 import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
 import { ProductGallery } from "@/components/product/product-gallery";
 import { AddToQuoteButton } from "@/components/product/add-to-quote-button";
 import { RollIcon } from "@/components/product/roll-icon";
 import { getDictionary, hasLocale } from "../../../dictionaries";
-import { locales } from "@/lib/site";
 
-export async function generateStaticParams() {
-  const categories = await getAllCategoriesFlat();
-  return locales.flatMap((locale) =>
-    categories.flatMap((category) =>
-      category.products.map((product) => ({
-        locale,
-        category: category.slug,
-        product: product.slug,
-      })),
-    ),
-  );
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata(
   props: PageProps<"/[locale]/urunler/[category]/[product]">,
