@@ -53,15 +53,15 @@ export default async function ProductPage(
       </div>
 
       <section className="bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
-            <ProductGallery
-              images={product.images}
-              alt={product.name[locale]}
-              fallbackCode={product.code}
-            />
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
+          <ProductGallery
+            images={product.images}
+            alt={product.name[locale]}
+            fallbackCode={product.code}
+          />
 
-            <div>
+          <div className="mt-10 flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
+            <div className="min-w-0 flex-1">
               <div className="text-sm font-semibold uppercase tracking-wider text-accent-600">
                 {product.code}
               </div>
@@ -79,36 +79,41 @@ export default async function ProductPage(
                   </span>
                 </div>
               )}
+            </div>
 
-              {product.description[locale] && (
-                <div
-                  className="prose-content mt-5"
-                  dangerouslySetInnerHTML={{ __html: product.description[locale] }}
-                />
-              )}
-
-              <div className="mt-10 flex flex-wrap gap-4">
-                <AddToQuoteButton
-                  locale={locale}
-                  productId={product.id}
-                  code={product.code}
-                  name={product.name[locale]}
-                  image={product.image ?? null}
-                  slug={product.slug}
-                  categoryName={category.name[locale]}
-                  categorySlug={category.slug}
-                  rollLength={product.rollLength ?? null}
-                  label={dict.nav.getQuote}
-                />
-                <Link
-                  href={`/${locale}/iletisim`}
-                  className="inline-flex items-center gap-2 rounded-md bg-brand-100 hover:bg-brand-200 px-6 py-3 text-base font-semibold text-brand-900 transition"
-                >
-                  {dict.nav.contact}
-                </Link>
-              </div>
+            <div className="flex flex-wrap gap-3 lg:justify-end lg:shrink-0">
+              <AddToQuoteButton
+                locale={locale}
+                productId={product.id}
+                code={product.code}
+                name={product.name[locale]}
+                image={product.image ?? null}
+                slug={product.slug}
+                categoryName={category.name[locale]}
+                categorySlug={category.slug}
+                rollLength={product.rollLength ?? null}
+                label={dict.nav.getQuote}
+              />
+              <Link
+                href={`/${locale}/iletisim`}
+                className="inline-flex items-center gap-2 rounded-md bg-brand-100 hover:bg-brand-200 px-6 py-3 text-base font-semibold text-brand-900 transition"
+              >
+                {dict.nav.contact}
+              </Link>
             </div>
           </div>
+
+          {product.description[locale] && (
+            <div className="mt-10 border-t border-brand-100 pt-8">
+              <h2 className="text-lg font-semibold text-brand-950 mb-4">
+                {locale === "tr" ? "Açıklama" : "Description"}
+              </h2>
+              <div
+                className="prose-content max-w-3xl"
+                dangerouslySetInnerHTML={{ __html: product.description[locale] }}
+              />
+            </div>
+          )}
         </div>
       </section>
 
