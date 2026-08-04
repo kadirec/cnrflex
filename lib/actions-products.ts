@@ -92,6 +92,12 @@ function parseFormData(fd: FormData) {
   };
 }
 
+function revalidatePublicProductPaths() {
+  revalidatePath("/[locale]/urunler", "page");
+  revalidatePath("/[locale]/urunler/[category]", "page");
+  revalidatePath("/[locale]/urunler/[category]/[product]", "page");
+}
+
 async function requireAuth(): Promise<ProductFormState | null> {
   const session = await getSession();
   if (!session.userId) return { ok: false, error: "Yetkisiz" };
@@ -127,8 +133,7 @@ export async function createProduct(_prev: ProductFormState, fd: FormData): Prom
   }
 
   revalidatePath("/panel/products");
-  revalidatePath("/tr/urunler", "layout");
-  revalidatePath("/en/urunler", "layout");
+  revalidatePublicProductPaths();
   redirect("/panel/products");
 }
 
@@ -169,8 +174,7 @@ export async function updateProduct(
 
   revalidatePath("/panel/products");
   revalidatePath(`/panel/products/${id}`);
-  revalidatePath("/tr/urunler", "layout");
-  revalidatePath("/en/urunler", "layout");
+  revalidatePublicProductPaths();
   return { ok: true };
 }
 
@@ -181,8 +185,7 @@ export async function deleteProduct(id: number): Promise<{ ok: boolean; error?: 
   const db = getDb();
   await db.delete(products).where(eq(products.id, id));
   revalidatePath("/panel/products");
-  revalidatePath("/tr/urunler", "layout");
-  revalidatePath("/en/urunler", "layout");
+  revalidatePublicProductPaths();
   return { ok: true };
 }
 
@@ -198,7 +201,6 @@ export async function deleteProducts(
   const db = getDb();
   await db.delete(products).where(inArray(products.id, clean));
   revalidatePath("/panel/products");
-  revalidatePath("/tr/urunler", "layout");
-  revalidatePath("/en/urunler", "layout");
+  revalidatePublicProductPaths();
   return { ok: true, count: clean.length };
 }

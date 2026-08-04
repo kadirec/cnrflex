@@ -107,8 +107,9 @@ export async function createCategory(_prev: CategoryFormState, fd: FormData): Pr
   }
 
   revalidatePath("/panel/categories");
-  revalidatePath("/tr/urunler", "layout");
-  revalidatePath("/en/urunler", "layout");
+  revalidatePath("/[locale]/urunler", "page");
+  revalidatePath("/[locale]/urunler/[category]", "page");
+  revalidatePath("/[locale]/urunler/[category]/[product]", "page");
   redirect("/panel/categories");
 }
 
@@ -156,8 +157,9 @@ export async function updateCategory(id: number, _prev: CategoryFormState, fd: F
 
   revalidatePath("/panel/categories");
   revalidatePath(`/panel/categories/${id}`);
-  revalidatePath("/tr/urunler", "layout");
-  revalidatePath("/en/urunler", "layout");
+  revalidatePath("/[locale]/urunler", "page");
+  revalidatePath("/[locale]/urunler/[category]", "page");
+  revalidatePath("/[locale]/urunler/[category]/[product]", "page");
   return { ok: true };
 }
 
@@ -168,7 +170,8 @@ export async function deleteCategory(id: number): Promise<{ ok: boolean; error?:
   const db = getDb();
   await db.delete(categories).where(eq(categories.id, id));
   revalidatePath("/panel/categories");
-  revalidatePath("/tr/urunler", "layout");
-  revalidatePath("/en/urunler", "layout");
+  revalidatePath("/[locale]/urunler", "page");
+  revalidatePath("/[locale]/urunler/[category]", "page");
+  revalidatePath("/[locale]/urunler/[category]/[product]", "page");
   return { ok: true };
 }
