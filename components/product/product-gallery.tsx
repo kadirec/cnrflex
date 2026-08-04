@@ -28,13 +28,13 @@ export function ProductGallery({ images, alt, fallbackCode }: Props) {
 
   if (images.length === 1) {
     return (
-      <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-white ring-1 ring-brand-100">
+      <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-white ring-1 ring-brand-100">
         <Image
           src={images[0]}
           alt={alt}
           fill
           sizes="(min-width: 1024px) 1200px, 100vw"
-          className="object-cover"
+          className="object-contain p-4 md:p-6"
           priority
           unoptimized
         />
@@ -58,14 +58,14 @@ export function ProductGallery({ images, alt, fallbackCode }: Props) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-      <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-white ring-1 ring-brand-100">
+      <div className="relative aspect-square rounded-2xl overflow-hidden bg-white ring-1 ring-brand-100">
         <Image
           key={left}
           src={left}
           alt={alt}
           fill
           sizes="(min-width: 1024px) 600px, 100vw"
-          className="object-cover"
+          className="object-contain p-4 md:p-6"
           priority
           unoptimized
         />
@@ -94,14 +94,14 @@ export function ProductGallery({ images, alt, fallbackCode }: Props) {
         )}
       </div>
 
-      <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-white ring-1 ring-brand-100">
+      <div className="relative aspect-square rounded-2xl overflow-hidden bg-white ring-1 ring-brand-100">
         <Image
           key={right}
           src={right}
           alt={alt}
           fill
           sizes="(min-width: 1024px) 600px, 100vw"
-          className="object-cover"
+          className="object-contain p-4 md:p-6"
           unoptimized
         />
         {hasCarousel && (
