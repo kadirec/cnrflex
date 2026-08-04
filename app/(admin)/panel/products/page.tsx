@@ -1,13 +1,11 @@
 import Link from "next/link";
-import Image from "next/image";
 import { asc, eq } from "drizzle-orm";
-import { Plus, Pencil } from "lucide-react";
+import { Plus } from "lucide-react";
 import { getDb, categories, products } from "@/lib/db";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/panel/page-header";
-import { DeleteProductButton } from "./delete-button";
+import { ProductsTable, type ProductRow } from "./products-table";
 import { ProductFilters } from "./filters";
 import { getAllCategoriesFlat } from "@/lib/products";
 
@@ -18,7 +16,7 @@ async function loadCategories() {
   return flat.map((c) => ({ id: c.id, nameTr: c.name.tr, slug: c.slug, depth: c.depth }));
 }
 
-async function loadProducts(categoryId?: number) {
+async function loadProducts(categoryId?: number): Promise<ProductRow[]> {
   const db = getDb();
   const query = db
     .select({
@@ -39,7 +37,15 @@ async function loadProducts(categoryId?: number) {
   const rows = categoryId
     ? await query.where(eq(products.categoryId, categoryId))
     : await query;
-  return rows;
+  return rows.map((r) => ({
+    id: r.id,
+    code: r.code,
+    slug: r.slug,
+    nameTr: r.nameTr,
+    imageUrl: r.imageUrl,
+    sortOrder: r.sortOrder,
+    categoryNameTr: r.categoryNameTr,
+  }));
 }
 
 export default async function ProductsListPage({
@@ -87,57 +93,7 @@ export default async function ProductsListPage({
           </CardContent>
         </Card>
       ) : (
-        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-          <div className="grid grid-cols-[64px_1fr_180px_100px_120px_140px] gap-4 px-5 py-3 border-b border-slate-200 bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-            <div></div>
-            <div>Ürün</div>
-            <div>Kategori</div>
-            <div>Kod</div>
-            <div>Sıra</div>
-            <div className="text-right">İşlem</div>
-          </div>
-          {rows.map((p) => (
-            <div
-              key={p.id}
-              className="grid grid-cols-[64px_1fr_180px_100px_120px_140px] gap-4 px-5 py-3 border-b border-slate-100 last:border-b-0 items-center hover:bg-slate-50/60 transition"
-            >
-              <div className="w-12 h-12 rounded-md bg-slate-100 overflow-hidden shrink-0 flex items-center justify-center">
-                {p.imageUrl ? (
-                  <Image
-                    src={p.imageUrl}
-                    alt=""
-                    width={48}
-                    height={48}
-                    className="w-full h-full object-cover"
-                    unoptimized
-                  />
-                ) : (
-                  <span className="text-xs text-slate-400">—</span>
-                )}
-              </div>
-              <div className="min-w-0">
-                <div className="font-medium text-slate-900 truncate">{p.nameTr}</div>
-                <div className="text-xs text-slate-500 truncate">/{p.slug}</div>
-              </div>
-              <div className="text-sm text-slate-700 truncate">{p.categoryNameTr}</div>
-              <div className="text-sm text-slate-500">
-                <Badge variant="outline" className="font-mono text-[10px]">
-                  {p.code}
-                </Badge>
-              </div>
-              <div className="text-sm text-slate-600">{p.sortOrder}</div>
-              <div className="flex items-center justify-end gap-1">
-                <Link href={`/panel/products/${p.id}`}>
-                  <Button variant="ghost" size="sm" className="gap-1.5">
-                    <Pencil className="w-3.5 h-3.5" />
-                    Düzenle
-                  </Button>
-                </Link>
-                <DeleteProductButton id={p.id} name={p.nameTr} />
-              </div>
-            </div>
-          ))}
-        </div>
+        <ProductsTable rows={rows} />
       )}
     </div>
   );

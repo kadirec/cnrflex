@@ -1,4 +1,4 @@
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtmlLib from "sanitize-html";
 
 const ALLOWED_TAGS = [
   "p",
@@ -19,19 +19,23 @@ const ALLOWED_TAGS = [
   "hr",
 ];
 
-const ALLOWED_ATTR = ["href", "target", "rel"];
+const options: sanitizeHtmlLib.IOptions = {
+  allowedTags: ALLOWED_TAGS,
+  allowedAttributes: {
+    a: ["href", "target", "rel"],
+  },
+  allowedSchemes: ["http", "https", "mailto", "tel"],
+  allowedSchemesByTag: {},
+  allowProtocolRelative: false,
+  allowedSchemesAppliedToAttributes: ["href"],
+};
 
 export function sanitizeHtml(input: string): string {
-  const clean = DOMPurify.sanitize(input, {
-    ALLOWED_TAGS,
-    ALLOWED_ATTR,
-    ALLOWED_URI_REGEXP: /^(?:https?:|mailto:|tel:|\/|#)/i,
-  });
-  return clean.trim();
+  return sanitizeHtmlLib(input, options).trim();
 }
 
 export function stripHtml(input: string): string {
-  return DOMPurify.sanitize(input, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] })
+  return sanitizeHtmlLib(input, { allowedTags: [], allowedAttributes: {} })
     .replace(/\s+/g, " ")
     .trim();
 }

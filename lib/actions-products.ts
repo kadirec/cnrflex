@@ -1,6 +1,6 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -184,4 +184,21 @@ export async function deleteProduct(id: number): Promise<{ ok: boolean; error?: 
   revalidatePath("/tr/urunler", "layout");
   revalidatePath("/en/urunler", "layout");
   return { ok: true };
+}
+
+export async function deleteProducts(
+  ids: number[],
+): Promise<{ ok: boolean; count?: number; error?: string }> {
+  const unauth = await requireAuth();
+  if (unauth) return { ok: false, error: unauth.error };
+
+  const clean = Array.from(new Set(ids.filter((n) => Number.isInteger(n) && n > 0)));
+  if (clean.length === 0) return { ok: false, error: "Seçim yok" };
+
+  const db = getDb();
+  await db.delete(products).where(inArray(products.id, clean));
+  revalidatePath("/panel/products");
+  revalidatePath("/tr/urunler", "layout");
+  revalidatePath("/en/urunler", "layout");
+  return { ok: true, count: clean.length };
 }
