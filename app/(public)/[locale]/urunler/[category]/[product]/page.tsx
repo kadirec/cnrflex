@@ -9,6 +9,7 @@ import { CustomRequestSection } from "@/components/sections/CustomRequestSection
 import { ProductGallery } from "@/components/product/product-gallery";
 import { AddToQuoteButton } from "@/components/product/add-to-quote-button";
 import { RollIcon } from "@/components/product/roll-icon";
+import { ProductStickyBar } from "@/components/product/product-sticky-bar";
 import { getDictionary, hasLocale } from "../../../dictionaries";
 
 export const dynamic = "force-dynamic";
@@ -60,7 +61,10 @@ export default async function ProductPage(
             fallbackCode={product.code}
           />
 
-          <div className="mt-10 flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
+          <div
+            id="product-info-bar"
+            className="mt-10 flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between"
+          >
             <div className="min-w-0 flex-1">
               <div className="text-sm font-semibold uppercase tracking-wider text-accent-600">
                 {product.code}
@@ -141,6 +145,21 @@ export default async function ProductPage(
       </section>
 
       <CustomRequestSection locale={locale} dict={dict} />
+
+      <ProductStickyBar
+        observeId="product-info-bar"
+        locale={locale}
+        productId={product.id}
+        code={product.code}
+        name={product.name[locale]}
+        slug={product.slug}
+        image={product.image ?? null}
+        categoryName={category.name[locale]}
+        categorySlug={category.slug}
+        rollLength={product.rollLength ?? null}
+        quoteLabel={dict.nav.getQuote}
+        contactLabel={dict.nav.contact}
+      />
     </>
   );
 }
