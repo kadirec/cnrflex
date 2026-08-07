@@ -12,7 +12,7 @@ type Props = {
 
 export function Hero({ locale, dict }: Props) {
   return (
-    <section className="relative overflow-hidden bg-brand-950 text-white">
+    <section className="relative overflow-hidden bg-brand-950 text-white min-h-[calc(100dvh-5rem)] lg:min-h-0 flex">
       <Image
         src="/cnr_flex_hero2.png"
         alt=""
@@ -27,29 +27,29 @@ export function Hero({ locale, dict }: Props) {
         <div className="absolute -bottom-32 -right-32 w-[28rem] h-[28rem] rounded-full bg-brand-500 blur-3xl" />
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-14 lg:py-32">
+      <div className="relative w-full mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-32 flex flex-col justify-center">
         <div className="max-w-3xl">
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur px-3 py-1 text-xs sm:text-sm font-medium text-brand-100 ring-1 ring-white/20">
-            <Sparkles className="h-3.5 w-3.5 text-accent-400" />
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur px-3.5 py-1.5 text-[13px] sm:text-sm font-medium text-brand-100 ring-1 ring-white/20">
+            <Sparkles className="h-4 w-4 text-accent-400" />
             {dict.hero.eyebrow}
           </div>
-          <h1 className="mt-4 sm:mt-6 text-[28px] leading-[1.15] sm:text-4xl sm:leading-tight lg:text-6xl font-bold">
+          <h1 className="mt-5 sm:mt-6 text-[32px] leading-[1.15] sm:text-4xl sm:leading-tight lg:text-6xl font-bold">
             {dict.hero.title}
           </h1>
-          <p className="mt-3 sm:mt-6 text-[15px] sm:text-lg lg:text-xl text-brand-200 leading-relaxed max-w-2xl">
+          <p className="mt-4 sm:mt-6 text-base sm:text-lg lg:text-xl text-brand-200 leading-relaxed max-w-2xl">
             {dict.hero.subtitle}
           </p>
-          <div className="mt-5 sm:mt-10 flex flex-wrap items-center gap-3">
+          <div className="mt-7 sm:mt-10 flex flex-wrap items-center gap-3">
             <Link
               href={`/${locale}/teklif-al`}
-              className="group inline-flex items-center gap-2 rounded-md bg-accent-500 hover:bg-accent-600 px-5 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold text-white shadow-lg shadow-accent-500/30 transition"
+              className="group inline-flex items-center gap-2 rounded-md bg-accent-500 hover:bg-accent-600 px-6 py-3 text-[15px] sm:text-base font-semibold text-white shadow-lg shadow-accent-500/30 transition"
             >
               {dict.hero.ctaPrimary}
               <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
             </Link>
             <Link
               href={`/${locale}/urunler`}
-              className="inline-flex items-center gap-2 rounded-md bg-white/10 backdrop-blur hover:bg-white/15 ring-1 ring-white/20 px-5 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold text-white transition"
+              className="inline-flex items-center gap-2 rounded-md bg-white/10 backdrop-blur hover:bg-white/15 ring-1 ring-white/20 px-6 py-3 text-[15px] sm:text-base font-semibold text-white transition"
             >
               {dict.hero.ctaSecondary}
             </Link>
