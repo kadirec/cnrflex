@@ -107,10 +107,10 @@ export function Header({ locale, dict, categoryLinks }: Props) {
             <Image
               src="/logo.png"
               alt={siteConfig.name}
-              width={1000}
-              height={339}
+              width={1938}
+              height={811}
               priority
-              className="h-14 w-auto"
+              className="h-[77px] w-auto"
             />
           </Link>
 

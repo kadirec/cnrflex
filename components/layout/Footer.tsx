@@ -66,8 +66,8 @@ export async function Footer({ locale, dict }: Props) {
               <Image
                 src="/logo.png"
                 alt={siteConfig.name}
-                width={1000}
-                height={339}
+                width={1938}
+                height={811}
                 className="h-12 w-auto brightness-0 invert"
               />
             </div>

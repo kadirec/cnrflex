@@ -25,9 +25,9 @@ export function PanelSidebar({ unreadQuotes = 0 }: { unreadQuotes?: number }) {
         <Image
           src="/logo.png"
           alt="CNR Seal"
-          width={1000}
-          height={339}
-          className="h-7 w-auto brightness-0 invert"
+          width={1938}
+          height={811}
+          className="h-8 w-auto brightness-0 invert"
         />
         <div className="text-[10px] uppercase tracking-wider text-slate-400">Panel</div>
       </div>

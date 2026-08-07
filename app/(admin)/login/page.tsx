@@ -16,8 +16,8 @@ export default async function LoginPage() {
           <Image
             src="/logo.png"
             alt="CNR Seal"
-            width={1000}
-            height={339}
+            width={1938}
+            height={811}
             priority
             className="mx-auto h-12 w-auto mb-3"
           />
