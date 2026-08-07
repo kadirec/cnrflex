@@ -18,6 +18,8 @@ type Props = {
   viewDetailsLabel: string;
 };
 
+const AUTOPLAY_INTERVAL_MS = 4500;
+
 export function SimilarProductsCarousel({
   locale,
   category,
@@ -27,6 +29,7 @@ export function SimilarProductsCarousel({
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(false);
+  const [paused, setPaused] = useState(false);
 
   const updateNav = useCallback(() => {
     const el = scrollerRef.current;
@@ -47,13 +50,33 @@ export function SimilarProductsCarousel({
     };
   }, [updateNav]);
 
-  const scrollBy = (dir: 1 | -1) => {
+  const stepBy = useCallback((dir: 1 | -1) => {
     const el = scrollerRef.current;
     if (!el) return;
     const card = el.querySelector<HTMLElement>("[data-card]");
     const step = card ? card.getBoundingClientRect().width + 24 : el.clientWidth * 0.9;
     el.scrollBy({ left: dir * step, behavior: "smooth" });
+  }, []);
+
+  const scrollBy = (dir: 1 | -1) => {
+    setPaused(true);
+    stepBy(dir);
   };
+
+  useEffect(() => {
+    if (paused || products.length <= 1) return;
+    const id = window.setInterval(() => {
+      const el = scrollerRef.current;
+      if (!el) return;
+      const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
+      if (atEnd) {
+        el.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        stepBy(1);
+      }
+    }, AUTOPLAY_INTERVAL_MS);
+    return () => window.clearInterval(id);
+  }, [paused, products.length, stepBy]);
 
   return (
     <div className="relative">
@@ -80,13 +103,16 @@ export function SimilarProductsCarousel({
 
       <div
         ref={scrollerRef}
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+        onTouchStart={() => setPaused(true)}
         className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-pl-4 sm:scroll-pl-6 lg:scroll-pl-8 pb-2 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 no-scrollbar"
       >
         {products.map((p) => (
           <article
             key={p.code}
             data-card
-            className="group relative flex flex-col shrink-0 snap-start rounded-xl border border-brand-100 bg-white hover:border-accent-500 hover:shadow-lg hover:shadow-brand-900/5 transition overflow-hidden w-[85%] sm:w-[45%] lg:w-[calc(33.333%-1rem)]"
+            className="group relative flex flex-col shrink-0 snap-start rounded-xl border border-brand-100 bg-white hover:border-accent-500 hover:shadow-lg hover:shadow-brand-900/5 transition overflow-hidden w-[80%] sm:w-[calc((100%-1.2*1.5rem)/2.2)] lg:w-[calc((100%-2.5*1.5rem)/3.5)]"
           >
             <Link
               href={`/${locale}/urunler/${category.slug}/${p.slug}`}
