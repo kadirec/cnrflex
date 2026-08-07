@@ -55,7 +55,7 @@ export function CategoryGrid({ locale, dict, categories }: Props) {
 
   return (
     <section className="bg-white">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-28">
         <div className="flex items-end justify-between gap-6">
           <div className="max-w-2xl">
             <h2 className="text-3xl lg:text-4xl font-bold text-brand-950">{dict.categories.title}</h2>

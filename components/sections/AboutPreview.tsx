@@ -18,7 +18,7 @@ export function AboutPreview({ locale, dict }: Props) {
 
   return (
     <section className="bg-brand-50">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-28">
         <div className="max-w-2xl">
           <div className="text-sm font-semibold uppercase tracking-wider text-accent-600">
             {dict.about.eyebrow}

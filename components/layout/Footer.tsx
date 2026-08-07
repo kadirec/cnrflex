@@ -64,11 +64,11 @@ export async function Footer({ locale, dict }: Props) {
           <div>
             <div className="mb-4">
               <Image
-                src="/logo.png"
+                src="/logo-white.png"
                 alt={siteConfig.name}
                 width={1938}
                 height={811}
-                className="h-12 w-auto brightness-0 invert"
+                className="h-12 w-auto"
               />
             </div>
             <p className="text-sm text-brand-300 leading-relaxed">{dict.footer.tagline}</p>

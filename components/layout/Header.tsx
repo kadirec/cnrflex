@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Menu, X, ChevronDown, ArrowUpRight } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -49,7 +49,24 @@ export function Header({ locale, dict, categoryLinks }: Props) {
   const [open, setOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [megaOpen, setMegaOpen] = useState(false);
+  const [mobileSection, setMobileSection] = useState<string | null>(null);
+  const [mobileCategory, setMobileCategory] = useState<string | null>(null);
   const megaCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const closeMobile = () => {
+    setOpen(false);
+    setMobileSection(null);
+    setMobileCategory(null);
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    const original = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = original;
+    };
+  }, [open]);
 
   const openMega = () => {
     if (megaCloseTimer.current) clearTimeout(megaCloseTimer.current);
@@ -102,7 +119,7 @@ export function Header({ locale, dict, categoryLinks }: Props) {
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-brand-100">
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-24 items-center justify-between gap-4">
+        <div className="flex h-20 lg:h-24 items-center justify-between gap-4">
           <Link href={`/${locale}`} className="flex items-center" aria-label={siteConfig.name}>
             <Image
               src="/logo.png"
@@ -110,7 +127,7 @@ export function Header({ locale, dict, categoryLinks }: Props) {
               width={1938}
               height={811}
               priority
-              className="h-[77px] w-auto"
+              className="h-14 lg:h-[77px] w-auto"
             />
           </Link>
 
@@ -237,13 +254,33 @@ export function Header({ locale, dict, categoryLinks }: Props) {
             </div>
           </div>
 
+          <div className="lg:hidden inline-flex items-center gap-0.5 rounded-full bg-brand-50 p-0.5 ring-1 ring-brand-100">
+            {locales.map((l) => (
+              <Link
+                key={l}
+                href={switchLocale(l)}
+                aria-label={l === "tr" ? "Türkçe" : "English"}
+                className={cn(
+                  "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold uppercase tracking-wide transition",
+                  locale === l ? "bg-white text-brand-900 shadow-sm" : "text-brand-600",
+                )}
+              >
+                <span className="text-sm leading-none">{flagMap[l]}</span>
+                {l}
+              </Link>
+            ))}
+          </div>
+
           <div className="flex items-center gap-2 lg:hidden">
             <CartMenu locale={locale} variant="mobile" />
             <button
               type="button"
               aria-label="Menu"
-              onClick={() => setOpen((v) => !v)}
-              className="inline-flex items-center justify-center rounded-md p-2 text-brand-900 hover:bg-brand-50"
+              onClick={() => (open ? closeMobile() : setOpen(true))}
+              className={cn(
+                "inline-flex items-center justify-center rounded-md p-2 text-brand-900 hover:bg-brand-50 transition",
+                open && "bg-brand-100 text-brand-950",
+              )}
             >
               {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -293,88 +330,179 @@ export function Header({ locale, dict, categoryLinks }: Props) {
       </div>
 
       {open && (
-        <div className="lg:hidden border-t border-brand-100 bg-white">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 space-y-2">
-            {navItems.map((item) =>
-              item.children ? (
-                <div key={item.label} className="space-y-1">
-                  <div className="text-xs font-semibold uppercase tracking-wide text-brand-500 px-3 pt-2">
-                    {item.label}
-                  </div>
-                  {item.children.map((child) => (
-                    <div key={child.href}>
-                      <Link
-                        href={child.href}
-                        onClick={() => setOpen(false)}
-                        className="block px-3 py-2 rounded-md text-base font-medium text-brand-800 hover:bg-brand-50"
-                      >
-                        {child.label}
-                      </Link>
-                      {child.children && child.children.length > 0 && (
-                        <div className="border-l-2 border-brand-100 ml-6 my-1 space-y-0.5">
-                          {child.children.map((sub) => (
-                            <Link
-                              key={sub.href}
-                              href={sub.href}
-                              onClick={() => setOpen(false)}
-                              className="block pl-4 pr-3 py-1.5 rounded-md text-sm text-brand-600 hover:bg-brand-50 hover:text-accent-600"
-                            >
-                              {sub.label}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                  {item.footer && (
-                    <Link
-                      href={item.footer.href}
-                      onClick={() => setOpen(false)}
-                      className="mx-3 mt-2 flex items-center justify-center rounded-md bg-accent-500 hover:bg-accent-600 px-4 py-2 text-sm font-semibold text-white transition"
-                    >
-                      {item.footer.label}
-                    </Link>
-                  )}
-                </div>
-              ) : (
-                <Link
-                  key={item.href}
-                  href={item.href!}
-                  onClick={() => setOpen(false)}
-                  className="block px-3 py-2 rounded-md text-base font-medium text-brand-800 hover:bg-brand-50"
-                >
-                  {item.label}
-                </Link>
-              ),
-            )}
-            <div className="flex items-center gap-2 mx-3 mt-3 pt-3 border-t border-brand-100">
-              <div className="inline-flex items-center gap-1 rounded-full bg-brand-50 p-1 ring-1 ring-brand-100">
-                {locales.map((l) => (
-                  <Link
-                    key={l}
-                    href={switchLocale(l)}
-                    onClick={() => setOpen(false)}
-                    aria-label={l === "tr" ? "Türkçe" : "English"}
-                    className={cn(
-                      "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold uppercase tracking-wide transition",
-                      locale === l
-                        ? "bg-white text-brand-900 shadow-sm"
-                        : "text-brand-600",
-                    )}
-                  >
-                    <span className="text-base leading-none">{flagMap[l]}</span>
-                    {l}
-                  </Link>
-                ))}
-              </div>
-            </div>
+        <div className="fixed top-20 inset-x-0 bottom-0 z-30 lg:hidden bg-white flex flex-col">
+          <div className="shrink-0 px-4 py-3 border-b border-brand-100 grid grid-cols-2 gap-2">
             <Link
               href={`/${locale}/teklif-al`}
-              onClick={() => setOpen(false)}
-              className="block text-center rounded-md bg-accent-500 hover:bg-accent-600 px-4 py-2 text-base font-semibold text-white"
+              onClick={closeMobile}
+              className="inline-flex items-center justify-center rounded-md bg-accent-500 hover:bg-accent-600 px-3 py-2.5 text-sm font-semibold text-white"
             >
               {dict.nav.getQuote}
             </Link>
+            <Link
+              href={`/${locale}/teklif-al?mode=custom`}
+              onClick={closeMobile}
+              className="inline-flex items-center justify-center rounded-md border border-accent-500 text-accent-600 hover:bg-accent-50 px-3 py-2.5 text-sm font-semibold"
+            >
+              {dict.custom.modalTitle}
+            </Link>
+          </div>
+
+          <div className="flex-1 overflow-y-auto px-3 py-2 space-y-0.5">
+            {navItems.map((item) => {
+              if (!item.children) {
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href!}
+                    onClick={closeMobile}
+                    className="flex items-center justify-between px-3 py-2.5 rounded-md text-[15px] font-semibold text-brand-900 hover:bg-brand-50"
+                  >
+                    {item.label}
+                  </Link>
+                );
+              }
+              const sectionOpen = mobileSection === item.label;
+              const isMega = item.variant === "mega";
+              return (
+                <div key={item.label} className="rounded-md overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileSection(sectionOpen ? null : item.label);
+                      setMobileCategory(null);
+                    }}
+                    className={cn(
+                      "w-full flex items-center justify-between px-3 py-2.5 text-[15px] font-semibold text-brand-900 hover:bg-brand-50 transition",
+                      sectionOpen && "bg-brand-50/60",
+                    )}
+                  >
+                    <span>{item.label}</span>
+                    <ChevronDown
+                      className={cn(
+                        "h-4 w-4 text-brand-500 transition",
+                        sectionOpen && "rotate-180",
+                      )}
+                    />
+                  </button>
+                  {sectionOpen && !isMega && (
+                    <div className="px-2 py-1.5 space-y-0.5 bg-brand-50/40 rounded-b-md">
+                      {item.children.map((child) => (
+                        <Link
+                          key={child.href}
+                          href={child.href}
+                          onClick={closeMobile}
+                          className="block px-3 py-2 rounded-md text-sm font-medium text-brand-800 hover:bg-white hover:text-accent-600"
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                  {sectionOpen && isMega && (
+                    <div className="p-2 bg-brand-50/40 rounded-b-md space-y-1.5">
+                      {item.href && (
+                        <Link
+                          href={item.href}
+                          onClick={closeMobile}
+                          className="flex items-center justify-between px-3 py-2 rounded-md bg-white ring-1 ring-brand-100 text-sm font-semibold text-brand-900 hover:text-accent-600"
+                        >
+                          {dict.nav.products}
+                          <ArrowUpRight className="h-4 w-4" />
+                        </Link>
+                      )}
+                      <div className="space-y-1.5">
+                        {categoryLinks.map((c) => {
+                          const catOpen = mobileCategory === c.slug;
+                          const hasSubs = c.children.length > 0;
+                          return (
+                            <div
+                              key={c.slug}
+                              className="rounded-md bg-white ring-1 ring-brand-100 overflow-hidden"
+                            >
+                              {hasSubs ? (
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setMobileCategory(catOpen ? null : c.slug)
+                                  }
+                                  className="w-full flex items-center gap-3 p-2 text-left"
+                                >
+                                  <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-brand-100">
+                                    {c.image && (
+                                      <Image
+                                        src={c.image}
+                                        alt={c.label}
+                                        fill
+                                        sizes="56px"
+                                        className="object-cover"
+                                      />
+                                    )}
+                                  </span>
+                                  <span className="min-w-0 flex-1 text-sm font-semibold text-brand-900 truncate">
+                                    {c.label}
+                                  </span>
+                                  <ChevronDown
+                                    className={cn(
+                                      "h-4 w-4 shrink-0 text-brand-500 transition",
+                                      catOpen && "rotate-180",
+                                    )}
+                                  />
+                                </button>
+                              ) : (
+                                <Link
+                                  href={`/${locale}/urunler/${c.slug}`}
+                                  onClick={closeMobile}
+                                  className="flex items-center gap-3 p-2"
+                                >
+                                  <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-brand-100">
+                                    {c.image && (
+                                      <Image
+                                        src={c.image}
+                                        alt={c.label}
+                                        fill
+                                        sizes="56px"
+                                        className="object-cover"
+                                      />
+                                    )}
+                                  </span>
+                                  <span className="min-w-0 flex-1 text-sm font-semibold text-brand-900 truncate">
+                                    {c.label}
+                                  </span>
+                                  <ArrowUpRight className="h-4 w-4 shrink-0 text-brand-400" />
+                                </Link>
+                              )}
+                              {catOpen && hasSubs && (
+                                <div className="border-t border-brand-100 p-1.5 space-y-0.5">
+                                  <Link
+                                    href={`/${locale}/urunler/${c.slug}`}
+                                    onClick={closeMobile}
+                                    className="flex items-center justify-between px-3 py-1.5 rounded-md text-xs font-semibold text-accent-600 hover:bg-brand-50"
+                                  >
+                                    {c.label}
+                                    <ArrowUpRight className="h-3.5 w-3.5" />
+                                  </Link>
+                                  {c.children.map((sub) => (
+                                    <Link
+                                      key={sub.slug}
+                                      href={`/${locale}/urunler/${sub.slug}`}
+                                      onClick={closeMobile}
+                                      className="block px-3 py-1.5 rounded-md text-xs text-brand-700 hover:bg-brand-50 hover:text-accent-600 truncate"
+                                    >
+                                      {sub.label}
+                                    </Link>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

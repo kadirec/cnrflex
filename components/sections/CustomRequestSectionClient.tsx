@@ -31,7 +31,7 @@ export function CustomRequestSectionClient({ locale, dict }: Props) {
       <div className="pointer-events-none absolute -top-32 -right-32 h-96 w-96 rounded-full bg-accent-500/10 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-brand-700/30 blur-3xl" />
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-28">
         <div className="grid lg:grid-cols-[1fr_auto] items-end gap-8 lg:gap-12">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full bg-accent-500/15 border border-accent-500/30 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-accent-300">
