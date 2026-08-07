@@ -2,23 +2,13 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowUpRight, Boxes, Square, Wind, DoorOpen, Tent, Lightbulb, Footprints } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 import { getAllCategories } from "@/lib/products";
 import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
 import { getDictionary, hasLocale } from "../dictionaries";
 
 export const dynamic = "force-dynamic";
-
-const iconMap: Record<string, typeof Boxes> = {
-  "otomatik-kepenk-fitilleri": Boxes,
-  "pergola-fitilleri": Square,
-  "biyoklimatik-fitiller": Wind,
-  "kapi-fitilleri": DoorOpen,
-  "tente-fitil-profilleri": Tent,
-  "lightbox-fitilleri": Lightbulb,
-  "paspas-profilleri": Footprints,
-};
 
 export async function generateMetadata(props: PageProps<"/[locale]/urunler">): Promise<Metadata> {
   const { locale } = await props.params;
@@ -49,7 +39,6 @@ export default async function ProductsPage(props: PageProps<"/[locale]/urunler">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {categories.map((category) => {
-              const Icon = iconMap[category.slug] ?? Boxes;
               return (
                 <Link
                   key={category.slug}
@@ -67,9 +56,6 @@ export default async function ProductsPage(props: PageProps<"/[locale]/urunler">
                       />
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
-                    <span className="absolute top-3 left-3 grid place-items-center h-11 w-11 rounded-lg bg-white/95 backdrop-blur text-brand-900 group-hover:bg-accent-500 group-hover:text-white transition shadow-sm">
-                      <Icon className="h-5 w-5" />
-                    </span>
                     <span className="absolute top-3 right-3 grid place-items-center h-9 w-9 rounded-full bg-white/15 backdrop-blur ring-1 ring-white/30 text-white group-hover:bg-accent-500 group-hover:ring-accent-500 transition">
                       <ArrowUpRight className="h-4 w-4" />
                     </span>
