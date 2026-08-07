@@ -4,7 +4,7 @@ import { Mail, Phone, MapPin, Clock } from "lucide-react";
 
 import { ContactForm } from "@/components/forms/ContactForm";
 import { getDictionary, hasLocale } from "../dictionaries";
-import { siteConfig } from "@/lib/site";
+import { getSiteSettings } from "@/lib/settings";
 
 export async function generateMetadata(props: PageProps<"/[locale]/iletisim">): Promise<Metadata> {
   const { locale } = await props.params;
@@ -17,12 +17,15 @@ export default async function ContactPage(props: PageProps<"/[locale]/iletisim">
   const { locale } = await props.params;
   if (!hasLocale(locale)) notFound();
   const dict = await getDictionary(locale);
+  const settings = await getSiteSettings();
+  const address = locale === "tr" ? settings.addressTr : settings.addressEn;
+  const hours = locale === "tr" ? settings.workingHoursTr : settings.workingHoursEn;
 
   const infoItems = [
-    { icon: Mail, label: dict.contact.email, value: siteConfig.contact.email, href: `mailto:${siteConfig.contact.email}` },
-    { icon: Phone, label: dict.contact.phone, value: siteConfig.contact.phone, href: `tel:${siteConfig.contact.phone.replace(/\s/g, "")}` },
-    { icon: MapPin, label: dict.contact.address, value: siteConfig.contact.address[locale] },
-    { icon: Clock, label: dict.contact.hours, value: dict.contact.hoursValue },
+    { icon: Mail, label: dict.contact.email, value: settings.contactEmail, href: `mailto:${settings.contactEmail}` },
+    { icon: Phone, label: dict.contact.phone, value: settings.contactPhone, href: `tel:${settings.contactPhone.replace(/\s/g, "")}` },
+    { icon: MapPin, label: dict.contact.address, value: address },
+    { icon: Clock, label: dict.contact.hours, value: hours },
   ];
 
   return (
@@ -58,6 +61,20 @@ export default async function ContactPage(props: PageProps<"/[locale]/iletisim">
                   </li>
                 ))}
               </ul>
+
+              {settings.mapEmbedUrl && (
+                <div className="mt-10 rounded-2xl overflow-hidden ring-1 ring-brand-100">
+                  <iframe
+                    src={settings.mapEmbedUrl}
+                    width="100%"
+                    height="320"
+                    style={{ border: 0 }}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title={locale === "tr" ? "Konum" : "Location"}
+                  />
+                </div>
+              )}
             </div>
 
             <div className="rounded-2xl bg-brand-50 p-6 lg:p-8">

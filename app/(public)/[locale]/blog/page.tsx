@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Clock, Calendar, ArrowRight } from "lucide-react";
 
-import { getAllPosts } from "@/content/blog";
+import { getPublishedPosts, BLOG_CATEGORIES, getCategoryLabel } from "@/lib/blog";
 import { getDictionary, hasLocale } from "../dictionaries";
+import type { BlogCategory } from "@/lib/db";
 
 export async function generateMetadata(props: PageProps<"/[locale]/blog">): Promise<Metadata> {
   const { locale } = await props.params;
@@ -17,7 +19,14 @@ export default async function BlogIndexPage(props: PageProps<"/[locale]/blog">) 
   const { locale } = await props.params;
   if (!hasLocale(locale)) notFound();
   const dict = await getDictionary(locale);
-  const posts = getAllPosts();
+  const posts = await getPublishedPosts();
+
+  const grouped = new Map<BlogCategory, typeof posts>();
+  for (const cat of BLOG_CATEGORIES) grouped.set(cat.slug, []);
+  for (const post of posts) {
+    const list = grouped.get(post.category as BlogCategory);
+    if (list) list.push(post);
+  }
 
   return (
     <>
@@ -33,44 +42,81 @@ export default async function BlogIndexPage(props: PageProps<"/[locale]/blog">) 
       </div>
 
       <section className="bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {posts.map((post) => (
-              <article
-                key={post.slug}
-                className="group rounded-xl border border-brand-100 overflow-hidden hover:border-accent-500 hover:shadow-lg transition flex flex-col"
-              >
-                <div className="aspect-[16/10] bg-gradient-to-br from-brand-900 to-brand-700 relative">
-                  <div className="absolute inset-0 grid place-items-center p-6">
-                    <span className="font-display text-2xl font-bold text-white/90 text-center leading-tight">
-                      {post.title[locale]}
-                    </span>
-                  </div>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 lg:py-20 space-y-16">
+          {posts.length === 0 && (
+            <p className="text-center text-brand-600">
+              {locale === "tr" ? "Henüz yayınlanmış bir yazı yok." : "No published posts yet."}
+            </p>
+          )}
+          {BLOG_CATEGORIES.map((cat) => {
+            const catPosts = grouped.get(cat.slug) ?? [];
+            if (catPosts.length === 0) return null;
+            return (
+              <div key={cat.slug}>
+                <h2 className="text-2xl lg:text-3xl font-bold text-brand-950 border-b border-brand-100 pb-3 mb-8">
+                  {getCategoryLabel(cat.slug, locale)}
+                </h2>
+                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                  {catPosts.map((post) => (
+                    <article
+                      key={post.id}
+                      className="group rounded-xl border border-brand-100 overflow-hidden hover:border-accent-500 hover:shadow-lg transition flex flex-col"
+                    >
+                      <div className="aspect-[16/10] bg-gradient-to-br from-brand-900 to-brand-700 relative">
+                        {post.coverImageUrl ? (
+                          <Image
+                            src={post.coverImageUrl}
+                            alt={locale === "tr" ? post.titleTr : post.titleEn}
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            className="object-cover"
+                            unoptimized
+                          />
+                        ) : (
+                          <div className="absolute inset-0 grid place-items-center p-6">
+                            <span className="font-display text-2xl font-bold text-white/90 text-center leading-tight">
+                              {locale === "tr" ? post.titleTr : post.titleEn}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-6 flex-1 flex flex-col">
+                        <div className="flex items-center gap-4 text-xs text-brand-600">
+                          {post.publishedAt && (
+                            <span className="inline-flex items-center gap-1">
+                              <Calendar className="h-3.5 w-3.5" />
+                              {new Date(post.publishedAt).toLocaleDateString(locale === "tr" ? "tr-TR" : "en-US", {
+                                dateStyle: "medium",
+                              })}
+                            </span>
+                          )}
+                          <span className="inline-flex items-center gap-1">
+                            <Clock className="h-3.5 w-3.5" />
+                            {post.readingTime} {locale === "tr" ? "dk okuma" : "min read"}
+                          </span>
+                        </div>
+                        <h3 className="mt-3 text-lg font-semibold text-brand-950">
+                          {locale === "tr" ? post.titleTr : post.titleEn}
+                        </h3>
+                        {(locale === "tr" ? post.excerptTr : post.excerptEn) && (
+                          <p className="mt-2 text-sm text-brand-700 leading-relaxed flex-1">
+                            {locale === "tr" ? post.excerptTr : post.excerptEn}
+                          </p>
+                        )}
+                        <Link
+                          href={`/${locale}/blog/${post.slug}`}
+                          className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-accent-600 group-hover:gap-2 transition-all"
+                        >
+                          {dict.common.readMore}
+                          <ArrowRight className="h-4 w-4" />
+                        </Link>
+                      </div>
+                    </article>
+                  ))}
                 </div>
-                <div className="p-6 flex-1 flex flex-col">
-                  <div className="flex items-center gap-4 text-xs text-brand-600">
-                    <span className="inline-flex items-center gap-1">
-                      <Calendar className="h-3.5 w-3.5" />
-                      {new Date(post.date).toLocaleDateString(locale === "tr" ? "tr-TR" : "en-US", { dateStyle: "medium" })}
-                    </span>
-                    <span className="inline-flex items-center gap-1">
-                      <Clock className="h-3.5 w-3.5" />
-                      {post.readingTime} {locale === "tr" ? "dk okuma" : "min read"}
-                    </span>
-                  </div>
-                  <h2 className="mt-3 text-lg font-semibold text-brand-950">{post.title[locale]}</h2>
-                  <p className="mt-2 text-sm text-brand-700 leading-relaxed flex-1">{post.excerpt[locale]}</p>
-                  <Link
-                    href={`/${locale}/blog/${post.slug}`}
-                    className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-accent-600 group-hover:gap-2 transition-all"
-                  >
-                    {dict.common.readMore}
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </div>
-              </article>
-            ))}
-          </div>
+              </div>
+            );
+          })}
         </div>
       </section>
     </>

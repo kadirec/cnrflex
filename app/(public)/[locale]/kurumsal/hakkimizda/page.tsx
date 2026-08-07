@@ -63,7 +63,7 @@ export default async function AboutPage(props: PageProps<"/[locale]/kurumsal/hak
         </div>
       </div>
 
-      <StatsCounter dict={dict} />
+      <StatsCounter locale={locale} />
 
       <section className="bg-white">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-20 space-y-12">

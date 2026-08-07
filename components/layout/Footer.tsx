@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Mail, Phone, MapPin } from "lucide-react";
 
 import { siteConfig, type Locale } from "@/lib/site";
+import { getSiteSettings } from "@/lib/settings";
 import type { Dictionary } from "@/app/(public)/[locale]/dictionaries";
 
 function Instagram(props: React.SVGProps<SVGSVGElement>) {
@@ -44,8 +45,17 @@ type Props = {
   dict: Dictionary;
 };
 
-export function Footer({ locale, dict }: Props) {
+export async function Footer({ locale, dict }: Props) {
   const year = new Date().getFullYear();
+  const settings = await getSiteSettings();
+  const address = locale === "tr" ? settings.addressTr : settings.addressEn;
+
+  const socials: Array<{ href: string; label: string; Icon: (p: React.SVGProps<SVGSVGElement>) => React.JSX.Element }> = [
+    { href: settings.instagramUrl, label: "Instagram", Icon: Instagram },
+    { href: settings.facebookUrl, label: "Facebook", Icon: Facebook },
+    { href: settings.linkedinUrl, label: "LinkedIn", Icon: Linkedin },
+    { href: settings.youtubeUrl, label: "YouTube", Icon: Youtube },
+  ].filter((s) => s.href && s.href.length > 0);
 
   return (
     <footer className="bg-brand-950 text-brand-100">
@@ -99,36 +109,38 @@ export function Footer({ locale, dict }: Props) {
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-3">
                 <Mail className="h-4 w-4 text-accent-400 mt-0.5 shrink-0" />
-                <a href={`mailto:${siteConfig.contact.email}`} className="hover:text-accent-400 break-all">
-                  {siteConfig.contact.email}
+                <a href={`mailto:${settings.contactEmail}`} className="hover:text-accent-400 break-all">
+                  {settings.contactEmail}
                 </a>
               </li>
               <li className="flex items-start gap-3">
                 <Phone className="h-4 w-4 text-accent-400 mt-0.5 shrink-0" />
-                <a href={`tel:${siteConfig.contact.phone.replace(/\s/g, "")}`} className="hover:text-accent-400">
-                  {siteConfig.contact.phone}
+                <a href={`tel:${settings.contactPhone.replace(/\s/g, "")}`} className="hover:text-accent-400">
+                  {settings.contactPhone}
                 </a>
               </li>
               <li className="flex items-start gap-3">
                 <MapPin className="h-4 w-4 text-accent-400 mt-0.5 shrink-0" />
-                <span>{siteConfig.contact.address[locale]}</span>
+                <span>{address}</span>
               </li>
             </ul>
 
-            <div className="mt-5 flex items-center gap-3">
-              <a href={siteConfig.social.instagram} aria-label="Instagram" className="grid place-items-center h-9 w-9 rounded-full bg-brand-800 hover:bg-accent-500 transition">
-                <Instagram className="h-4 w-4" />
-              </a>
-              <a href={siteConfig.social.facebook} aria-label="Facebook" className="grid place-items-center h-9 w-9 rounded-full bg-brand-800 hover:bg-accent-500 transition">
-                <Facebook className="h-4 w-4" />
-              </a>
-              <a href={siteConfig.social.linkedin} aria-label="LinkedIn" className="grid place-items-center h-9 w-9 rounded-full bg-brand-800 hover:bg-accent-500 transition">
-                <Linkedin className="h-4 w-4" />
-              </a>
-              <a href={siteConfig.social.youtube} aria-label="YouTube" className="grid place-items-center h-9 w-9 rounded-full bg-brand-800 hover:bg-accent-500 transition">
-                <Youtube className="h-4 w-4" />
-              </a>
-            </div>
+            {socials.length > 0 && (
+              <div className="mt-5 flex items-center gap-3">
+                {socials.map(({ href, label, Icon }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    className="grid place-items-center h-9 w-9 rounded-full bg-brand-800 hover:bg-accent-500 transition"
+                  >
+                    <Icon className="h-4 w-4" />
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

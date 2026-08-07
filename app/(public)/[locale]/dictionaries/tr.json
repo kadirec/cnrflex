@@ -4,7 +4,6 @@
     "corporate": "Kurumsal",
     "about": "Hakkımızda",
     "vision": "Vizyon & Misyon",
-    "quality": "Kalite & Tedarik",
     "products": "Ürünler",
     "blog": "Blog",
     "catalog": "Katalog",
@@ -12,9 +11,9 @@
     "getQuote": "Teklif Al"
   },
   "hero": {
-    "eyebrow": "Plastikte Modern Çözümler",
-    "title": "Endüstriyel Fitil ve Plastik Profil Tedariğinde Güvenilir Çözüm Ortağınız",
-    "subtitle": "Modern ekstrüzyon teknolojisiyle üretilmiş geniş ürün portföyümüz ve deneyimli mühendislik ekibimizle her projeye özel çözümler sunuyoruz.",
+    "eyebrow": "Teknik Fitil • Ekstrüzyon Profilleri • Özel Profil Geliştirme",
+    "title": "Teknik Fitil ve Ekstrüzyon Profillerinde Güvenilir Üretim ve Çözüm Ortağınız",
+    "subtitle": "CNR SEAL; teknik fitil, conta ve ekstrüzyon profilleri alanında, her projeyi kendi teknik gereklilikleri doğrultusunda değerlendiriyor; doğru analiz yaklaşımıyla en uygun üretim çözümlerini geliştiriyoruz.",
     "ctaPrimary": "Hemen Teklif Al",
     "ctaSecondary": "Ürünleri İncele"
   },
@@ -37,15 +36,15 @@
     "features": {
       "quality": {
         "title": "Ürün Kalitesi",
-        "description": "Her tedarik aşamasında titiz kalite kontrolü ile uzun ömürlü ürünler."
+        "description": "Doğru malzeme seçimi ve kalite odaklı üretim anlayışıyla uzun ömürlü ve güvenilir ürünler geliştiriyoruz."
       },
       "delivery": {
         "title": "Hızlı Teslimat",
-        "description": "Geniş stok ağıyla aynı gün sevkiyat imkanı."
+        "description": "Planlı üretim ve sevkiyat organizasyonumuzla, siparişlerinizi zamanında ve güvenilir şekilde teslim etmeyi hedefliyoruz."
       },
       "support": {
         "title": "Teknik Destek",
-        "description": "Proje sürecinde sürekli teknik danışmanlık ve özel kalıp tasarımı."
+        "description": "Ürün seçiminden özel profil geliştirmeye kadar tüm süreçlerde teknik danışmanlık ve özel kalıp tasarımı desteği sunuyoruz."
       }
     },
     "cta": "Daha Fazla Bilgi"
@@ -115,20 +114,16 @@
     },
     "capabilities": {
       "extrusion": {
-        "title": "Mikron Hassasiyetinde Üretim",
-        "description": "TPE, PVC ve TPU profilleri; istediğiniz kesit, sertlik ve toleransta — projenize milimetrik uyum sağlayan ekstrüzyon."
+        "title": "Hassas Üretim",
+        "description": "Teknik çizim, numune ve uygulama gereksinimlerine uygun ölçü toleranslarında; PVC, TPE, TPV ve diğer teknik hammaddelerle yüksek kalite standartlarında üretim gerçekleştiriyoruz."
       },
       "mold": {
         "title": "Tasarımdan Kalıba Anahtar Teslim",
-        "description": "Teknik çiziminiz veya numuneniz üzerinden özel ekstrüzyon kalıbı tasarlayıp imal ediyoruz; prototipten seriye tek elden."
-      },
-      "lab": {
-        "title": "Akredite Kalite Testleri",
-        "description": "Her üretim partisi çekme, sertlik, yaşlanma ve UV testlerinden geçer; sevkiyat öncesi raporlanır."
+        "description": "Teknik çizim veya numuneniz doğrultusunda profil tasarımı, kalıp geliştirme, numune onayı ve seri üretime kadar tüm süreci tek merkezden planlıyor ve yönetiyoruz."
       },
       "project": {
         "title": "Şeffaf Üretim Akışı",
-        "description": "Talepten teslimata kadar her aşama tek mühendislik temsilciniz üzerinden takip edilebilir ve planlı ilerler."
+        "description": "Talebinizin ilk değerlendirmesinden üretim ve sevkiyata kadar tüm süreci planlı şekilde takip ediyor, her aşamada zamanında bilgilendirme sağlayarak güvenilir bir proje yönetimi sunuyoruz."
       }
     }
   },

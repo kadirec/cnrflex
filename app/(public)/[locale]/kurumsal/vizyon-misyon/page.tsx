@@ -31,10 +31,10 @@ export default async function VisionMissionPage(props: PageProps<"/[locale]/kuru
     values: {
       title: "Değerlerimiz",
       items: [
-        { title: "Kalite", body: "Her aşamada uluslararası standartlara uygun ürün portföyü." },
-        { title: "Güvenilirlik", body: "Verdiğimiz sözü zamanında ve eksiksiz yerine getirmek." },
-        { title: "İnovasyon", body: "Sürekli iyileştirme ve teknolojik yenilik." },
-        { title: "Sürdürülebilirlik", body: "Çevreye saygılı tedarik ve geri dönüştürülebilir malzeme." },
+        { title: "Kalite Anlayışımız", body: "Kaliteyi yalnızca ürün özellikleriyle değil; doğru malzeme seçimi, planlı üretim ve sürdürülebilir performansın bütünü olarak değerlendiriyoruz." },
+        { title: "Güvenilirlik", body: "Verdiğimiz sözün arkasında durmayı, süreç boyunca şeffaf iletişim kurmayı ve uzun vadeli güven ilişkileri oluşturmayı önceliğimiz olarak görüyoruz." },
+        { title: "Teknik Uzmanlık", body: "Her projeyi ihtiyaçları doğrultusunda analiz ediyor; teknik bilgi ve üretim deneyimimizi doğru çözümlere dönüştürüyoruz." },
+        { title: "Sürdürülebilir İş Birliği", body: "Müşterilerimizle yalnızca ürün odaklı değil; üretim süreçlerine değer katan, uzun soluklu iş ortaklıkları kurmayı hedefliyoruz." },
       ],
     },
   } : {
@@ -51,10 +51,10 @@ export default async function VisionMissionPage(props: PageProps<"/[locale]/kuru
     values: {
       title: "Our Values",
       items: [
-        { title: "Quality", body: "A portfolio aligned with international standards at every step." },
-        { title: "Reliability", body: "Delivering on every promise — on time and in full." },
-        { title: "Innovation", body: "Continuous improvement and technological renewal." },
-        { title: "Sustainability", body: "Environmentally respectful sourcing and recyclable materials." },
+        { title: "Our Approach to Quality", body: "We define quality not only by product features, but as the sum of the right material choice, planned production and sustainable performance." },
+        { title: "Reliability", body: "We consider it a priority to stand behind our promises, maintain transparent communication throughout the process, and build long-term relationships of trust." },
+        { title: "Technical Expertise", body: "We analyse every project by its own needs and translate our technical knowledge and manufacturing experience into the right solutions." },
+        { title: "Sustainable Partnerships", body: "We aim to build long-lasting partnerships with our customers — not just product-focused, but adding real value across their production processes." },
       ],
     },
   };

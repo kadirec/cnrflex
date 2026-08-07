@@ -4,7 +4,6 @@
     "corporate": "Corporate",
     "about": "About Us",
     "vision": "Vision & Mission",
-    "quality": "Quality & Supply",
     "products": "Products",
     "blog": "Blog",
     "catalog": "Catalog",
@@ -12,9 +11,9 @@
     "getQuote": "Get a Quote"
   },
   "hero": {
-    "eyebrow": "Modern Solutions in Plastic",
-    "title": "Your Trusted Partner in Industrial Seal and Plastic Profile Supply",
-    "subtitle": "With our broad portfolio of PVC, TPE and TPU profiles produced with modern extrusion technology and our experienced engineering team, we deliver tailored solutions for every project.",
+    "eyebrow": "Technical Seals • Extrusion Profiles • Custom Profile Development",
+    "title": "Your Trusted Manufacturing and Solution Partner in Technical Seals and Extrusion Profiles",
+    "subtitle": "CNR SEAL evaluates every project in the field of technical seals, gaskets and extrusion profiles according to its own technical requirements, and develops the most suitable production solutions with a precise analytical approach.",
     "ctaPrimary": "Request a Quote",
     "ctaSecondary": "Browse Products"
   },
@@ -37,15 +36,15 @@
     "features": {
       "quality": {
         "title": "Product Quality",
-        "description": "Long-lasting products with rigorous quality control at every supply stage."
+        "description": "With the right material selection and a quality-focused production approach, we develop long-lasting and reliable products."
       },
       "delivery": {
         "title": "Fast Delivery",
-        "description": "Same-day shipping capability thanks to our broad stock network."
+        "description": "Through our planned production and dispatch organisation, we aim to deliver your orders on time and reliably."
       },
       "support": {
         "title": "Technical Support",
-        "description": "Continuous technical consulting and custom mold design throughout your project."
+        "description": "From product selection to custom profile development, we provide technical consulting and custom mold design support at every step."
       }
     },
     "cta": "Learn More"
@@ -115,20 +114,16 @@
     },
     "capabilities": {
       "extrusion": {
-        "title": "Micron-Precision Manufacturing",
-        "description": "TPE, PVC and TPU profiles extruded in the exact cross-section, hardness and tolerance your project demands."
+        "title": "Precision Manufacturing",
+        "description": "We manufacture to the tolerances demanded by your technical drawings, samples and application requirements — using PVC, TPE, TPV and other technical raw materials at high quality standards."
       },
       "mold": {
-        "title": "Turnkey From Drawing to Mold",
-        "description": "We design and manufacture custom extrusion molds from your drawing or sample — prototype to serial production, all in-house."
-      },
-      "lab": {
-        "title": "Accredited Quality Testing",
-        "description": "Every production batch passes tensile, hardness, ageing and UV tests — reported before shipment."
+        "title": "Turnkey From Design to Mold",
+        "description": "From your technical drawing or sample, we plan and manage the entire flow — profile design, mold development, sample approval and serial production — from a single center."
       },
       "project": {
         "title": "Transparent Production Flow",
-        "description": "From inquiry to delivery every step runs through a single engineering contact — traceable and planned."
+        "description": "From the first evaluation of your request through production and shipment, we track every stage on a planned schedule and provide timely updates at each step — delivering reliable project management."
       }
     }
   },

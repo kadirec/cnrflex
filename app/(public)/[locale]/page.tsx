@@ -18,7 +18,7 @@ export default async function HomePage(props: PageProps<"/[locale]">) {
   return (
     <>
       <Hero locale={locale} dict={dict} />
-      <StatsCounter dict={dict} />
+      <StatsCounter locale={locale} />
       <CategoryGrid locale={locale} dict={dict} categories={categories} />
       <AboutPreview locale={locale} dict={dict} />
       <CustomRequestSection locale={locale} dict={dict} />

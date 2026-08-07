@@ -1,38 +1,37 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight, Clock, Calendar, ArrowLeft } from "lucide-react";
 
-import { getAllPosts, getPost } from "@/content/blog";
-import { renderMarkdown } from "@/lib/markdown";
+import { getPublishedPostBySlug } from "@/lib/blog";
 import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
 import { getDictionary, hasLocale } from "../../dictionaries";
-import { locales } from "@/lib/site";
-
-export async function generateStaticParams() {
-  return locales.flatMap((locale) =>
-    getAllPosts().map((post) => ({ locale, slug: post.slug })),
-  );
-}
 
 export async function generateMetadata(props: PageProps<"/[locale]/blog/[slug]">): Promise<Metadata> {
   const { locale, slug } = await props.params;
   if (!hasLocale(locale)) return {};
-  const post = getPost(slug);
+  const post = await getPublishedPostBySlug(slug);
   if (!post) return {};
+  const title = locale === "tr" ? post.titleTr : post.titleEn;
+  const description = locale === "tr" ? post.excerptTr : post.excerptEn;
   return {
-    title: post.title[locale],
-    description: post.excerpt[locale],
+    title,
+    description: description ?? undefined,
+    openGraph: post.coverImageUrl
+      ? { images: [{ url: post.coverImageUrl }] }
+      : undefined,
   };
 }
 
 export default async function BlogPostPage(props: PageProps<"/[locale]/blog/[slug]">) {
   const { locale, slug } = await props.params;
   if (!hasLocale(locale)) notFound();
-  const post = getPost(slug);
+  const post = await getPublishedPostBySlug(slug);
   if (!post) notFound();
   const dict = await getDictionary(locale);
-  const html = renderMarkdown(post.content[locale]);
+  const title = locale === "tr" ? post.titleTr : post.titleEn;
+  const content = locale === "tr" ? post.contentTr : post.contentEn;
 
   return (
     <>
@@ -43,16 +42,18 @@ export default async function BlogPostPage(props: PageProps<"/[locale]/blog/[slu
             <ChevronRight className="h-4 w-4" />
             <Link href={`/${locale}/blog`} className="hover:text-accent-600">{dict.nav.blog}</Link>
             <ChevronRight className="h-4 w-4" />
-            <span className="text-brand-900 truncate">{post.title[locale]}</span>
+            <span className="text-brand-900 truncate">{title}</span>
           </nav>
-          <h1 className="mt-4 text-3xl lg:text-4xl font-bold text-brand-950 leading-tight">
-            {post.title[locale]}
-          </h1>
-          <div className="mt-5 flex items-center gap-5 text-sm text-brand-600">
-            <span className="inline-flex items-center gap-1.5">
-              <Calendar className="h-4 w-4" />
-              {new Date(post.date).toLocaleDateString(locale === "tr" ? "tr-TR" : "en-US", { dateStyle: "long" })}
-            </span>
+          <h1 className="mt-4 text-3xl lg:text-4xl font-bold text-brand-950 leading-tight">{title}</h1>
+          <div className="mt-5 flex items-center gap-5 text-sm text-brand-600 flex-wrap">
+            {post.publishedAt && (
+              <span className="inline-flex items-center gap-1.5">
+                <Calendar className="h-4 w-4" />
+                {new Date(post.publishedAt).toLocaleDateString(locale === "tr" ? "tr-TR" : "en-US", {
+                  dateStyle: "long",
+                })}
+              </span>
+            )}
             <span className="inline-flex items-center gap-1.5">
               <Clock className="h-4 w-4" />
               {post.readingTime} {locale === "tr" ? "dk okuma" : "min read"}
@@ -62,10 +63,28 @@ export default async function BlogPostPage(props: PageProps<"/[locale]/blog/[slu
         </div>
       </div>
 
+      {post.coverImageUrl && (
+        <div className="bg-white">
+          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pt-10">
+            <div className="relative aspect-[16/9] rounded-2xl overflow-hidden ring-1 ring-brand-100">
+              <Image
+                src={post.coverImageUrl}
+                alt={title}
+                fill
+                sizes="(max-width: 1024px) 100vw, 900px"
+                className="object-cover"
+                priority
+                unoptimized
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       <article className="bg-white">
         <div
           className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16 prose-content"
-          dangerouslySetInnerHTML={{ __html: html }}
+          dangerouslySetInnerHTML={{ __html: content }}
         />
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pb-16">
           <Link

@@ -1,11 +1,11 @@
 import { Resend } from "resend";
 import { siteConfig } from "./site";
+import { getSiteSettings } from "./settings";
 
 const resendApiKey = process.env.RESEND_API_KEY;
 const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 const fromAddress = process.env.RESEND_FROM ?? `${siteConfig.name} <noreply@cnrseal.com>`;
-const toAddress = process.env.RESEND_TO ?? siteConfig.contact.email;
 
 export type EmailAttachment = {
   filename: string;
@@ -24,6 +24,8 @@ export async function sendEmail({ subject, html, replyTo, attachments }: EmailPa
     console.warn("[email] RESEND_API_KEY not configured — skipping send");
     return { ok: false, reason: "not_configured" as const };
   }
+  const settings = await getSiteSettings();
+  const toAddress = process.env.RESEND_TO ?? settings.contactEmail;
   try {
     const { error } = await resend.emails.send({
       from: fromAddress,

@@ -1,13 +1,12 @@
 import type { MetadataRoute } from "next";
 import { getAllCategoriesFlat } from "@/lib/products";
-import { getAllPosts } from "@/content/blog";
+import { getPublishedPosts } from "@/lib/blog";
 import { siteConfig, locales } from "@/lib/site";
 
 const STATIC_PATHS = [
   "",
   "/kurumsal/hakkimizda",
   "/kurumsal/vizyon-misyon",
-  "/kurumsal/kalite",
   "/urunler",
   "/blog",
   "/teklif-al",
@@ -64,11 +63,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  for (const post of getAllPosts()) {
+  const posts = await getPublishedPosts();
+  for (const post of posts) {
     entries.push({
       url: `${base}/tr/blog/${post.slug}`,
-      lastModified: new Date(post.date),
-      changeFrequency: "yearly",
+      lastModified: post.publishedAt ?? now,
+      changeFrequency: "monthly",
       priority: 0.5,
       alternates: {
         languages: Object.fromEntries(

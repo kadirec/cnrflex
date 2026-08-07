@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { getDictionary, hasLocale } from "../dictionaries";
 import { siteConfig } from "@/lib/site";
+import { getSiteSettings } from "@/lib/settings";
 
 export async function generateMetadata(props: PageProps<"/[locale]/gizlilik-politikasi">): Promise<Metadata> {
   const { locale } = await props.params;
@@ -15,6 +16,7 @@ export default async function PrivacyPage(props: PageProps<"/[locale]/gizlilik-p
   const { locale } = await props.params;
   if (!hasLocale(locale)) notFound();
   const dict = await getDictionary(locale);
+  const settings = await getSiteSettings();
 
   return (
     <>
@@ -43,7 +45,7 @@ export default async function PrivacyPage(props: PageProps<"/[locale]/gizlilik-p
               <h2>Veri Saklama</h2>
               <p>Toplanan veriler yalnızca yukarıdaki amaçlar için ve gerekli süre boyunca saklanır.</p>
               <h2>Haklarınız</h2>
-              <p>KVKK kapsamında verilerinize erişme, düzeltme ve silme haklarına sahipsiniz. Talepleriniz için <a href={`mailto:${siteConfig.contact.email}`}>{siteConfig.contact.email}</a> adresine yazabilirsiniz.</p>
+              <p>KVKK kapsamında verilerinize erişme, düzeltme ve silme haklarına sahipsiniz. Talepleriniz için <a href={`mailto:${settings.contactEmail}`}>{settings.contactEmail}</a> adresine yazabilirsiniz.</p>
               <p className="text-sm">Bu metin örnek niteliğindedir; nihai metin için hukuk danışmanı görüşü alınmalıdır.</p>
             </>
           ) : (
@@ -63,7 +65,7 @@ export default async function PrivacyPage(props: PageProps<"/[locale]/gizlilik-p
               <h2>Data Retention</h2>
               <p>Collected data is retained only for the purposes above and for the necessary duration.</p>
               <h2>Your Rights</h2>
-              <p>Under applicable data protection law, you have the right to access, correct and delete your data. For requests, contact <a href={`mailto:${siteConfig.contact.email}`}>{siteConfig.contact.email}</a>.</p>
+              <p>Under applicable data protection law, you have the right to access, correct and delete your data. For requests, contact <a href={`mailto:${settings.contactEmail}`}>{settings.contactEmail}</a>.</p>
               <p className="text-sm">This text is a sample; obtain legal counsel for the final version.</p>
             </>
           )}

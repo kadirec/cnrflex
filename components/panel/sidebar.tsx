@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, FolderTree, Package, MessageSquareText } from "lucide-react";
+import { LayoutDashboard, FolderTree, Package, MessageSquareText, Newspaper, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const items = [
@@ -11,6 +11,8 @@ const items = [
   { href: "/panel/quotes", label: "Teklifler", icon: MessageSquareText, match: (p: string) => p.startsWith("/panel/quotes"), badgeKey: "unreadQuotes" as const },
   { href: "/panel/categories", label: "Kategoriler", icon: FolderTree, match: (p: string) => p.startsWith("/panel/categories") },
   { href: "/panel/products", label: "Ürünler", icon: Package, match: (p: string) => p.startsWith("/panel/products") },
+  { href: "/panel/blog", label: "Blog", icon: Newspaper, match: (p: string) => p.startsWith("/panel/blog") },
+  { href: "/panel/settings", label: "Ayarlar", icon: Settings, match: (p: string) => p.startsWith("/panel/settings") },
 ];
 
 export function PanelSidebar({ unreadQuotes = 0 }: { unreadQuotes?: number }) {

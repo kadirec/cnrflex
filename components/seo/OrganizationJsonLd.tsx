@@ -1,8 +1,10 @@
 import { siteConfig, type Locale } from "@/lib/site";
+import { getSiteSettings } from "@/lib/settings";
 
 type Props = { locale: Locale };
 
-export function OrganizationJsonLd({ locale }: Props) {
+export async function OrganizationJsonLd({ locale }: Props) {
+  const settings = await getSiteSettings();
   const data = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -10,19 +12,19 @@ export function OrganizationJsonLd({ locale }: Props) {
     url: siteConfig.url,
     logo: `${siteConfig.url}/logo.png`,
     description: siteConfig.description[locale],
-    email: siteConfig.contact.email,
-    telephone: siteConfig.contact.phone,
+    email: settings.contactEmail,
+    telephone: settings.contactPhone,
     address: {
       "@type": "PostalAddress",
-      addressLocality: siteConfig.contact.address[locale],
+      streetAddress: locale === "tr" ? settings.addressTr : settings.addressEn,
       addressCountry: "TR",
     },
     sameAs: [
-      siteConfig.social.instagram,
-      siteConfig.social.facebook,
-      siteConfig.social.linkedin,
-      siteConfig.social.youtube,
-    ].filter((u) => u && u !== "#"),
+      settings.instagramUrl,
+      settings.facebookUrl,
+      settings.linkedinUrl,
+      settings.youtubeUrl,
+    ].filter((u) => u && u.length > 0),
   };
 
   return (

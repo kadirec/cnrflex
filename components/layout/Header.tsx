@@ -49,7 +49,6 @@ export function Header({ locale, dict, categoryLinks }: Props) {
       children: [
         { href: `/${locale}/kurumsal/hakkimizda`, label: dict.nav.about },
         { href: `/${locale}/kurumsal/vizyon-misyon`, label: dict.nav.vision },
-        { href: `/${locale}/kurumsal/kalite`, label: dict.nav.quality },
       ],
     },
     {
@@ -81,17 +80,17 @@ export function Header({ locale, dict, categoryLinks }: Props) {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-brand-100">
+    <header className="sticky top-0 z-40 bg-white border-b border-brand-100">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-20 items-center justify-between gap-4">
+        <div className="flex h-24 items-center justify-between gap-4">
           <Link href={`/${locale}`} className="flex items-center" aria-label={siteConfig.name}>
             <Image
               src="/logo.png"
               alt={siteConfig.name}
-              width={240}
-              height={160}
+              width={320}
+              height={213}
               priority
-              className="h-14 w-auto"
+              className="h-[72px] w-auto"
             />
           </Link>
 

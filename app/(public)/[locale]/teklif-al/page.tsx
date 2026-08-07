@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { QuoteForm } from "@/components/forms/QuoteForm";
 import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
 import { getDictionary, hasLocale } from "../dictionaries";
-import { siteConfig } from "@/lib/site";
+import { getSiteSettings } from "@/lib/settings";
 import { getPickerProducts } from "@/lib/products";
 import { Mail, Phone, MessageCircle } from "lucide-react";
 
@@ -23,6 +23,7 @@ export default async function QuotePage(props: PageProps<"/[locale]/teklif-al">)
   const prefillProduct = typeof product === "string" ? product : undefined;
   const prefillCategory = typeof category === "string" ? category : undefined;
   const products = await getPickerProducts();
+  const settings = await getSiteSettings();
 
   return (
     <>
@@ -61,20 +62,20 @@ export default async function QuotePage(props: PageProps<"/[locale]/teklif-al">)
             <ContactCard
               icon={Mail}
               label="E-posta"
-              value={siteConfig.contact.email}
-              href={`mailto:${siteConfig.contact.email}`}
+              value={settings.contactEmail}
+              href={`mailto:${settings.contactEmail}`}
             />
             <ContactCard
               icon={Phone}
               label={locale === "tr" ? "Telefon" : "Phone"}
-              value={siteConfig.contact.phone}
-              href={`tel:${siteConfig.contact.phone.replace(/\s/g, "")}`}
+              value={settings.contactPhone}
+              href={`tel:${settings.contactPhone.replace(/\s/g, "")}`}
             />
             <ContactCard
               icon={MessageCircle}
               label="WhatsApp"
               value={locale === "tr" ? "Anında yazışın" : "Chat now"}
-              href={`https://wa.me/${siteConfig.contact.whatsapp}`}
+              href={`https://wa.me/${settings.contactWhatsapp}`}
               external
             />
           </div>

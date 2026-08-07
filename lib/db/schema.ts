@@ -130,3 +130,61 @@ export const quotes = pgTable("quotes", {
 
 export type Quote = typeof quotes.$inferSelect;
 export type NewQuote = typeof quotes.$inferInsert;
+
+export const siteSettings = pgTable("site_settings", {
+  id: serial("id").primaryKey(),
+  contactEmail: text("contact_email"),
+  contactPhone: text("contact_phone"),
+  contactWhatsapp: text("contact_whatsapp"),
+  addressTr: text("address_tr"),
+  addressEn: text("address_en"),
+  workingHoursTr: text("working_hours_tr"),
+  workingHoursEn: text("working_hours_en"),
+  mapEmbedUrl: text("map_embed_url"),
+  instagramUrl: text("instagram_url"),
+  facebookUrl: text("facebook_url"),
+  linkedinUrl: text("linkedin_url"),
+  youtubeUrl: text("youtube_url"),
+  defaultMetaTitleTr: text("default_meta_title_tr"),
+  defaultMetaTitleEn: text("default_meta_title_en"),
+  defaultMetaDescriptionTr: text("default_meta_description_tr"),
+  defaultMetaDescriptionEn: text("default_meta_description_en"),
+  defaultOgImageUrl: text("default_og_image_url"),
+  gaMeasurementId: text("ga_measurement_id"),
+  gtmContainerId: text("gtm_container_id"),
+  metaPixelId: text("meta_pixel_id"),
+  headSnippet: text("head_snippet"),
+  bodySnippet: text("body_snippet"),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type SiteSettings = typeof siteSettings.$inferSelect;
+export type NewSiteSettings = typeof siteSettings.$inferInsert;
+
+export type BlogCategory =
+  | "malzeme-rehberleri"
+  | "uygulama-rehberleri"
+  | "uretim-teknolojileri"
+  | "satin-alma-rehberleri";
+
+export const blogPosts = pgTable("blog_posts", {
+  id: serial("id").primaryKey(),
+  slug: text("slug").notNull().unique(),
+  category: text("category").$type<BlogCategory>().notNull(),
+  titleTr: text("title_tr").notNull(),
+  titleEn: text("title_en").notNull(),
+  excerptTr: text("excerpt_tr"),
+  excerptEn: text("excerpt_en"),
+  contentTr: text("content_tr").notNull(),
+  contentEn: text("content_en").notNull(),
+  coverImageUrl: text("cover_image_url"),
+  author: text("author").notNull().default("CNR Seal"),
+  readingTime: integer("reading_time").notNull().default(3),
+  publishedAt: timestamp("published_at", { withTimezone: true }),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type BlogPost = typeof blogPosts.$inferSelect;
+export type NewBlogPost = typeof blogPosts.$inferInsert;

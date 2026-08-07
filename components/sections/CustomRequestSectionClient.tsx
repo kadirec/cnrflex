@@ -10,14 +10,12 @@ import { CustomRequestForm } from "@/components/forms/CustomRequestForm";
 import {
   IconExtrusion,
   IconMoldDesign,
-  IconQualityLab,
   IconProjectMgmt,
 } from "@/components/icons/CapabilityIcons";
 
 const CAPABILITIES = [
   { key: "extrusion", Icon: IconExtrusion },
   { key: "mold", Icon: IconMoldDesign },
-  { key: "lab", Icon: IconQualityLab },
   { key: "project", Icon: IconProjectMgmt },
 ] as const;
 
@@ -61,7 +59,7 @@ export function CustomRequestSectionClient({ locale, dict, categoryOptions }: Pr
             </button>
           </div>
 
-          <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
+          <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
             {CAPABILITIES.map(({ key, Icon }) => {
               const cap = dict.custom.capabilities[key];
               return (
