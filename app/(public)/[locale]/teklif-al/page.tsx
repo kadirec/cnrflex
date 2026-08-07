@@ -17,11 +17,12 @@ export async function generateMetadata(props: PageProps<"/[locale]/teklif-al">):
 
 export default async function QuotePage(props: PageProps<"/[locale]/teklif-al">) {
   const { locale } = await props.params;
-  const { product, category } = await props.searchParams;
+  const { product, category, mode } = await props.searchParams;
   if (!hasLocale(locale)) notFound();
   const dict = await getDictionary(locale);
   const prefillProduct = typeof product === "string" ? product : undefined;
   const prefillCategory = typeof category === "string" ? category : undefined;
+  const initialMode = mode === "custom" ? "custom" : "catalog";
   const products = await getPickerProducts();
   const settings = await getSiteSettings();
 
@@ -42,6 +43,7 @@ export default async function QuotePage(props: PageProps<"/[locale]/teklif-al">)
             products={products}
             prefillProductSlug={prefillProduct}
             prefillCategorySlug={prefillCategory}
+            initialMode={initialMode}
           />
         </div>
       </section>

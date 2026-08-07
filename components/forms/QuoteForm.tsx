@@ -66,6 +66,7 @@ type Props = {
   products: PickerProduct[];
   prefillProductSlug?: string;
   prefillCategorySlug?: string;
+  initialMode?: Mode;
 };
 
 export function QuoteForm({
@@ -74,8 +75,9 @@ export function QuoteForm({
   products,
   prefillProductSlug,
   prefillCategorySlug,
+  initialMode = "catalog",
 }: Props) {
-  const [mode, setMode] = useState<Mode>("catalog");
+  const [mode, setMode] = useState<Mode>(initialMode);
   const cart = useQuoteCart();
   const prefillAppliedRef = useRef(false);
 

@@ -85,7 +85,7 @@ export async function Footer({ locale, dict }: Props) {
               <li><Link href={`/${locale}/blog`} className="hover:text-accent-400">{dict.nav.blog}</Link></li>
               <li><Link href={`/${locale}/katalog`} className="hover:text-accent-400">{dict.nav.catalog}</Link></li>
               <li><Link href={`/${locale}/teklif-al`} className="hover:text-accent-400">{dict.nav.getQuote}</Link></li>
-              <li><Link href={`/${locale}/teklif-al#ozel-talep`} className="hover:text-accent-400">{dict.custom.eyebrow}</Link></li>
+              <li><Link href={`/${locale}/teklif-al?mode=custom`} className="hover:text-accent-400">{dict.custom.eyebrow}</Link></li>
             </ul>
           </div>
 
