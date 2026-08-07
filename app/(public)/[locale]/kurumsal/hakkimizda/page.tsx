@@ -18,35 +18,47 @@ export default async function AboutPage(props: PageProps<"/[locale]/kurumsal/hak
   const dict = await getDictionary(locale);
 
   const content = locale === "tr" ? {
-    hero: "CNR Seal, plastik profil ve fitil tedariğinde güvenilir bir çözüm ortağı olarak modern ekstrüzyon teknolojisini ve mühendislik uzmanlığını birleştiren bir markadır.",
+    heroTitle: "Teknik Fitil ve Ekstrüzyon Profillerinde Güvenilir Teknik Çözümler",
+    heroLead:
+      "CNR SEAL, teknik fitil ve ekstrüzyon profilleri alanında uzmanlaşmış; müşterilerinin üretim süreçlerini doğru analiz ederek ihtiyaçlarına özel, doğru malzeme, doğru üretim yöntemi ve doğru çözümleri bir araya getiren, üretim süreçlerine değer katan güvenilir bir çözüm markasıdır.",
     sections: [
       {
-        title: "Tedarik Yaklaşımımız",
-        body: "Modern ekstrüzyon teknolojisiyle üretilmiş, sıkı kalite kontrolünden geçmiş ürünler portföyümüzde standartların üzerinde performansla sunulur. PVC, TPE ve TPU bazlı malzemelerin doğru seçimi, ürünün dayanıklılığını doğrudan etkileyen kritik bir aşamadır; bu nedenle malzeme seçiminden sevkiyata kadar tüm süreç titizlikle yönetilir.",
+        title: "Sektöre Yolculuğumuz",
+        body: "2010 yılında teknik plastik ve sızdırmazlık ürünlerinin ithalatıyla başlayan sektör yolculuğumuz, değişen ve gelişen Türk sanayisinin ihtiyaçlarını yakından takip ederek bugün teknik fitil ve ekstrüzyon profilleri alanında uzmanlaşan CNR SEAL markasına dönüşmüştür.",
       },
       {
-        title: "Müşteri Odaklı Çözüm",
-        body: "Her müşterimizin ihtiyacı farklıdır. Standart ürün portföyümüze ek olarak özel kesit, renk ve boyut talepleri karşılanabilir. Mühendislik ekibimiz, projenize en uygun çözümü sunmak için baştan sona danışmanlık verir.",
+        title: "Yerli Üretim ve Sürdürülebilir Çözümler",
+        body: "Sektörde edindiğimiz ticari ve teknik deneyim doğrultusunda, üreticilerimizin yalnızca ithal ürünlere bağımlı kalmadan; yerli üretim gücü, doğru hammadde seçimi ve güvenilir üretim teknolojileriyle sürdürülebilir çözümlere ulaşmasını hedefliyoruz.",
       },
       {
-        title: "Sürdürülebilirlik",
-        body: "Tedarik süreçlerimizde enerji verimliliği ve atık azaltma ön plandadır. Geri dönüştürülebilir malzeme kullanımı, çevreye duyarlı paketleme ve yerli onaylı kaynaklı tedarik ile hem ekonomik hem ekolojik değer sunulur.",
+        title: "Özel Profil Geliştirme ve Kalıp Tasarımı",
+        body: "Bu doğrultuda standart ürün tedariğinin yanı sıra, teknik çizim veya numuneye göre özel profil geliştirme, kalıp tasarımı ve fason üretim süreçlerini yönetiyor; üretim sürecinin ihtiyaç duyduğu doğru malzemeyi, doğru üretim yöntemini ve doğru çözüm kaynaklarını bir araya getiriyoruz.",
+      },
+      {
+        title: "Projelere Yaklaşımımız",
+        body: "Bizim için talep edilen projeler yalnızca bir ürün talebi değildir. Her uygulamayı kendi teknik gereklilikleri içinde değerlendiriyor, doğru analiz ile doğru çözümü buluşturarak müşterilerimizin üretim süreçlerine değer katmayı hedefliyoruz. CNR SEAL, teknik fitil ve ekstrüzyon profilleri alanında uzmanlaşmış, üretim süreçlerini doğru analiz ederek müşterilerine güvenilir ve sürdürülebilir çözümler sunan bir markadır.",
       },
     ],
   } : {
-    hero: "CNR Seal is a trusted supply partner for plastic profiles and seals, combining modern extrusion-based products with engineering expertise.",
+    heroTitle: "Reliable Technical Solutions in Seals and Extrusion Profiles",
+    heroLead:
+      "CNR SEAL is a specialised solution brand in technical seals and extrusion profiles that analyses each customer's production processes to bring together the right material, the right manufacturing method and the right solution — adding tangible value to their production.",
     sections: [
       {
-        title: "Our Supply Approach",
-        body: "Products manufactured with modern extrusion technology and passed through strict quality control are offered in our portfolio with above-standard performance. The right selection of PVC, TPE and TPU based materials is the critical step that directly affects product durability; therefore the entire process — from material selection to shipping — is managed with care.",
+        title: "Our Journey Into the Industry",
+        body: "Our industry journey began in 2010 with the import of technical plastic and sealing products. Closely following the evolving needs of Turkish industry, we have grown into CNR SEAL — a brand specialised today in technical seals and extrusion profiles.",
       },
       {
-        title: "Customer-Focused Solutions",
-        body: "Every customer has unique needs. In addition to our standard portfolio, custom cross-section, color and dimension requests can be fulfilled. Our engineering team provides end-to-end consulting to deliver the most suitable solution for your project.",
+        title: "Domestic Production and Sustainable Solutions",
+        body: "Drawing on the commercial and technical experience we have built, we help manufacturers reach sustainable solutions that are not solely dependent on imports — leveraging domestic production capacity, correct raw material selection and reliable manufacturing technologies.",
       },
       {
-        title: "Sustainability",
-        body: "Energy efficiency and waste reduction are central to our supply processes. With recyclable material usage, environmentally conscious packaging and domestic approved sourcing, both economic and ecological value are delivered.",
+        title: "Custom Profile Development and Mold Design",
+        body: "Alongside standard product supply, we manage custom profile development from a technical drawing or sample, mold design, and contract manufacturing processes — bringing together the right material, the right production method and the right solution sources for every project.",
+      },
+      {
+        title: "How We Approach Projects",
+        body: "For us, each project is more than just a product request. We evaluate every application within its own technical requirements and pair the right analysis with the right solution — aiming to add value to our customers' production processes. CNR SEAL is a brand specialised in technical seals and extrusion profiles, delivering reliable and sustainable solutions grounded in accurate technical analysis.",
       },
     ],
   };
@@ -58,8 +70,8 @@ export default async function AboutPage(props: PageProps<"/[locale]/kurumsal/hak
           <div className="text-sm font-semibold uppercase tracking-wider text-accent-400">
             {dict.about.eyebrow}
           </div>
-          <h1 className="mt-3 text-4xl lg:text-5xl font-bold">{dict.about.title}</h1>
-          <p className="mt-5 text-lg lg:text-xl text-brand-200 max-w-3xl leading-relaxed">{content.hero}</p>
+          <h1 className="mt-3 text-4xl lg:text-5xl font-bold">{content.heroTitle}</h1>
+          <p className="mt-5 text-lg lg:text-xl text-brand-200 max-w-3xl leading-relaxed">{content.heroLead}</p>
         </div>
       </div>
 

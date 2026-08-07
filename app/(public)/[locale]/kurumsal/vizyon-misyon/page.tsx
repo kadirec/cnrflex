@@ -19,14 +19,30 @@ export default async function VisionMissionPage(props: PageProps<"/[locale]/kuru
 
   const content = locale === "tr" ? {
     title: "Vizyonumuz ve Misyonumuz",
-    intro: "CNR Seal olarak değerlerimiz, sektördeki yerimizi ve müşterilerimize sunduğumuz hizmeti şekillendirir.",
+    intro: "CNR SEAL olarak değerlerimiz, sektördeki yerimizi ve müşterilerimize sunduğumuz hizmeti şekillendirir.",
     vision: {
       title: "Vizyonumuz",
-      body: "Plastik profil ve fitil tedariğinde Türkiye'nin tercih edilen markası olmak; mühendislik yetkinliğimizi sürekli geliştirerek küresel pazarlarda rekabetçi ve sürdürülebilir çözümler sunmak.",
+      lead:
+        "Bilgiye dayalı çalışma anlayışımızı sürekli geliştirerek, teknik fitil ve ekstrüzyon profilleri alanında güvenilirliği, uzmanlığı ve çözüm yaklaşımıyla ulusal ve uluslararası pazarlarda referans gösterilen bir Türk markası olmak.",
+      body: [
+        "Teknik fitil ve ekstrüzyon profilleri alanında yalnızca ürünleriyle değil; çalışma anlayışı, teknik yaklaşımı ve güvenilir iş modeliyle örnek gösterilen bir Türk markası olmak.",
+        "Ülkemizin üretim gücünü, yerli hammadde kaynaklarını ve teknik bilgi birikimini destekleyerek, mümkün olan her alanda sürdürülebilir ve rekabetçi üretim modellerinin gelişmesine katkı sağlamayı hedefliyoruz.",
+        "Bununla birlikte, günümüz sanayisinin küresel bir ekosistem olduğunun bilinciyle hareket ediyor; doğru çözümün gerektirdiği durumlarda uluslararası bilgi, teknoloji ve hammadde kaynaklarını da aynı profesyonel bakış açısıyla değerlendiriyoruz.",
+        "Vizyonumuz; teknik sızdırmazlık sektöründe yalnızca ürün tedarik eden bir firma olmak değil, doğru teknik kararların alınmasına katkı sağlayan, üretim süreçlerini geliştiren ve sektörün güven duyduğu çözüm markalarından biri hâline gelmektir.",
+        "Bugün kurduğumuz her iş ortaklığını geleceğe yapılan bir yatırım olarak görüyor; bilgi paylaşımı, sürekli gelişim ve karşılıklı güven ilkeleriyle Türkiye'den doğan, uluslararası pazarlarda saygı duyulan bir marka olmayı amaçlıyoruz.",
+      ],
     },
     mission: {
       title: "Misyonumuz",
-      body: "Müşterilerimizin teknik beklentilerini en yüksek seviyede karşılayan, kalite standartlarından ödün vermeyen, uzun ömürlü ve çevreye duyarlı çözümler sunmak; tedarik zincirinin her aşamasında şeffaflık ve güveni esas almak.",
+      lead:
+        "Her projeye önce anlamaya çalışarak yaklaşmak; doğru analiz, doğru malzeme, doğru üretim yöntemi ve güvenilir iş birlikleriyle müşterilerimizin üretim süreçlerine sürdürülebilir değer katmak.",
+      body: [
+        "Üretim sektöründe güvenilir bir çözümün yalnızca kaliteli bir ürünle değil; doğru analiz, doğru malzeme seçimi ve doğru üretim süreciyle mümkün olduğuna inanıyoruz.",
+        "Bu anlayışla, müşterilerimizin ihtiyaçlarını öncelikle teknik açıdan değerlendiriyor; talep edilen ürünü değil, ihtiyacın gerçek nedenini anlamaya odaklanıyoruz. Çünkü yaşanan bir teknik problem bazen hammaddeden, bazen kalıp tasarımından, bazen üretim teknolojisinden, bazen ise uygulama veya lojistik süreçlerinden kaynaklanabilir.",
+        "CNR SEAL olarak görevimiz; tüm bu süreçleri bir bütün olarak değerlendirerek, doğru teknik çözümleri güvenilir üretim modelleriyle buluşturmak ve müşterilerimizin üretim süreçlerine sürdürülebilir değer katmaktır.",
+        "Standart ürün tedariğinin ötesinde, özel profil geliştirme, teknik danışmanlık, kalıp geliştirme ve üretim koordinasyonu gibi süreçleri disiplinler arası bir bakış açısıyla yönetiyor; her projeye uzun vadeli bir iş ortaklığı anlayışıyla yaklaşıyoruz.",
+        "Çalışma anlayışımızın temelinde dürüstlük, güven ve sorumluluk yer alır. Veremeyeceğimiz sözü vermemeyi, doğru çözüm olduğuna inanmadığımız hiçbir ürünü önermemeyi ve müşterilerimizin üretim süreçlerini kendi sorumluluğumuz gibi sahiplenmeyi en önemli çalışma prensiplerimiz olarak görüyoruz.",
+      ],
     },
     values: {
       title: "Değerlerimiz",
@@ -42,11 +58,27 @@ export default async function VisionMissionPage(props: PageProps<"/[locale]/kuru
     intro: "Our values shape our position in the industry and the service we deliver to our customers.",
     vision: {
       title: "Our Vision",
-      body: "To become Turkey's preferred supply partner for plastic profiles and seals; continuously advancing engineering capability to deliver competitive and sustainable solutions in global markets.",
+      lead:
+        "To be a Turkish brand continuously advancing its knowledge-driven way of working — recognised in national and international markets for its reliability, expertise and solution-driven approach in technical seals and extrusion profiles.",
+      body: [
+        "To be recognised as a benchmark Turkish brand in technical seals and extrusion profiles — not only for our products, but for our way of working, our technical approach and our reliable business model.",
+        "By supporting the manufacturing capacity, domestic raw material sources and technical know-how of our country, we aim to contribute to the development of sustainable and competitive production models wherever possible.",
+        "At the same time, we recognise that today's industry is a global ecosystem — and where the right solution requires it, we apply the same professional lens to international knowledge, technology and raw material sources.",
+        "Our vision is to be more than a supplier in the technical sealing sector; it is to become one of the trusted solution brands that contribute to the right technical decisions and help improve production processes.",
+        "We see every partnership we build today as an investment in tomorrow — aiming, through knowledge sharing, continuous improvement and mutual trust, to become a brand born in Türkiye and respected in international markets.",
+      ],
     },
     mission: {
       title: "Our Mission",
-      body: "To deliver long-lasting, environmentally responsible solutions that meet our customers' technical expectations at the highest level without compromising on quality; placing transparency and trust at the core of every step of the supply chain.",
+      lead:
+        "To approach every project with a mindset of understanding first; to add sustainable value to our customers' production processes through the right analysis, the right material, the right manufacturing method and reliable partnerships.",
+      body: [
+        "We believe that a reliable solution in manufacturing comes not only from a quality product, but from the combination of the right analysis, the right material choice and the right production process.",
+        "With this mindset, we assess our customers' needs technically first and focus on understanding the real cause of the need — not just the requested product. Because a technical problem may stem from raw material, mold design, production technology, application, or logistics.",
+        "Our role at CNR SEAL is to evaluate all these processes as a whole, to pair the right technical solutions with reliable production models, and to add sustainable value to our customers' production.",
+        "Beyond standard product supply, we manage custom profile development, technical consultancy, mold development and production coordination with a cross-disciplinary perspective — approaching every project with the mindset of a long-term partnership.",
+        "Honesty, trust and responsibility are at the core of the way we work. Not making promises we cannot keep, not recommending any product we don't believe is the right solution, and taking ownership of our customers' production processes as our own — these are our most important working principles.",
+      ],
     },
     values: {
       title: "Our Values",
@@ -74,12 +106,26 @@ export default async function VisionMissionPage(props: PageProps<"/[locale]/kuru
             <article className="rounded-2xl bg-brand-50 p-8 lg:p-10">
               <Compass className="h-10 w-10 text-accent-500" />
               <h2 className="mt-5 text-2xl font-bold text-brand-950">{content.vision.title}</h2>
-              <p className="mt-4 text-brand-700 leading-relaxed text-lg">{content.vision.body}</p>
+              <blockquote className="mt-5 text-lg lg:text-xl font-semibold text-brand-950 leading-snug border-l-4 border-accent-500 pl-4 italic">
+                &ldquo;{content.vision.lead}&rdquo;
+              </blockquote>
+              <div className="mt-5 space-y-3 text-brand-700 leading-relaxed">
+                {content.vision.body.map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
+              </div>
             </article>
             <article className="rounded-2xl bg-brand-900 text-white p-8 lg:p-10">
               <Target className="h-10 w-10 text-accent-400" />
               <h2 className="mt-5 text-2xl font-bold">{content.mission.title}</h2>
-              <p className="mt-4 text-brand-200 leading-relaxed text-lg">{content.mission.body}</p>
+              <blockquote className="mt-5 text-lg lg:text-xl font-semibold text-white leading-snug border-l-4 border-accent-400 pl-4 italic">
+                &ldquo;{content.mission.lead}&rdquo;
+              </blockquote>
+              <div className="mt-5 space-y-3 text-brand-200 leading-relaxed">
+                {content.mission.body.map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
+              </div>
             </article>
           </div>
 
