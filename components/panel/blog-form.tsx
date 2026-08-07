@@ -16,7 +16,7 @@ import { RichTextEditor } from "@/components/panel/rich-text-editor";
 import { slugify } from "@/lib/slug";
 import type { BlogPost, BlogCategory } from "@/lib/db";
 import type { BlogFormState } from "@/lib/actions-blog";
-import { BLOG_CATEGORIES } from "@/lib/blog";
+import { BLOG_CATEGORIES } from "@/lib/blog-categories";
 
 type Props = {
   post?: BlogPost;
