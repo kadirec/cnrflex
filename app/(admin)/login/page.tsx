@@ -16,10 +16,10 @@ export default async function LoginPage() {
           <Image
             src="/logo.png"
             alt="CNR Seal"
-            width={200}
-            height={133}
+            width={1000}
+            height={339}
             priority
-            className="mx-auto h-14 w-auto mb-3"
+            className="mx-auto h-12 w-auto mb-3"
           />
           <p className="text-sm text-slate-600">Yönetim Paneli</p>
         </div>
