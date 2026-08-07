@@ -3,8 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { useRef, useState } from "react";
+import { Menu, X, ChevronDown, ArrowUpRight } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { siteConfig, type Locale, locales } from "@/lib/site";
@@ -14,7 +14,8 @@ import { CartMenu } from "@/components/cart/CartMenu";
 type CategoryLink = {
   slug: string;
   label: string;
-  children: { slug: string; label: string }[];
+  image?: string | null;
+  children: { slug: string; label: string; image?: string | null }[];
 };
 
 type Props = {
@@ -23,13 +24,19 @@ type Props = {
   categoryLinks: CategoryLink[];
 };
 
-type NavChild = { href: string; label: string; children?: { href: string; label: string }[] };
+type NavChild = {
+  href: string;
+  label: string;
+  image?: string | null;
+  children?: { href: string; label: string }[];
+};
 
 type NavItem = {
   label: string;
   href?: string;
   children?: NavChild[];
   footer?: { href: string; label: string };
+  variant?: "simple" | "mega";
 };
 
 const flagMap: Record<Locale, string> = {
@@ -41,6 +48,17 @@ export function Header({ locale, dict, categoryLinks }: Props) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [megaOpen, setMegaOpen] = useState(false);
+  const megaCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const openMega = () => {
+    if (megaCloseTimer.current) clearTimeout(megaCloseTimer.current);
+    setMegaOpen(true);
+  };
+  const scheduleMegaClose = () => {
+    if (megaCloseTimer.current) clearTimeout(megaCloseTimer.current);
+    megaCloseTimer.current = setTimeout(() => setMegaOpen(false), 120);
+  };
 
   const navItems: NavItem[] = [
     { href: `/${locale}`, label: dict.nav.home },
@@ -54,9 +72,11 @@ export function Header({ locale, dict, categoryLinks }: Props) {
     {
       label: dict.nav.products,
       href: `/${locale}/urunler`,
+      variant: "mega",
       children: categoryLinks.map((c) => ({
         href: `/${locale}/urunler/${c.slug}`,
         label: c.label,
+        image: c.image ?? null,
         children: c.children.map((ch) => ({
           href: `/${locale}/urunler/${ch.slug}`,
           label: ch.label,
@@ -81,7 +101,7 @@ export function Header({ locale, dict, categoryLinks }: Props) {
 
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-brand-100">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-24 items-center justify-between gap-4">
           <Link href={`/${locale}`} className="flex items-center" aria-label={siteConfig.name}>
             <Image
@@ -97,7 +117,10 @@ export function Header({ locale, dict, categoryLinks }: Props) {
           <nav className="hidden lg:flex items-center gap-1">
             {navItems.map((item) => {
               if (item.children) {
-                const isOpen = openMenu === item.label;
+                const isMega = item.variant === "mega";
+                const isOpen = isMega ? megaOpen : openMenu === item.label;
+                const enter = isMega ? openMega : () => setOpenMenu(item.label);
+                const leave = isMega ? scheduleMegaClose : () => setOpenMenu(null);
                 const TriggerInner = (
                   <>
                     {item.label}
@@ -108,8 +131,8 @@ export function Header({ locale, dict, categoryLinks }: Props) {
                   <div
                     key={item.label}
                     className="relative"
-                    onMouseEnter={() => setOpenMenu(item.label)}
-                    onMouseLeave={() => setOpenMenu(null)}
+                    onMouseEnter={enter}
+                    onMouseLeave={leave}
                   >
                     {item.href ? (
                       <Link
@@ -126,7 +149,7 @@ export function Header({ locale, dict, categoryLinks }: Props) {
                         {TriggerInner}
                       </button>
                     )}
-                    {isOpen && (
+                    {isOpen && !isMega && (
                       <div className="absolute left-0 top-full pt-1 w-64">
                         <div className="bg-white rounded-lg shadow-lg border border-brand-100 py-2">
                           {item.children.map((child) => (
@@ -226,6 +249,47 @@ export function Header({ locale, dict, categoryLinks }: Props) {
             </button>
           </div>
         </div>
+
+        {megaOpen && (
+          <div
+            className="hidden lg:block absolute left-4 right-4 sm:left-6 sm:right-6 lg:left-8 lg:right-8 top-full pt-1 z-50"
+            onMouseEnter={openMega}
+            onMouseLeave={scheduleMegaClose}
+          >
+            <div className="bg-white rounded-xl shadow-xl border border-brand-100 p-5">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {categoryLinks.map((c) => (
+                  <Link
+                    key={c.slug}
+                    href={`/${locale}/urunler/${c.slug}`}
+                    className="group/tile flex items-center gap-4 rounded-lg border border-brand-100 p-2 hover:border-brand-200 hover:bg-brand-50/60 transition"
+                  >
+                    <span className="relative h-[84px] w-[84px] shrink-0 overflow-hidden rounded-md bg-brand-100 ring-1 ring-brand-100">
+                      {c.image && (
+                        <Image
+                          src={c.image}
+                          alt={c.label}
+                          fill
+                          sizes="84px"
+                          className="object-cover"
+                        />
+                      )}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-sm font-semibold text-brand-900 group-hover/tile:text-accent-600 transition">
+                        {c.label}
+                      </span>
+                      <span className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-brand-400 group-hover/tile:text-accent-600 transition">
+                        {dict.nav.view}
+                        <ArrowUpRight className="h-3 w-3" />
+                      </span>
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {open && (

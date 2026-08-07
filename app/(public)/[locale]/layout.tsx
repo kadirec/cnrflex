@@ -85,7 +85,12 @@ export default async function LocaleLayout(props: LayoutProps<"/[locale]">) {
   const categoryLinks = categories.map((c) => ({
     slug: c.slug,
     label: c.name[locale],
-    children: c.children.map((ch) => ({ slug: ch.slug, label: ch.name[locale] })),
+    image: c.image ?? null,
+    children: c.children.map((ch) => ({
+      slug: ch.slug,
+      label: ch.name[locale],
+      image: ch.image ?? null,
+    })),
   }));
 
   return (
