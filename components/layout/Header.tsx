@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -83,13 +84,15 @@ export function Header({ locale, dict, categoryLinks }: Props) {
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-brand-100">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between gap-4">
-          <Link href={`/${locale}`} className="flex items-center gap-2">
-            <span className="grid place-items-center h-9 px-2.5 rounded-lg bg-brand-900 text-white font-display font-bold text-sm tracking-tight">
-              CNR
-            </span>
-            <span className="font-display text-xl font-bold tracking-tight text-brand-900">
-              Seal
-            </span>
+          <Link href={`/${locale}`} className="flex items-center" aria-label={siteConfig.name}>
+            <Image
+              src="/logo.png"
+              alt={siteConfig.name}
+              width={160}
+              height={107}
+              priority
+              className="h-10 w-auto"
+            />
           </Link>
 
           <nav className="hidden lg:flex items-center gap-1">

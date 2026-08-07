@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, FolderTree, Package, MessageSquareText } from "lucide-react";
@@ -18,14 +19,15 @@ export function PanelSidebar({ unreadQuotes = 0 }: { unreadQuotes?: number }) {
 
   return (
     <aside className="hidden lg:flex w-64 shrink-0 bg-brand-950 text-slate-100 flex-col">
-      <div className="h-16 px-6 flex items-center gap-2 border-b border-white/10">
-        <div className="w-8 h-8 rounded-md bg-accent-500 flex items-center justify-center text-white font-bold text-sm">
-          C
-        </div>
-        <div>
-          <div className="font-bold text-white leading-tight">CNR Seal</div>
-          <div className="text-[10px] uppercase tracking-wider text-slate-400">Panel</div>
-        </div>
+      <div className="h-16 px-6 flex items-center gap-3 border-b border-white/10">
+        <Image
+          src="/logo.png"
+          alt="CNR Seal"
+          width={160}
+          height={107}
+          className="h-8 w-auto brightness-0 invert"
+        />
+        <div className="text-[10px] uppercase tracking-wider text-slate-400">Panel</div>
       </div>
       <nav className="flex-1 p-3 space-y-1">
         {items.map((item) => {

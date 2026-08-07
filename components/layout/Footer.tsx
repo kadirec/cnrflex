@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Mail, Phone, MapPin } from "lucide-react";
 
@@ -51,13 +52,14 @@ export function Footer({ locale, dict }: Props) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <span className="grid place-items-center h-9 px-2.5 rounded-lg bg-accent-500 text-white font-display font-bold text-sm tracking-tight">
-                CNR
-              </span>
-              <span className="font-display text-xl font-bold tracking-tight text-white">
-                Seal
-              </span>
+            <div className="mb-4">
+              <Image
+                src="/logo.png"
+                alt={siteConfig.name}
+                width={160}
+                height={107}
+                className="h-12 w-auto brightness-0 invert"
+              />
             </div>
             <p className="text-sm text-brand-300 leading-relaxed">{dict.footer.tagline}</p>
             <p className="mt-4 text-sm text-brand-400 leading-relaxed">{siteConfig.description[locale]}</p>

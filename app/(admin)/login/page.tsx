@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { LoginForm } from "./login-form";
@@ -12,12 +13,14 @@ export default async function LoginPage() {
     <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <div className="inline-flex items-center gap-2 mb-2">
-            <div className="w-10 h-10 rounded-lg bg-brand-900 flex items-center justify-center text-white font-bold">
-              C
-            </div>
-            <span className="text-2xl font-bold text-brand-950">CNR Seal</span>
-          </div>
+          <Image
+            src="/logo.png"
+            alt="CNR Seal"
+            width={200}
+            height={133}
+            priority
+            className="mx-auto h-14 w-auto mb-3"
+          />
           <p className="text-sm text-slate-600">Yönetim Paneli</p>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
