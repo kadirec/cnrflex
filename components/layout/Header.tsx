@@ -83,15 +83,15 @@ export function Header({ locale, dict, categoryLinks }: Props) {
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-brand-100">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between gap-4">
+        <div className="flex h-20 items-center justify-between gap-4">
           <Link href={`/${locale}`} className="flex items-center" aria-label={siteConfig.name}>
             <Image
               src="/logo.png"
               alt={siteConfig.name}
-              width={160}
-              height={107}
+              width={240}
+              height={160}
               priority
-              className="h-10 w-auto"
+              className="h-14 w-auto"
             />
           </Link>
 
