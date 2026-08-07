@@ -12,7 +12,7 @@ type Props = {
 
 export function Hero({ locale, dict }: Props) {
   return (
-    <section className="relative overflow-hidden bg-brand-950 text-white min-h-[calc(100dvh-5rem)] lg:min-h-0 flex">
+    <section className="relative overflow-hidden bg-brand-950 text-white min-h-[calc(100svh-5rem)] lg:min-h-0 flex">
       <Image
         src="/cnr_flex_hero2.png"
         alt=""
@@ -29,9 +29,10 @@ export function Hero({ locale, dict }: Props) {
 
       <div className="relative w-full mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-32 flex flex-col justify-center">
         <div className="max-w-3xl">
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur px-3.5 py-1.5 text-[13px] sm:text-sm font-medium text-brand-100 ring-1 ring-white/20">
-            <Sparkles className="h-4 w-4 text-accent-400" />
-            {dict.hero.eyebrow}
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur px-3 sm:px-3.5 py-1 sm:py-1.5 text-[11px] sm:text-sm font-medium text-brand-100 ring-1 ring-white/20 whitespace-nowrap">
+            <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 text-accent-400" />
+            <span className="sm:hidden">{dict.hero.eyebrowShort}</span>
+            <span className="hidden sm:inline">{dict.hero.eyebrow}</span>
           </div>
           <h1 className="mt-5 sm:mt-6 text-[32px] leading-[1.15] sm:text-4xl sm:leading-tight lg:text-6xl font-bold">
             {dict.hero.title}
