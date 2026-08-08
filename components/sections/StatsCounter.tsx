@@ -7,7 +7,7 @@ type Item = {
 
 const items: Item[] = [
   {
-    value: { tr: "2010'dan Beri", en: "Since 2010" },
+    value: { tr: "2010'dan Günümüze", en: "Since 2010" },
     label: { tr: "Sektör Deneyimi", en: "Industry Experience" },
   },
   {
