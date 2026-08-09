@@ -9,7 +9,10 @@ import { stripHtml } from "@/lib/sanitize";
 import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
 import { QuickAddButton } from "@/components/product/quick-add-button";
 import { RollIcon } from "@/components/product/roll-icon";
+import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
+import { ProductItemListJsonLd } from "@/components/seo/ProductItemListJsonLd";
 import { getDictionary, hasLocale } from "../../dictionaries";
+import { buildAlternates, canonicalUrl } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -18,9 +21,12 @@ export async function generateMetadata(props: PageProps<"/[locale]/urunler/[cate
   if (!hasLocale(locale)) return {};
   const category = await getCategory(categorySlug);
   if (!category) return {};
+  const path = `/urunler/${category.slug}`;
   return {
     title: category.name[locale],
     description: category.shortDescription[locale],
+    alternates: buildAlternates(locale, path),
+    openGraph: { url: canonicalUrl(locale, path) },
   };
 }
 
@@ -33,6 +39,14 @@ export default async function CategoryPage(props: PageProps<"/[locale]/urunler/[
 
   return (
     <>
+      <BreadcrumbJsonLd
+        items={[
+          { name: dict.nav.home, url: `/${locale}` },
+          { name: dict.nav.products, url: `/${locale}/urunler` },
+          { name: category.name[locale], url: `/${locale}/urunler/${category.slug}` },
+        ]}
+      />
+      <ProductItemListJsonLd locale={locale} category={category} />
       <div className="bg-brand-50 border-b border-brand-100">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
           <nav className="flex items-center gap-2 text-sm text-brand-600">

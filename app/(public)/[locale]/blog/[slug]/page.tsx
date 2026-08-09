@@ -6,7 +6,10 @@ import { ChevronRight, Clock, Calendar, ArrowLeft } from "lucide-react";
 
 import { getPublishedPostBySlug } from "@/lib/blog";
 import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
+import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
+import { BlogPostingJsonLd } from "@/components/seo/BlogPostingJsonLd";
 import { getDictionary, hasLocale } from "../../dictionaries";
+import { buildAlternates, canonicalUrl } from "@/lib/seo";
 
 export async function generateMetadata(props: PageProps<"/[locale]/blog/[slug]">): Promise<Metadata> {
   const { locale, slug } = await props.params;
@@ -15,12 +18,18 @@ export async function generateMetadata(props: PageProps<"/[locale]/blog/[slug]">
   if (!post) return {};
   const title = locale === "tr" ? post.titleTr : post.titleEn;
   const description = locale === "tr" ? post.excerptTr : post.excerptEn;
+  const path = `/blog/${post.slug}`;
   return {
     title,
     description: description ?? undefined,
-    openGraph: post.coverImageUrl
-      ? { images: [{ url: post.coverImageUrl }] }
-      : undefined,
+    alternates: buildAlternates(locale, path),
+    openGraph: {
+      type: "article",
+      url: canonicalUrl(locale, path),
+      images: post.coverImageUrl ? [{ url: post.coverImageUrl }] : undefined,
+      publishedTime: post.publishedAt ? new Date(post.publishedAt).toISOString() : undefined,
+      modifiedTime: post.updatedAt ? new Date(post.updatedAt).toISOString() : undefined,
+    },
   };
 }
 
@@ -35,6 +44,14 @@ export default async function BlogPostPage(props: PageProps<"/[locale]/blog/[slu
 
   return (
     <>
+      <BreadcrumbJsonLd
+        items={[
+          { name: dict.nav.home, url: `/${locale}` },
+          { name: dict.nav.blog, url: `/${locale}/blog` },
+          { name: title, url: `/${locale}/blog/${post.slug}` },
+        ]}
+      />
+      <BlogPostingJsonLd locale={locale} post={post} />
       <div className="bg-brand-50 border-b border-brand-100">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
           <nav className="flex items-center gap-2 text-sm text-brand-600 flex-wrap">

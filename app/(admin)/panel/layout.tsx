@@ -4,7 +4,10 @@ import { PanelTopbar } from "@/components/panel/topbar";
 import { Toaster } from "@/components/ui/sonner";
 import { countUnread } from "@/lib/quotes";
 
-export const metadata = { title: "Panel — CNR Seal" };
+export const metadata = {
+  title: "Panel — CNR Seal",
+  robots: { index: false, follow: false, googleBot: { index: false, follow: false } },
+};
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
   await requireSession();

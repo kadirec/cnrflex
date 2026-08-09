@@ -18,12 +18,18 @@ import { getPublishedPosts, BLOG_CATEGORIES, getCategoryLabel } from "@/lib/blog
 import { getDictionary, hasLocale } from "../dictionaries";
 import type { BlogCategory } from "@/lib/db";
 import { cn } from "@/lib/utils";
+import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
+import { buildAlternates, canonicalUrl } from "@/lib/seo";
 
 export async function generateMetadata(props: PageProps<"/[locale]/blog">): Promise<Metadata> {
   const { locale } = await props.params;
   if (!hasLocale(locale)) return {};
   const dict = await getDictionary(locale);
-  return { title: dict.nav.blog };
+  return {
+    title: dict.nav.blog,
+    alternates: buildAlternates(locale, "/blog"),
+    openGraph: { url: canonicalUrl(locale, "/blog") },
+  };
 }
 
 const CATEGORY_ICON: Record<BlogCategory, LucideIcon> = {
@@ -68,6 +74,12 @@ export default async function BlogIndexPage(props: PageProps<"/[locale]/blog">) 
 
   return (
     <>
+      <BreadcrumbJsonLd
+        items={[
+          { name: dict.nav.home, url: `/${locale}` },
+          { name: dict.nav.blog, url: `/${locale}/blog` },
+        ]}
+      />
       <div className="bg-brand-950 text-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
           <h1 className="text-4xl lg:text-5xl font-bold">{dict.nav.blog}</h1>

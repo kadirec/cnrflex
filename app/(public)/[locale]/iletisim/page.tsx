@@ -5,12 +5,19 @@ import { Mail, Phone, MapPin, Clock } from "lucide-react";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { getDictionary, hasLocale } from "../dictionaries";
 import { getSiteSettings } from "@/lib/settings";
+import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
+import { LocalBusinessJsonLd } from "@/components/seo/LocalBusinessJsonLd";
+import { buildAlternates, canonicalUrl } from "@/lib/seo";
 
 export async function generateMetadata(props: PageProps<"/[locale]/iletisim">): Promise<Metadata> {
   const { locale } = await props.params;
   if (!hasLocale(locale)) return {};
   const dict = await getDictionary(locale);
-  return { title: dict.nav.contact };
+  return {
+    title: dict.nav.contact,
+    alternates: buildAlternates(locale, "/iletisim"),
+    openGraph: { url: canonicalUrl(locale, "/iletisim") },
+  };
 }
 
 export default async function ContactPage(props: PageProps<"/[locale]/iletisim">) {
@@ -30,6 +37,13 @@ export default async function ContactPage(props: PageProps<"/[locale]/iletisim">
 
   return (
     <>
+      <BreadcrumbJsonLd
+        items={[
+          { name: dict.nav.home, url: `/${locale}` },
+          { name: dict.nav.contact, url: `/${locale}/iletisim` },
+        ]}
+      />
+      <LocalBusinessJsonLd locale={locale} />
       <div className="bg-brand-950 text-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
           <h1 className="text-4xl lg:text-5xl font-bold">{dict.contact.title}</h1>

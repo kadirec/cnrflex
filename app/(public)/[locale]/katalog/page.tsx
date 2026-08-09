@@ -4,12 +4,17 @@ import { Download, FileText, CheckCircle2 } from "lucide-react";
 
 import { ContactForm } from "@/components/forms/ContactForm";
 import { getDictionary, hasLocale } from "../dictionaries";
+import { buildAlternates, canonicalUrl } from "@/lib/seo";
 
 export async function generateMetadata(props: PageProps<"/[locale]/katalog">): Promise<Metadata> {
   const { locale } = await props.params;
   if (!hasLocale(locale)) return {};
   const dict = await getDictionary(locale);
-  return { title: dict.nav.catalog };
+  return {
+    title: dict.nav.catalog,
+    alternates: buildAlternates(locale, "/katalog"),
+    openGraph: { url: canonicalUrl(locale, "/katalog") },
+  };
 }
 
 export default async function CatalogPage(props: PageProps<"/[locale]/katalog">) {

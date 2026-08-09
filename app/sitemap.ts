@@ -16,10 +16,19 @@ const STATIC_PATHS = [
   "/kullanim-sartlari",
 ];
 
+function languagesFor(path: string) {
+  return Object.fromEntries(
+    locales.map((l) => [l, `${siteConfig.url}/${l}${path}`]),
+  );
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteConfig.url;
   const now = new Date();
-  const categories = await getAllCategoriesFlat();
+  const [categories, posts] = await Promise.all([
+    getAllCategoriesFlat(),
+    getPublishedPosts(),
+  ]);
 
   const entries: MetadataRoute.Sitemap = [];
 
@@ -29,52 +38,45 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "monthly",
       priority: path === "" ? 1 : 0.7,
-      alternates: {
-        languages: Object.fromEntries(locales.map((l) => [l, `${base}/${l}${path}`])),
-      },
+      alternates: { languages: languagesFor(path) },
     });
   }
 
   for (const category of categories) {
+    const catPath = `/urunler/${category.slug}`;
+    const productLatest = category.products.reduce<Date>(
+      (max, p) => (p.updatedAt > max ? p.updatedAt : max),
+      category.updatedAt,
+    );
     entries.push({
-      url: `${base}/tr/urunler/${category.slug}`,
-      lastModified: now,
-      changeFrequency: "monthly",
+      url: `${base}/tr${catPath}`,
+      lastModified: productLatest,
+      changeFrequency: "weekly",
       priority: 0.8,
-      alternates: {
-        languages: Object.fromEntries(
-          locales.map((l) => [l, `${base}/${l}/urunler/${category.slug}`]),
-        ),
-      },
+      alternates: { languages: languagesFor(catPath) },
     });
 
     for (const product of category.products) {
+      const prodPath = `/urunler/${category.slug}/${product.slug}`;
       entries.push({
-        url: `${base}/tr/urunler/${category.slug}/${product.slug}`,
-        lastModified: now,
+        url: `${base}/tr${prodPath}`,
+        lastModified: product.updatedAt,
         changeFrequency: "monthly",
         priority: 0.6,
-        alternates: {
-          languages: Object.fromEntries(
-            locales.map((l) => [l, `${base}/${l}/urunler/${category.slug}/${product.slug}`]),
-          ),
-        },
+        alternates: { languages: languagesFor(prodPath) },
       });
     }
   }
 
-  const posts = await getPublishedPosts();
   for (const post of posts) {
+    const path = `/blog/${post.slug}`;
+    const lastMod = post.updatedAt ?? post.publishedAt ?? now;
     entries.push({
-      url: `${base}/tr/blog/${post.slug}`,
-      lastModified: post.publishedAt ?? now,
+      url: `${base}/tr${path}`,
+      lastModified: lastMod,
       changeFrequency: "monthly",
       priority: 0.5,
-      alternates: {
-        languages: Object.fromEntries(
-          locales.map((l) => [l, `${base}/${l}/blog/${post.slug}`]),
-        ),
-      },
+      alternates: { languages: languagesFor(path) },
     });
   }
 

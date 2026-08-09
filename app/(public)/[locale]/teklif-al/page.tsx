@@ -7,12 +7,17 @@ import { getDictionary, hasLocale } from "../dictionaries";
 import { getSiteSettings } from "@/lib/settings";
 import { getPickerProducts } from "@/lib/products";
 import { Mail, Phone, MessageCircle } from "lucide-react";
+import { buildAlternates, canonicalUrl } from "@/lib/seo";
 
 export async function generateMetadata(props: PageProps<"/[locale]/teklif-al">): Promise<Metadata> {
   const { locale } = await props.params;
   if (!hasLocale(locale)) return {};
   const dict = await getDictionary(locale);
-  return { title: dict.quote.title };
+  return {
+    title: dict.quote.title,
+    alternates: buildAlternates(locale, "/teklif-al"),
+    openGraph: { url: canonicalUrl(locale, "/teklif-al") },
+  };
 }
 
 export default async function QuotePage(props: PageProps<"/[locale]/teklif-al">) {

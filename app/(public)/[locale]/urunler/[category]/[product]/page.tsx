@@ -11,7 +11,10 @@ import { AddToQuoteButton } from "@/components/product/add-to-quote-button";
 import { SimilarProductsCarousel } from "@/components/product/similar-products-carousel";
 import { RollIcon } from "@/components/product/roll-icon";
 import { ProductStickyBar } from "@/components/product/product-sticky-bar";
+import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
+import { ProductJsonLd } from "@/components/seo/ProductJsonLd";
 import { getDictionary, hasLocale } from "../../../dictionaries";
+import { buildAlternates, canonicalUrl } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -22,9 +25,16 @@ export async function generateMetadata(
   if (!hasLocale(locale)) return {};
   const result = await getProduct(catSlug, prodSlug);
   if (!result) return {};
+  const path = `/urunler/${result.category.slug}/${result.product.slug}`;
+  const cover = result.product.image ?? result.product.images[0];
   return {
     title: result.product.name[locale],
     description: stripHtml(result.product.description[locale]).slice(0, 200),
+    alternates: buildAlternates(locale, path),
+    openGraph: {
+      url: canonicalUrl(locale, path),
+      images: cover ? [{ url: cover }] : undefined,
+    },
   };
 }
 
@@ -42,6 +52,15 @@ export default async function ProductPage(
 
   return (
     <>
+      <BreadcrumbJsonLd
+        items={[
+          { name: dict.nav.home, url: `/${locale}` },
+          { name: dict.nav.products, url: `/${locale}/urunler` },
+          { name: category.name[locale], url: `/${locale}/urunler/${category.slug}` },
+          { name: product.name[locale], url: `/${locale}/urunler/${category.slug}/${product.slug}` },
+        ]}
+      />
+      <ProductJsonLd locale={locale} product={product} category={category} />
       <div className="bg-brand-50 border-b border-brand-100">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
           <nav className="flex items-center gap-2 text-sm text-brand-600 flex-wrap">

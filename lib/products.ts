@@ -20,6 +20,7 @@ export type Product = {
   images: string[];
   rollLength?: number | null;
   specs?: ProductSpec[] | null;
+  updatedAt: Date;
 };
 
 export type Category = {
@@ -34,6 +35,7 @@ export type Category = {
   sortOrder: number;
   products: Product[];
   children: Category[];
+  updatedAt: Date;
 };
 
 type CatRow = typeof catT.$inferSelect;
@@ -52,6 +54,7 @@ function toProduct(p: ProdRow): Product {
     images: gallery.length > 0 ? gallery : cover ? [cover] : [],
     rollLength: p.rollLength,
     specs: p.specs,
+    updatedAt: p.updatedAt,
   };
 }
 
@@ -92,6 +95,7 @@ async function loadAll() {
       sortOrder: row.sortOrder,
       products: productsByCategory.get(row.id) ?? [],
       children,
+      updatedAt: row.updatedAt,
     };
   };
 

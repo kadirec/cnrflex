@@ -4,12 +4,17 @@ import { Target, Compass } from "lucide-react";
 
 import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
 import { getDictionary, hasLocale } from "../../dictionaries";
+import { buildAlternates, canonicalUrl } from "@/lib/seo";
 
 export async function generateMetadata(props: PageProps<"/[locale]/kurumsal/vizyon-misyon">): Promise<Metadata> {
   const { locale } = await props.params;
   if (!hasLocale(locale)) return {};
   const dict = await getDictionary(locale);
-  return { title: dict.nav.vision };
+  return {
+    title: dict.nav.vision,
+    alternates: buildAlternates(locale, "/kurumsal/vizyon-misyon"),
+    openGraph: { url: canonicalUrl(locale, "/kurumsal/vizyon-misyon") },
+  };
 }
 
 export default async function VisionMissionPage(props: PageProps<"/[locale]/kurumsal/vizyon-misyon">) {

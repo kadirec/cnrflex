@@ -3,12 +3,17 @@ import { notFound } from "next/navigation";
 
 import { getDictionary, hasLocale } from "../dictionaries";
 import { siteConfig } from "@/lib/site";
+import { buildAlternates, canonicalUrl } from "@/lib/seo";
 
 export async function generateMetadata(props: PageProps<"/[locale]/kullanim-sartlari">): Promise<Metadata> {
   const { locale } = await props.params;
   if (!hasLocale(locale)) return {};
   const dict = await getDictionary(locale);
-  return { title: dict.footer.terms };
+  return {
+    title: dict.footer.terms,
+    alternates: buildAlternates(locale, "/kullanim-sartlari"),
+    openGraph: { url: canonicalUrl(locale, "/kullanim-sartlari") },
+  };
 }
 
 export default async function TermsPage(props: PageProps<"/[locale]/kullanim-sartlari">) {

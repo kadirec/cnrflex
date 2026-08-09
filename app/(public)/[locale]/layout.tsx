@@ -13,6 +13,7 @@ import { getDictionary, hasLocale } from "./dictionaries";
 import { locales, siteConfig } from "@/lib/site";
 import { getSiteSettings } from "@/lib/settings";
 import { getAllCategories } from "@/lib/products";
+import { buildAlternates } from "@/lib/seo";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -49,13 +50,7 @@ export async function generateMetadata(props: LayoutProps<"/[locale]">): Promise
       template: `%s | ${siteConfig.name}`,
     },
     description,
-    alternates: {
-      canonical: `/${locale}`,
-      languages: {
-        tr: "/tr",
-        en: "/en",
-      },
-    },
+    alternates: buildAlternates(locale, ""),
     openGraph: {
       type: "website",
       siteName: siteConfig.name,

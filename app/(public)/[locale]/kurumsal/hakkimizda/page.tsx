@@ -4,12 +4,17 @@ import { notFound } from "next/navigation";
 import { StatsCounter } from "@/components/sections/StatsCounter";
 import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
 import { getDictionary, hasLocale } from "../../dictionaries";
+import { buildAlternates, canonicalUrl } from "@/lib/seo";
 
 export async function generateMetadata(props: PageProps<"/[locale]/kurumsal/hakkimizda">): Promise<Metadata> {
   const { locale } = await props.params;
   if (!hasLocale(locale)) return {};
   const dict = await getDictionary(locale);
-  return { title: dict.nav.about };
+  return {
+    title: dict.nav.about,
+    alternates: buildAlternates(locale, "/kurumsal/hakkimizda"),
+    openGraph: { url: canonicalUrl(locale, "/kurumsal/hakkimizda") },
+  };
 }
 
 export default async function AboutPage(props: PageProps<"/[locale]/kurumsal/hakkimizda">) {

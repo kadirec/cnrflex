@@ -4,12 +4,17 @@ import { notFound } from "next/navigation";
 import { getDictionary, hasLocale } from "../dictionaries";
 import { siteConfig } from "@/lib/site";
 import { getSiteSettings } from "@/lib/settings";
+import { buildAlternates, canonicalUrl } from "@/lib/seo";
 
 export async function generateMetadata(props: PageProps<"/[locale]/gizlilik-politikasi">): Promise<Metadata> {
   const { locale } = await props.params;
   if (!hasLocale(locale)) return {};
   const dict = await getDictionary(locale);
-  return { title: dict.footer.privacy };
+  return {
+    title: dict.footer.privacy,
+    alternates: buildAlternates(locale, "/gizlilik-politikasi"),
+    openGraph: { url: canonicalUrl(locale, "/gizlilik-politikasi") },
+  };
 }
 
 export default async function PrivacyPage(props: PageProps<"/[locale]/gizlilik-politikasi">) {

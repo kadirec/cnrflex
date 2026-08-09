@@ -5,6 +5,7 @@ import { StatsCounter } from "@/components/sections/StatsCounter";
 import { CategoryGrid } from "@/components/sections/CategoryGrid";
 import { AboutPreview } from "@/components/sections/AboutPreview";
 import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
+import { WebSiteJsonLd } from "@/components/seo/WebSiteJsonLd";
 
 import { getDictionary, hasLocale } from "./dictionaries";
 import { getAllCategories } from "@/lib/products";
@@ -17,6 +18,7 @@ export default async function HomePage(props: PageProps<"/[locale]">) {
 
   return (
     <>
+      <WebSiteJsonLd locale={locale} />
       <Hero locale={locale} dict={dict} />
       <StatsCounter locale={locale} />
       <CategoryGrid locale={locale} dict={dict} categories={categories} />

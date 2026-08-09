@@ -6,7 +6,9 @@ import { ArrowUpRight } from "lucide-react";
 
 import { getAllCategories } from "@/lib/products";
 import { CustomRequestSection } from "@/components/sections/CustomRequestSection";
+import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
 import { getDictionary, hasLocale } from "../dictionaries";
+import { buildAlternates, canonicalUrl } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +19,8 @@ export async function generateMetadata(props: PageProps<"/[locale]/urunler">): P
   return {
     title: dict.nav.products,
     description: dict.categories.subtitle,
+    alternates: buildAlternates(locale, "/urunler"),
+    openGraph: { url: canonicalUrl(locale, "/urunler") },
   };
 }
 
@@ -28,6 +32,12 @@ export default async function ProductsPage(props: PageProps<"/[locale]/urunler">
 
   return (
     <>
+      <BreadcrumbJsonLd
+        items={[
+          { name: dict.nav.home, url: `/${locale}` },
+          { name: dict.nav.products, url: `/${locale}/urunler` },
+        ]}
+      />
       <div className="bg-brand-50 border-b border-brand-100">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
           <h1 className="text-4xl lg:text-5xl font-bold text-brand-950">{dict.nav.products}</h1>
