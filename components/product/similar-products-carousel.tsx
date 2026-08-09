@@ -8,7 +8,7 @@ import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { stripHtml } from "@/lib/sanitize";
 import { QuickAddButton } from "@/components/product/quick-add-button";
 import { RollIcon } from "@/components/product/roll-icon";
-import type { Locale } from "@/lib/site";
+import { type Locale, localePrefix } from "@/lib/site";
 import type { Product, Category } from "@/lib/products";
 
 type Props = {
@@ -115,7 +115,7 @@ export function SimilarProductsCarousel({
             className="group relative flex flex-col shrink-0 snap-start rounded-xl border border-brand-100 bg-white hover:border-accent-500 hover:shadow-lg hover:shadow-brand-900/5 transition overflow-hidden w-[80%] sm:w-[calc((100%-1.2*1.5rem)/2.2)] lg:w-[calc((100%-2.5*1.5rem)/3.5)]"
           >
             <Link
-              href={`/${locale}/urunler/${category.slug}/${p.slug}`}
+              href={`${localePrefix(locale)}/urunler/${category.slug}/${p.slug}`}
               className="relative aspect-[4/3] bg-gradient-to-br from-brand-100 to-brand-50 grid place-items-center overflow-hidden"
             >
               {p.image ? (
@@ -145,7 +145,7 @@ export function SimilarProductsCarousel({
               />
             </div>
             <Link
-              href={`/${locale}/urunler/${category.slug}/${p.slug}`}
+              href={`${localePrefix(locale)}/urunler/${category.slug}/${p.slug}`}
               className="p-5 flex-1 flex flex-col"
             >
               <div className="flex items-center justify-between gap-2">

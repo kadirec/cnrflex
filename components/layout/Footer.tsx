@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Mail, Phone, MapPin } from "lucide-react";
 
-import { siteConfig, type Locale } from "@/lib/site";
+import { siteConfig, type Locale, localePrefix } from "@/lib/site";
 import { getSiteSettings } from "@/lib/settings";
 import type { Dictionary } from "@/app/(public)/[locale]/dictionaries";
 
@@ -80,12 +80,12 @@ export async function Footer({ locale, dict }: Props) {
               {dict.footer.quickLinks}
             </h3>
             <ul className="space-y-2 text-sm">
-              <li><Link href={`/${locale}/kurumsal/hakkimizda`} className="hover:text-accent-400">{dict.nav.about}</Link></li>
-              <li><Link href={`/${locale}/urunler`} className="hover:text-accent-400">{dict.nav.products}</Link></li>
-              <li><Link href={`/${locale}/blog`} className="hover:text-accent-400">{dict.nav.blog}</Link></li>
-              <li><Link href={`/${locale}/katalog`} className="hover:text-accent-400">{dict.nav.catalog}</Link></li>
-              <li><Link href={`/${locale}/teklif-al`} className="hover:text-accent-400">{dict.nav.getQuote}</Link></li>
-              <li><Link href={`/${locale}/teklif-al?mode=custom`} className="hover:text-accent-400">{dict.custom.eyebrow}</Link></li>
+              <li><Link href={`${localePrefix(locale)}/kurumsal/hakkimizda`} className="hover:text-accent-400">{dict.nav.about}</Link></li>
+              <li><Link href={`${localePrefix(locale)}/urunler`} className="hover:text-accent-400">{dict.nav.products}</Link></li>
+              <li><Link href={`${localePrefix(locale)}/blog`} className="hover:text-accent-400">{dict.nav.blog}</Link></li>
+              <li><Link href={`${localePrefix(locale)}/katalog`} className="hover:text-accent-400">{dict.nav.catalog}</Link></li>
+              <li><Link href={`${localePrefix(locale)}/teklif-al`} className="hover:text-accent-400">{dict.nav.getQuote}</Link></li>
+              <li><Link href={`${localePrefix(locale)}/teklif-al?mode=custom`} className="hover:text-accent-400">{dict.custom.eyebrow}</Link></li>
             </ul>
           </div>
 
@@ -94,11 +94,11 @@ export async function Footer({ locale, dict }: Props) {
               {dict.footer.products}
             </h3>
             <ul className="space-y-2 text-sm">
-              <li><Link href={`/${locale}/urunler/otomatik-kepenk-fitilleri`} className="hover:text-accent-400">{locale === "tr" ? "Otomatik Kepenk Fitilleri" : "Automatic Shutter Seals"}</Link></li>
-              <li><Link href={`/${locale}/urunler/pergola-fitilleri`} className="hover:text-accent-400">{locale === "tr" ? "Pergola Fitilleri" : "Pergola Seals"}</Link></li>
-              <li><Link href={`/${locale}/urunler/biyoklimatik-fitiller`} className="hover:text-accent-400">{locale === "tr" ? "Biyoklimatik Fitiller" : "Bioclimatic Seals"}</Link></li>
-              <li><Link href={`/${locale}/urunler/kapi-fitilleri`} className="hover:text-accent-400">{locale === "tr" ? "Kapı Fitilleri" : "Door Seals"}</Link></li>
-              <li><Link href={`/${locale}/urunler/tente-fitil-profilleri`} className="hover:text-accent-400">{locale === "tr" ? "Tente Fitil Profilleri" : "Awning Seal Profiles"}</Link></li>
+              <li><Link href={`${localePrefix(locale)}/urunler/otomatik-kepenk-fitilleri`} className="hover:text-accent-400">{locale === "tr" ? "Otomatik Kepenk Fitilleri" : "Automatic Shutter Seals"}</Link></li>
+              <li><Link href={`${localePrefix(locale)}/urunler/pergola-fitilleri`} className="hover:text-accent-400">{locale === "tr" ? "Pergola Fitilleri" : "Pergola Seals"}</Link></li>
+              <li><Link href={`${localePrefix(locale)}/urunler/biyoklimatik-fitiller`} className="hover:text-accent-400">{locale === "tr" ? "Biyoklimatik Fitiller" : "Bioclimatic Seals"}</Link></li>
+              <li><Link href={`${localePrefix(locale)}/urunler/kapi-fitilleri`} className="hover:text-accent-400">{locale === "tr" ? "Kapı Fitilleri" : "Door Seals"}</Link></li>
+              <li><Link href={`${localePrefix(locale)}/urunler/tente-fitil-profilleri`} className="hover:text-accent-400">{locale === "tr" ? "Tente Fitil Profilleri" : "Awning Seal Profiles"}</Link></li>
             </ul>
           </div>
 
@@ -147,8 +147,8 @@ export async function Footer({ locale, dict }: Props) {
         <div className="mt-12 pt-8 border-t border-brand-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-brand-400">
           <p>&copy; {year} {siteConfig.name}. {dict.footer.copyright}</p>
           <div className="flex items-center gap-6">
-            <Link href={`/${locale}/gizlilik-politikasi`} className="hover:text-accent-400">{dict.footer.privacy}</Link>
-            <Link href={`/${locale}/kullanim-sartlari`} className="hover:text-accent-400">{dict.footer.terms}</Link>
+            <Link href={`${localePrefix(locale)}/gizlilik-politikasi`} className="hover:text-accent-400">{dict.footer.privacy}</Link>
+            <Link href={`${localePrefix(locale)}/kullanim-sartlari`} className="hover:text-accent-400">{dict.footer.terms}</Link>
           </div>
         </div>
       </div>

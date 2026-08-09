@@ -13,6 +13,7 @@ import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
 import { ProductItemListJsonLd } from "@/components/seo/ProductItemListJsonLd";
 import { getDictionary, hasLocale } from "../../dictionaries";
 import { buildAlternates, canonicalUrl } from "@/lib/seo";
+import { localePath, localePrefix } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
@@ -41,18 +42,18 @@ export default async function CategoryPage(props: PageProps<"/[locale]/urunler/[
     <>
       <BreadcrumbJsonLd
         items={[
-          { name: dict.nav.home, url: `/${locale}` },
-          { name: dict.nav.products, url: `/${locale}/urunler` },
-          { name: category.name[locale], url: `/${locale}/urunler/${category.slug}` },
+          { name: dict.nav.home, url: localePath(locale) },
+          { name: dict.nav.products, url: `${localePrefix(locale)}/urunler` },
+          { name: category.name[locale], url: `${localePrefix(locale)}/urunler/${category.slug}` },
         ]}
       />
       <ProductItemListJsonLd locale={locale} category={category} />
       <div className="bg-brand-50 border-b border-brand-100">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
           <nav className="flex items-center gap-2 text-sm text-brand-600">
-            <Link href={`/${locale}`} className="hover:text-accent-600">{dict.nav.home}</Link>
+            <Link href={localePath(locale)} className="hover:text-accent-600">{dict.nav.home}</Link>
             <ChevronRight className="h-4 w-4" />
-            <Link href={`/${locale}/urunler`} className="hover:text-accent-600">{dict.nav.products}</Link>
+            <Link href={`${localePrefix(locale)}/urunler`} className="hover:text-accent-600">{dict.nav.products}</Link>
             <ChevronRight className="h-4 w-4" />
             <span className="text-brand-900">{category.name[locale]}</span>
           </nav>
@@ -73,7 +74,7 @@ export default async function CategoryPage(props: PageProps<"/[locale]/urunler/[
               {category.children.map((sub) => (
                 <Link
                   key={sub.slug}
-                  href={`/${locale}/urunler/${sub.slug}`}
+                  href={`${localePrefix(locale)}/urunler/${sub.slug}`}
                   className="group flex flex-col rounded-xl border border-brand-100 bg-white hover:border-accent-500 hover:shadow-lg hover:shadow-brand-900/5 transition overflow-hidden"
                 >
                   <div className="relative aspect-[16/10] bg-brand-100 overflow-hidden">
@@ -120,7 +121,7 @@ export default async function CategoryPage(props: PageProps<"/[locale]/urunler/[
               {category.products.map((product) => (
                 <div key={product.code} className="group relative flex flex-col rounded-xl border border-brand-100 bg-white hover:border-accent-500 hover:shadow-lg hover:shadow-brand-900/5 transition overflow-hidden">
                   <Link
-                    href={`/${locale}/urunler/${category.slug}/${product.slug}`}
+                    href={`${localePrefix(locale)}/urunler/${category.slug}/${product.slug}`}
                     className="relative aspect-[4/3] bg-gradient-to-br from-brand-100 to-brand-50 grid place-items-center overflow-hidden"
                   >
                     {product.image ? (
@@ -150,7 +151,7 @@ export default async function CategoryPage(props: PageProps<"/[locale]/urunler/[
                     />
                   </div>
                   <Link
-                    href={`/${locale}/urunler/${category.slug}/${product.slug}`}
+                    href={`${localePrefix(locale)}/urunler/${category.slug}/${product.slug}`}
                     className="p-5 flex-1 flex flex-col"
                   >
                     <div className="flex items-center justify-between gap-2">

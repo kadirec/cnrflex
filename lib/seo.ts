@@ -1,4 +1,4 @@
-import { defaultLocale, siteConfig, type Locale } from "@/lib/site";
+import { defaultLocale, localePath, siteConfig, type Locale } from "@/lib/site";
 
 type Alternates = {
   canonical: string;
@@ -6,18 +6,16 @@ type Alternates = {
 };
 
 export function buildAlternates(locale: Locale, path: string): Alternates {
-  const clean = path.startsWith("/") ? path : `/${path}`;
   return {
-    canonical: `/${locale}${clean}`,
+    canonical: localePath(locale, path),
     languages: {
-      tr: `/tr${clean}`,
-      en: `/en${clean}`,
-      "x-default": `/${defaultLocale}${clean}`,
+      tr: localePath("tr", path),
+      en: localePath("en", path),
+      "x-default": localePath(defaultLocale, path),
     },
   };
 }
 
 export function canonicalUrl(locale: Locale, path: string): string {
-  const clean = path.startsWith("/") ? path : `/${path}`;
-  return `${siteConfig.url}/${locale}${clean}`;
+  return `${siteConfig.url}${localePath(locale, path)}`;
 }

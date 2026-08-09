@@ -1,5 +1,6 @@
 import { JsonLd } from "./JsonLd";
-import { siteConfig, type Locale } from "@/lib/site";
+import { type Locale } from "@/lib/site";
+import { canonicalUrl } from "@/lib/seo";
 import type { Category } from "@/lib/products";
 
 type Props = { locale: Locale; category: Category };
@@ -13,7 +14,7 @@ export function ProductItemListJsonLd({ locale, category }: Props) {
     itemListElement: category.products.map((p, i) => ({
       "@type": "ListItem",
       position: i + 1,
-      url: `${siteConfig.url}/${locale}/urunler/${category.slug}/${p.slug}`,
+      url: canonicalUrl(locale, `/urunler/${category.slug}/${p.slug}`),
       name: p.name[locale],
     })),
   };

@@ -9,6 +9,7 @@ import { CustomRequestSection } from "@/components/sections/CustomRequestSection
 import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
 import { getDictionary, hasLocale } from "../dictionaries";
 import { buildAlternates, canonicalUrl } from "@/lib/seo";
+import { localePath, localePrefix } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
@@ -34,8 +35,8 @@ export default async function ProductsPage(props: PageProps<"/[locale]/urunler">
     <>
       <BreadcrumbJsonLd
         items={[
-          { name: dict.nav.home, url: `/${locale}` },
-          { name: dict.nav.products, url: `/${locale}/urunler` },
+          { name: dict.nav.home, url: localePath(locale) },
+          { name: dict.nav.products, url: `${localePrefix(locale)}/urunler` },
         ]}
       />
       <div className="bg-brand-50 border-b border-brand-100">
@@ -52,7 +53,7 @@ export default async function ProductsPage(props: PageProps<"/[locale]/urunler">
               return (
                 <Link
                   key={category.slug}
-                  href={`/${locale}/urunler/${category.slug}`}
+                  href={`${localePrefix(locale)}/urunler/${category.slug}`}
                   className="group flex flex-col rounded-xl border border-brand-100 bg-white hover:border-accent-500 hover:shadow-lg hover:shadow-brand-900/5 transition overflow-hidden"
                 >
                   <div className="relative aspect-[16/10] bg-brand-100 overflow-hidden">

@@ -24,7 +24,7 @@ import {
   Upload,
 } from "lucide-react";
 
-import type { Locale } from "@/lib/site";
+import { type Locale, localePrefix } from "@/lib/site";
 import type { Dictionary } from "@/app/(public)/[locale]/dictionaries";
 import type { PickerProduct } from "@/lib/products";
 import { useQuoteCart, type CartItem } from "@/components/cart/QuoteCartContext";
@@ -1074,7 +1074,7 @@ function BasketPanel({
           {step === "select" ? (
             <div className="flex items-stretch gap-2">
               <Link
-                href={`/${locale}/urunler`}
+                href={`${localePrefix(locale)}/urunler`}
                 className="inline-flex items-center justify-center gap-1 rounded-md border border-brand-200 bg-white px-3 text-sm font-medium text-brand-700 hover:border-accent-500 hover:text-accent-600 transition"
                 aria-label={locale === "tr" ? "Ürünlere dön" : "Back to products"}
               >
@@ -1389,7 +1389,7 @@ function SuccessScreen({
       </p>
       <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
         <Link
-          href={`/${locale}/urunler`}
+          href={`${localePrefix(locale)}/urunler`}
           className="inline-flex items-center gap-2 rounded-md border border-brand-200 bg-white px-5 py-3 text-sm font-semibold text-brand-800 hover:border-brand-400 hover:text-brand-950 transition"
         >
           <Package className="h-4 w-4" />

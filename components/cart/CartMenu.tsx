@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { ShoppingCart, ChevronRight, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useQuoteCart } from "@/components/cart/QuoteCartContext";
-import type { Locale } from "@/lib/site";
+import { type Locale, localePrefix } from "@/lib/site";
 
 type Props = {
   locale: Locale;
@@ -82,7 +82,7 @@ export function CartMenu({ locale, variant = "desktop" }: Props) {
   if (empty) {
     return (
       <Link
-        href={`/${locale}/teklif-al`}
+        href={`${localePrefix(locale)}/teklif-al`}
         aria-label={label}
         className={
           variant === "desktop"
@@ -173,7 +173,7 @@ export function CartMenu({ locale, variant = "desktop" }: Props) {
 
           <div className="border-t border-brand-100 bg-brand-50/60 p-3">
             <Link
-              href={`/${locale}/teklif-al`}
+              href={`${localePrefix(locale)}/teklif-al`}
               onClick={() => setOpen(false)}
               className="w-full inline-flex items-center justify-center gap-2 rounded-md bg-accent-500 hover:bg-accent-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-accent-500/25 transition"
             >

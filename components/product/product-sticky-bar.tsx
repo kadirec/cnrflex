@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import type { Locale } from "@/lib/site";
+import { type Locale, localePrefix } from "@/lib/site";
 import { AddToQuoteButton } from "@/components/product/add-to-quote-button";
 
 type Props = {
@@ -79,7 +79,7 @@ export function ProductStickyBar({
             label={quoteLabel}
           />
           <Link
-            href={`/${locale}/iletisim`}
+            href={`${localePrefix(locale)}/iletisim`}
             className="hidden sm:inline-flex items-center gap-2 rounded-md bg-brand-100 hover:bg-brand-200 px-4 py-2.5 text-sm font-semibold text-brand-900 transition"
           >
             {contactLabel}

@@ -15,6 +15,7 @@ import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
 import { ProductJsonLd } from "@/components/seo/ProductJsonLd";
 import { getDictionary, hasLocale } from "../../../dictionaries";
 import { buildAlternates, canonicalUrl } from "@/lib/seo";
+import { localePath, localePrefix } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
@@ -54,21 +55,21 @@ export default async function ProductPage(
     <>
       <BreadcrumbJsonLd
         items={[
-          { name: dict.nav.home, url: `/${locale}` },
-          { name: dict.nav.products, url: `/${locale}/urunler` },
-          { name: category.name[locale], url: `/${locale}/urunler/${category.slug}` },
-          { name: product.name[locale], url: `/${locale}/urunler/${category.slug}/${product.slug}` },
+          { name: dict.nav.home, url: localePath(locale) },
+          { name: dict.nav.products, url: `${localePrefix(locale)}/urunler` },
+          { name: category.name[locale], url: `${localePrefix(locale)}/urunler/${category.slug}` },
+          { name: product.name[locale], url: `${localePrefix(locale)}/urunler/${category.slug}/${product.slug}` },
         ]}
       />
       <ProductJsonLd locale={locale} product={product} category={category} />
       <div className="bg-brand-50 border-b border-brand-100">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
           <nav className="flex items-center gap-2 text-sm text-brand-600 flex-wrap">
-            <Link href={`/${locale}`} className="hover:text-accent-600">{dict.nav.home}</Link>
+            <Link href={localePath(locale)} className="hover:text-accent-600">{dict.nav.home}</Link>
             <ChevronRight className="h-4 w-4" />
-            <Link href={`/${locale}/urunler`} className="hover:text-accent-600">{dict.nav.products}</Link>
+            <Link href={`${localePrefix(locale)}/urunler`} className="hover:text-accent-600">{dict.nav.products}</Link>
             <ChevronRight className="h-4 w-4" />
-            <Link href={`/${locale}/urunler/${category.slug}`} className="hover:text-accent-600">{category.name[locale]}</Link>
+            <Link href={`${localePrefix(locale)}/urunler/${category.slug}`} className="hover:text-accent-600">{category.name[locale]}</Link>
             <ChevronRight className="h-4 w-4" />
             <span className="text-brand-900">{product.name[locale]}</span>
           </nav>
@@ -115,7 +116,7 @@ export default async function ProductPage(
                 label={dict.nav.getQuote}
               />
               <Link
-                href={`/${locale}/iletisim`}
+                href={`${localePrefix(locale)}/iletisim`}
                 className="inline-flex items-center gap-2 rounded-md bg-brand-100 hover:bg-brand-200 px-6 py-3 text-base font-semibold text-brand-900 transition"
               >
                 {dict.nav.contact}

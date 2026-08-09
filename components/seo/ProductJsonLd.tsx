@@ -1,5 +1,6 @@
 import { JsonLd } from "./JsonLd";
 import { siteConfig, type Locale } from "@/lib/site";
+import { canonicalUrl } from "@/lib/seo";
 import { stripHtml } from "@/lib/sanitize";
 import type { Category, Product } from "@/lib/products";
 
@@ -15,7 +16,7 @@ export function ProductJsonLd({ locale, product, category }: Props) {
     : product.image
       ? [product.image]
       : [];
-  const url = `${siteConfig.url}/${locale}/urunler/${category.slug}/${product.slug}`;
+  const url = canonicalUrl(locale, `/urunler/${category.slug}/${product.slug}`);
   const description = stripHtml(product.description[locale]).slice(0, 500);
 
   const data: Record<string, unknown> = {

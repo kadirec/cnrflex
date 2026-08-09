@@ -1,5 +1,6 @@
 import { JsonLd } from "./JsonLd";
 import { siteConfig, type Locale } from "@/lib/site";
+import { canonicalUrl } from "@/lib/seo";
 
 type Props = { locale: Locale };
 
@@ -8,7 +9,7 @@ export function WebSiteJsonLd({ locale }: Props) {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: siteConfig.name,
-    url: `${siteConfig.url}/${locale}`,
+    url: canonicalUrl(locale, ""),
     inLanguage: locale === "tr" ? "tr-TR" : "en-US",
     publisher: {
       "@type": "Organization",

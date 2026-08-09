@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getAllCategoriesFlat } from "@/lib/products";
 import { getPublishedPosts } from "@/lib/blog";
-import { siteConfig, locales } from "@/lib/site";
+import { siteConfig, locales, localePath, defaultLocale } from "@/lib/site";
 
 const STATIC_PATHS = [
   "",
@@ -18,7 +18,7 @@ const STATIC_PATHS = [
 
 function languagesFor(path: string) {
   return Object.fromEntries(
-    locales.map((l) => [l, `${siteConfig.url}/${l}${path}`]),
+    locales.map((l) => [l, `${siteConfig.url}${localePath(l, path)}`]),
   );
 }
 
@@ -34,7 +34,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   for (const path of STATIC_PATHS) {
     entries.push({
-      url: `${base}/tr${path}`,
+      url: `${base}${localePath(defaultLocale, path)}`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: path === "" ? 1 : 0.7,
@@ -49,7 +49,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       category.updatedAt,
     );
     entries.push({
-      url: `${base}/tr${catPath}`,
+      url: `${base}${localePath(defaultLocale, catPath)}`,
       lastModified: productLatest,
       changeFrequency: "weekly",
       priority: 0.8,
@@ -59,7 +59,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const product of category.products) {
       const prodPath = `/urunler/${category.slug}/${product.slug}`;
       entries.push({
-        url: `${base}/tr${prodPath}`,
+        url: `${base}${localePath(defaultLocale, prodPath)}`,
         lastModified: product.updatedAt,
         changeFrequency: "monthly",
         priority: 0.6,
@@ -72,7 +72,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const path = `/blog/${post.slug}`;
     const lastMod = post.updatedAt ?? post.publishedAt ?? now;
     entries.push({
-      url: `${base}/tr${path}`,
+      url: `${base}${localePath(defaultLocale, path)}`,
       lastModified: lastMod,
       changeFrequency: "monthly",
       priority: 0.5,

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 
-import type { Locale } from "@/lib/site";
+import { type Locale, localePrefix } from "@/lib/site";
 import type { Dictionary } from "@/app/(public)/[locale]/dictionaries";
 
 type CategoryCard = {
@@ -91,7 +91,7 @@ export function CategoryGrid({ locale, dict, categories }: Props) {
             <Link
               key={category.slug}
               data-card
-              href={`/${locale}/urunler/${category.slug}`}
+              href={`${localePrefix(locale)}/urunler/${category.slug}`}
               className="group snap-start shrink-0 basis-[78%] sm:basis-[48%] lg:basis-[28%] flex flex-col rounded-xl border border-brand-100 bg-white hover:border-accent-500 hover:shadow-lg hover:shadow-brand-900/5 transition overflow-hidden"
             >
               <div className="relative aspect-[4/3] bg-brand-100 overflow-hidden">

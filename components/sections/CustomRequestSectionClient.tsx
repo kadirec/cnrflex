@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Sparkles, ArrowRight } from "lucide-react";
 
-import type { Locale } from "@/lib/site";
+import { type Locale, localePrefix } from "@/lib/site";
 import type { Dictionary } from "@/app/(public)/[locale]/dictionaries";
 import {
   IconExtrusion,
@@ -21,7 +21,7 @@ type Props = {
 };
 
 export function CustomRequestSectionClient({ locale, dict }: Props) {
-  const customHref = `/${locale}/teklif-al?mode=custom`;
+  const customHref = `${localePrefix(locale)}/teklif-al?mode=custom`;
 
   return (
     <section

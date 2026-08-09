@@ -1,5 +1,6 @@
 import { JsonLd } from "./JsonLd";
 import { siteConfig, type Locale } from "@/lib/site";
+import { canonicalUrl } from "@/lib/seo";
 import type { BlogPost } from "@/lib/db";
 
 type Props = { locale: Locale; post: BlogPost };
@@ -7,7 +8,7 @@ type Props = { locale: Locale; post: BlogPost };
 export function BlogPostingJsonLd({ locale, post }: Props) {
   const title = locale === "tr" ? post.titleTr : post.titleEn;
   const description = locale === "tr" ? post.excerptTr : post.excerptEn;
-  const url = `${siteConfig.url}/${locale}/blog/${post.slug}`;
+  const url = canonicalUrl(locale, `/blog/${post.slug}`);
   const published = post.publishedAt ? new Date(post.publishedAt).toISOString() : undefined;
   const modified = post.updatedAt ? new Date(post.updatedAt).toISOString() : published;
 

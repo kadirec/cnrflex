@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ShieldCheck, Truck, Headphones, ArrowRight } from "lucide-react";
 
-import type { Locale } from "@/lib/site";
+import { type Locale, localePrefix } from "@/lib/site";
 import type { Dictionary } from "@/app/(public)/[locale]/dictionaries";
 
 type Props = {
@@ -45,7 +45,7 @@ export function AboutPreview({ locale, dict }: Props) {
 
         <div className="mt-10">
           <Link
-            href={`/${locale}/kurumsal/hakkimizda`}
+            href={`${localePrefix(locale)}/kurumsal/hakkimizda`}
             className="group inline-flex items-center gap-2 rounded-md bg-brand-900 hover:bg-brand-800 px-6 py-3 text-base font-semibold text-white transition"
           >
             {dict.about.cta}

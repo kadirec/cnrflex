@@ -7,7 +7,7 @@ import { ArrowRight, Check, ShoppingCart } from "lucide-react";
 import { useQuoteCart } from "@/components/cart/QuoteCartContext";
 import { RollCountDialog, buildRollQuantity } from "@/components/product/roll-count-dialog";
 import { cn } from "@/lib/utils";
-import type { Locale } from "@/lib/site";
+import { type Locale, localePrefix } from "@/lib/site";
 
 type Props = {
   locale: Locale;
@@ -62,7 +62,7 @@ export function AddToQuoteButton({
 
   const onClick = () => {
     if (inCart) {
-      startTransition(() => router.push(`/${locale}/teklif-al`));
+      startTransition(() => router.push(`${localePrefix(locale)}/teklif-al`));
       return;
     }
     if (rollLength) {

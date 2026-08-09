@@ -20,6 +20,7 @@ import type { BlogCategory } from "@/lib/db";
 import { cn } from "@/lib/utils";
 import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
 import { buildAlternates, canonicalUrl } from "@/lib/seo";
+import { localePath, localePrefix } from "@/lib/site";
 
 export async function generateMetadata(props: PageProps<"/[locale]/blog">): Promise<Metadata> {
   const { locale } = await props.params;
@@ -76,8 +77,8 @@ export default async function BlogIndexPage(props: PageProps<"/[locale]/blog">) 
     <>
       <BreadcrumbJsonLd
         items={[
-          { name: dict.nav.home, url: `/${locale}` },
-          { name: dict.nav.blog, url: `/${locale}/blog` },
+          { name: dict.nav.home, url: localePath(locale) },
+          { name: dict.nav.blog, url: `${localePrefix(locale)}/blog` },
         ]}
       />
       <div className="bg-brand-950 text-white">
@@ -96,7 +97,7 @@ export default async function BlogIndexPage(props: PageProps<"/[locale]/blog">) 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
             <CategoryTile
               locale={locale}
-              href={`/${locale}/blog`}
+              href={`${localePrefix(locale)}/blog`}
               label={clearLabel}
               icon={BookOpen}
               gradient="from-brand-500 to-brand-700"
@@ -107,7 +108,7 @@ export default async function BlogIndexPage(props: PageProps<"/[locale]/blog">) 
               <CategoryTile
                 key={cat.slug}
                 locale={locale}
-                href={`/${locale}/blog?kategori=${cat.slug}`}
+                href={`${localePrefix(locale)}/blog?kategori=${cat.slug}`}
                 label={getCategoryLabel(cat.slug, locale)}
                 icon={CATEGORY_ICON[cat.slug]}
                 gradient={CATEGORY_GRADIENT[cat.slug]}
@@ -141,7 +142,7 @@ export default async function BlogIndexPage(props: PageProps<"/[locale]/blog">) 
                   key={post.id}
                   className="group rounded-xl border border-brand-100 overflow-hidden hover:border-accent-500 hover:shadow-lg transition flex flex-col"
                 >
-                  <Link href={`/${locale}/blog/${post.slug}`} className="block">
+                  <Link href={`${localePrefix(locale)}/blog/${post.slug}`} className="block">
                     <div className="aspect-[16/10] bg-gradient-to-br from-brand-900 to-brand-700 relative">
                       {post.coverImageUrl ? (
                         <Image
@@ -164,7 +165,7 @@ export default async function BlogIndexPage(props: PageProps<"/[locale]/blog">) 
                   <div className="p-6 flex-1 flex flex-col">
                     <div className="flex items-center gap-3 text-xs">
                       <Link
-                        href={`/${locale}/blog?kategori=${post.category}`}
+                        href={`${localePrefix(locale)}/blog?kategori=${post.category}`}
                         className="inline-flex items-center rounded-full bg-brand-50 border border-brand-100 px-2.5 py-1 font-semibold text-brand-700 hover:border-accent-500 hover:text-accent-600 transition"
                       >
                         {getCategoryLabel(post.category, locale)}
@@ -192,7 +193,7 @@ export default async function BlogIndexPage(props: PageProps<"/[locale]/blog">) 
                         {post.readingTime} {locale === "tr" ? "dk okuma" : "min read"}
                       </span>
                       <Link
-                        href={`/${locale}/blog/${post.slug}`}
+                        href={`${localePrefix(locale)}/blog/${post.slug}`}
                         className="inline-flex items-center gap-1 text-sm font-semibold text-accent-600 group-hover:gap-2 transition-all"
                       >
                         {dict.common.readMore}

@@ -10,3 +10,14 @@ export const siteConfig = {
 export const locales = ["tr", "en"] as const;
 export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = "tr";
+
+export function localePrefix(locale: Locale): string {
+  return locale === defaultLocale ? "" : `/${locale}`;
+}
+
+export function localePath(locale: Locale, path: string = ""): string {
+  const prefix = localePrefix(locale);
+  if (!path || path === "/") return prefix || "/";
+  const clean = path.startsWith("/") ? path : `/${path}`;
+  return `${prefix}${clean}`;
+}

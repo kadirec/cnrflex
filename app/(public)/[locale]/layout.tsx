@@ -13,7 +13,7 @@ import { getDictionary, hasLocale } from "./dictionaries";
 import { locales, siteConfig } from "@/lib/site";
 import { getSiteSettings } from "@/lib/settings";
 import { getAllCategories } from "@/lib/products";
-import { buildAlternates } from "@/lib/seo";
+import { buildAlternates, canonicalUrl } from "@/lib/seo";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -56,7 +56,7 @@ export async function generateMetadata(props: LayoutProps<"/[locale]">): Promise
       siteName: siteConfig.name,
       title: defaultTitle,
       description,
-      url: `${siteConfig.url}/${locale}`,
+      url: canonicalUrl(locale, ""),
       locale: locale === "tr" ? "tr_TR" : "en_US",
       images: settings.defaultOgImageUrl ? [{ url: settings.defaultOgImageUrl }] : undefined,
     },

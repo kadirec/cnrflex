@@ -8,6 +8,7 @@ import { getSiteSettings } from "@/lib/settings";
 import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
 import { LocalBusinessJsonLd } from "@/components/seo/LocalBusinessJsonLd";
 import { buildAlternates, canonicalUrl } from "@/lib/seo";
+import { localePath, localePrefix } from "@/lib/site";
 
 export async function generateMetadata(props: PageProps<"/[locale]/iletisim">): Promise<Metadata> {
   const { locale } = await props.params;
@@ -39,8 +40,8 @@ export default async function ContactPage(props: PageProps<"/[locale]/iletisim">
     <>
       <BreadcrumbJsonLd
         items={[
-          { name: dict.nav.home, url: `/${locale}` },
-          { name: dict.nav.contact, url: `/${locale}/iletisim` },
+          { name: dict.nav.home, url: localePath(locale) },
+          { name: dict.nav.contact, url: `${localePrefix(locale)}/iletisim` },
         ]}
       />
       <LocalBusinessJsonLd locale={locale} />

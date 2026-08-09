@@ -10,6 +10,7 @@ import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
 import { BlogPostingJsonLd } from "@/components/seo/BlogPostingJsonLd";
 import { getDictionary, hasLocale } from "../../dictionaries";
 import { buildAlternates, canonicalUrl } from "@/lib/seo";
+import { localePath, localePrefix } from "@/lib/site";
 
 export async function generateMetadata(props: PageProps<"/[locale]/blog/[slug]">): Promise<Metadata> {
   const { locale, slug } = await props.params;
@@ -46,18 +47,18 @@ export default async function BlogPostPage(props: PageProps<"/[locale]/blog/[slu
     <>
       <BreadcrumbJsonLd
         items={[
-          { name: dict.nav.home, url: `/${locale}` },
-          { name: dict.nav.blog, url: `/${locale}/blog` },
-          { name: title, url: `/${locale}/blog/${post.slug}` },
+          { name: dict.nav.home, url: localePath(locale) },
+          { name: dict.nav.blog, url: `${localePrefix(locale)}/blog` },
+          { name: title, url: `${localePrefix(locale)}/blog/${post.slug}` },
         ]}
       />
       <BlogPostingJsonLd locale={locale} post={post} />
       <div className="bg-brand-50 border-b border-brand-100">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
           <nav className="flex items-center gap-2 text-sm text-brand-600 flex-wrap">
-            <Link href={`/${locale}`} className="hover:text-accent-600">{dict.nav.home}</Link>
+            <Link href={localePath(locale)} className="hover:text-accent-600">{dict.nav.home}</Link>
             <ChevronRight className="h-4 w-4" />
-            <Link href={`/${locale}/blog`} className="hover:text-accent-600">{dict.nav.blog}</Link>
+            <Link href={`${localePrefix(locale)}/blog`} className="hover:text-accent-600">{dict.nav.blog}</Link>
             <ChevronRight className="h-4 w-4" />
             <span className="text-brand-900 truncate">{title}</span>
           </nav>
@@ -105,7 +106,7 @@ export default async function BlogPostPage(props: PageProps<"/[locale]/blog/[slu
         />
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pb-16">
           <Link
-            href={`/${locale}/blog`}
+            href={`${localePrefix(locale)}/blog`}
             className="inline-flex items-center gap-2 text-sm font-semibold text-accent-600 hover:text-accent-700"
           >
             <ArrowLeft className="h-4 w-4" />

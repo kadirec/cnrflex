@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { Menu, X, ChevronDown, ArrowUpRight } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { siteConfig, type Locale, locales } from "@/lib/site";
+import { siteConfig, type Locale, locales, localePath, localePrefix } from "@/lib/site";
 import type { Dictionary } from "@/app/(public)/[locale]/dictionaries";
 import { CartMenu } from "@/components/cart/CartMenu";
 
@@ -78,49 +78,48 @@ export function Header({ locale, dict, categoryLinks }: Props) {
   };
 
   const navItems: NavItem[] = [
-    { href: `/${locale}`, label: dict.nav.home },
+    { href: localePath(locale), label: dict.nav.home },
     {
       label: dict.nav.corporate,
       children: [
-        { href: `/${locale}/kurumsal/hakkimizda`, label: dict.nav.about },
-        { href: `/${locale}/kurumsal/vizyon-misyon`, label: dict.nav.vision },
+        { href: `${localePrefix(locale)}/kurumsal/hakkimizda`, label: dict.nav.about },
+        { href: `${localePrefix(locale)}/kurumsal/vizyon-misyon`, label: dict.nav.vision },
       ],
     },
     {
       label: dict.nav.products,
-      href: `/${locale}/urunler`,
+      href: `${localePrefix(locale)}/urunler`,
       variant: "mega",
       children: categoryLinks.map((c) => ({
-        href: `/${locale}/urunler/${c.slug}`,
+        href: `${localePrefix(locale)}/urunler/${c.slug}`,
         label: c.label,
         image: c.image ?? null,
         children: c.children.map((ch) => ({
-          href: `/${locale}/urunler/${ch.slug}`,
+          href: `${localePrefix(locale)}/urunler/${ch.slug}`,
           label: ch.label,
         })),
       })),
     },
-    { href: `/${locale}/blog`, label: dict.nav.blog },
-    { href: `/${locale}/katalog`, label: dict.nav.catalog },
-    { href: `/${locale}/iletisim`, label: dict.nav.contact },
+    { href: `${localePrefix(locale)}/blog`, label: dict.nav.blog },
+    { href: `${localePrefix(locale)}/katalog`, label: dict.nav.catalog },
+    { href: `${localePrefix(locale)}/iletisim`, label: dict.nav.contact },
   ];
 
   const switchLocale = (newLocale: Locale) => {
-    if (newLocale === locale) return `/${locale}`;
+    if (newLocale === locale) return localePath(locale);
     const segments = pathname.split("/").filter(Boolean);
     if ((locales as readonly string[]).includes(segments[0] ?? "")) {
-      segments[0] = newLocale;
-    } else {
-      segments.unshift(newLocale);
+      segments.shift();
     }
-    return "/" + segments.join("/");
+    const path = segments.length > 0 ? `/${segments.join("/")}` : "";
+    return localePath(newLocale, path);
   };
 
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-brand-100">
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-20 lg:h-24 items-center justify-between gap-4">
-          <Link href={`/${locale}`} className="flex items-center" aria-label={siteConfig.name}>
+          <Link href={localePath(locale)} className="flex items-center" aria-label={siteConfig.name}>
             <Image
               src="/logo.png"
               alt={siteConfig.name}
@@ -228,7 +227,7 @@ export function Header({ locale, dict, categoryLinks }: Props) {
 
           <div className="hidden lg:flex items-center gap-3">
             <Link
-              href={`/${locale}/teklif-al`}
+              href={`${localePrefix(locale)}/teklif-al`}
               className="inline-flex items-center justify-center rounded-md bg-accent-500 hover:bg-accent-600 px-4 py-2 text-sm font-semibold text-white transition"
             >
               {dict.nav.getQuote}
@@ -298,7 +297,7 @@ export function Header({ locale, dict, categoryLinks }: Props) {
                 {categoryLinks.map((c) => (
                   <Link
                     key={c.slug}
-                    href={`/${locale}/urunler/${c.slug}`}
+                    href={`${localePrefix(locale)}/urunler/${c.slug}`}
                     className="group/tile flex items-center gap-4 rounded-lg border border-brand-100 p-2 hover:border-brand-200 hover:bg-brand-50/60 transition"
                   >
                     <span className="relative h-[84px] w-[84px] shrink-0 overflow-hidden rounded-md bg-brand-100 ring-1 ring-brand-100">
@@ -333,14 +332,14 @@ export function Header({ locale, dict, categoryLinks }: Props) {
         <div className="fixed top-20 inset-x-0 bottom-0 z-30 lg:hidden bg-white flex flex-col">
           <div className="shrink-0 px-4 py-3 border-b border-brand-100 grid grid-cols-2 gap-2">
             <Link
-              href={`/${locale}/teklif-al`}
+              href={`${localePrefix(locale)}/teklif-al`}
               onClick={closeMobile}
               className="inline-flex items-center justify-center rounded-md bg-accent-500 hover:bg-accent-600 px-3 py-2.5 text-sm font-semibold text-white"
             >
               {dict.nav.getQuote}
             </Link>
             <Link
-              href={`/${locale}/teklif-al?mode=custom`}
+              href={`${localePrefix(locale)}/teklif-al?mode=custom`}
               onClick={closeMobile}
               className="inline-flex items-center justify-center rounded-md border border-accent-500 text-accent-600 hover:bg-accent-50 px-3 py-2.5 text-sm font-semibold"
             >
@@ -451,7 +450,7 @@ export function Header({ locale, dict, categoryLinks }: Props) {
                                 </button>
                               ) : (
                                 <Link
-                                  href={`/${locale}/urunler/${c.slug}`}
+                                  href={`${localePrefix(locale)}/urunler/${c.slug}`}
                                   onClick={closeMobile}
                                   className="flex items-center gap-3 p-2"
                                 >
@@ -475,7 +474,7 @@ export function Header({ locale, dict, categoryLinks }: Props) {
                               {catOpen && hasSubs && (
                                 <div className="border-t border-brand-100 p-1.5 space-y-0.5">
                                   <Link
-                                    href={`/${locale}/urunler/${c.slug}`}
+                                    href={`${localePrefix(locale)}/urunler/${c.slug}`}
                                     onClick={closeMobile}
                                     className="flex items-center justify-between px-3 py-1.5 rounded-md text-xs font-semibold text-accent-600 hover:bg-brand-50"
                                   >
@@ -485,7 +484,7 @@ export function Header({ locale, dict, categoryLinks }: Props) {
                                   {c.children.map((sub) => (
                                     <Link
                                       key={sub.slug}
-                                      href={`/${locale}/urunler/${sub.slug}`}
+                                      href={`${localePrefix(locale)}/urunler/${sub.slug}`}
                                       onClick={closeMobile}
                                       className="block px-3 py-1.5 rounded-md text-xs text-brand-700 hover:bg-brand-50 hover:text-accent-600 truncate"
                                     >

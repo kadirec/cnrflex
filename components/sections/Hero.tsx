@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
 
-import type { Locale } from "@/lib/site";
+import { type Locale, localePrefix } from "@/lib/site";
 import type { Dictionary } from "@/app/(public)/[locale]/dictionaries";
 
 type Props = {
@@ -42,14 +42,14 @@ export function Hero({ locale, dict }: Props) {
           </p>
           <div className="mt-7 sm:mt-10 flex flex-wrap items-center gap-3">
             <Link
-              href={`/${locale}/teklif-al`}
+              href={`${localePrefix(locale)}/teklif-al`}
               className="group inline-flex items-center gap-2 rounded-md bg-accent-500 hover:bg-accent-600 px-6 py-3 text-[15px] sm:text-base font-semibold text-white shadow-lg shadow-accent-500/30 transition"
             >
               {dict.hero.ctaPrimary}
               <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
             </Link>
             <Link
-              href={`/${locale}/urunler`}
+              href={`${localePrefix(locale)}/urunler`}
               className="inline-flex items-center gap-2 rounded-md bg-white/10 backdrop-blur hover:bg-white/15 ring-1 ring-white/20 px-6 py-3 text-[15px] sm:text-base font-semibold text-white transition"
             >
               {dict.hero.ctaSecondary}
