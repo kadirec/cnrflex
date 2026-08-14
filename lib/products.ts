@@ -1,5 +1,6 @@
 import "server-only";
 import { asc } from "drizzle-orm";
+import { unstable_cache } from "next/cache";
 import {
   getDb,
   categories as catT,
@@ -7,6 +8,8 @@ import {
   type ProductSpec,
 } from "@/lib/db";
 import type { Locale } from "@/lib/site";
+
+export const PRODUCTS_CACHE_TAG = "products-catalog";
 
 export type Translated = Record<Locale, string>;
 
@@ -41,6 +44,10 @@ export type Category = {
 type CatRow = typeof catT.$inferSelect;
 type ProdRow = typeof prodT.$inferSelect;
 
+function toDate(value: Date | string): Date {
+  return value instanceof Date ? value : new Date(value);
+}
+
 function toProduct(p: ProdRow): Product {
   const gallery = Array.isArray(p.images) ? p.images.filter(Boolean) : [];
   const cover = gallery[0] ?? p.imageUrl ?? null;
@@ -54,16 +61,25 @@ function toProduct(p: ProdRow): Product {
     images: gallery.length > 0 ? gallery : cover ? [cover] : [],
     rollLength: p.rollLength,
     specs: p.specs,
-    updatedAt: p.updatedAt,
+    updatedAt: toDate(p.updatedAt),
   };
 }
 
+const loadRaw = unstable_cache(
+  async (): Promise<{ cats: CatRow[]; prods: ProdRow[] }> => {
+    const db = getDb();
+    const [cats, prods] = await Promise.all([
+      db.select().from(catT).orderBy(asc(catT.sortOrder), asc(catT.nameTr)),
+      db.select().from(prodT).orderBy(asc(prodT.sortOrder), asc(prodT.nameTr)),
+    ]);
+    return { cats, prods };
+  },
+  ["products-catalog:v1"],
+  { tags: [PRODUCTS_CACHE_TAG], revalidate: 3600 },
+);
+
 async function loadAll() {
-  const db = getDb();
-  const [cats, prods] = await Promise.all([
-    db.select().from(catT).orderBy(asc(catT.sortOrder), asc(catT.nameTr)),
-    db.select().from(prodT).orderBy(asc(prodT.sortOrder), asc(prodT.nameTr)),
-  ]);
+  const { cats, prods } = await loadRaw();
 
   const productsByCategory = new Map<number, Product[]>();
   for (const p of prods) {
@@ -95,7 +111,7 @@ async function loadAll() {
       sortOrder: row.sortOrder,
       products: productsByCategory.get(row.id) ?? [],
       children,
-      updatedAt: row.updatedAt,
+      updatedAt: toDate(row.updatedAt),
     };
   };
 

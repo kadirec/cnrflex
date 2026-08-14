@@ -15,8 +15,6 @@ import { getDictionary, hasLocale } from "../../dictionaries";
 import { buildAlternates, canonicalUrl } from "@/lib/seo";
 import { localePath, localePrefix } from "@/lib/site";
 
-export const dynamic = "force-dynamic";
-
 export async function generateMetadata(props: PageProps<"/[locale]/urunler/[category]">): Promise<Metadata> {
   const { locale, category: categorySlug } = await props.params;
   if (!hasLocale(locale)) return {};

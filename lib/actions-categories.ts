@@ -1,12 +1,13 @@
 "use server";
 
 import { eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import "@/lib/zod-tr";
 import { getSession } from "@/lib/auth";
 import { getDb, categories } from "@/lib/db";
+import { PRODUCTS_CACHE_TAG } from "@/lib/products";
 import { slugify } from "@/lib/slug";
 
 const categorySchema = z.object({
@@ -107,9 +108,11 @@ export async function createCategory(_prev: CategoryFormState, fd: FormData): Pr
   }
 
   revalidatePath("/panel/categories");
+  revalidateTag(PRODUCTS_CACHE_TAG, "max");
   revalidatePath("/[locale]/urunler", "page");
   revalidatePath("/[locale]/urunler/[category]", "page");
   revalidatePath("/[locale]/urunler/[category]/[product]", "page");
+  revalidatePath("/sitemap.xml");
   redirect("/panel/categories");
 }
 
@@ -157,9 +160,11 @@ export async function updateCategory(id: number, _prev: CategoryFormState, fd: F
 
   revalidatePath("/panel/categories");
   revalidatePath(`/panel/categories/${id}`);
+  revalidateTag(PRODUCTS_CACHE_TAG, "max");
   revalidatePath("/[locale]/urunler", "page");
   revalidatePath("/[locale]/urunler/[category]", "page");
   revalidatePath("/[locale]/urunler/[category]/[product]", "page");
+  revalidatePath("/sitemap.xml");
   return { ok: true };
 }
 
@@ -170,8 +175,10 @@ export async function deleteCategory(id: number): Promise<{ ok: boolean; error?:
   const db = getDb();
   await db.delete(categories).where(eq(categories.id, id));
   revalidatePath("/panel/categories");
+  revalidateTag(PRODUCTS_CACHE_TAG, "max");
   revalidatePath("/[locale]/urunler", "page");
   revalidatePath("/[locale]/urunler/[category]", "page");
   revalidatePath("/[locale]/urunler/[category]/[product]", "page");
+  revalidatePath("/sitemap.xml");
   return { ok: true };
 }

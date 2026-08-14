@@ -1,12 +1,13 @@
 "use server";
 
 import { and, eq, inArray, ne } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import "@/lib/zod-tr";
 import { getSession } from "@/lib/auth";
 import { getDb, products, type ProductSpec } from "@/lib/db";
+import { PRODUCTS_CACHE_TAG } from "@/lib/products";
 import { sanitizeHtml } from "@/lib/sanitize";
 import { slugify } from "@/lib/slug";
 
@@ -120,9 +121,11 @@ async function ensureUniqueSlug(
 }
 
 function revalidatePublicProductPaths() {
+  revalidateTag(PRODUCTS_CACHE_TAG, "max");
   revalidatePath("/[locale]/urunler", "page");
   revalidatePath("/[locale]/urunler/[category]", "page");
   revalidatePath("/[locale]/urunler/[category]/[product]", "page");
+  revalidatePath("/sitemap.xml");
 }
 
 async function requireAuth(): Promise<ProductFormState | null> {
