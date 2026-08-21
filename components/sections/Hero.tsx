@@ -14,7 +14,7 @@ export function Hero({ locale, dict }: Props) {
   return (
     <section className="relative overflow-hidden bg-brand-950 text-white min-h-[calc(100svh-5rem)] lg:min-h-0 flex">
       <Image
-        src="/cnr_flex_hero2.png"
+        src="/hero_slider.png"
         alt=""
         fill
         priority
