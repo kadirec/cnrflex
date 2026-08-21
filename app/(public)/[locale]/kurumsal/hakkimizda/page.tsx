@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import { StatsCounter } from "@/components/sections/StatsCounter";
@@ -70,8 +71,17 @@ export default async function AboutPage(props: PageProps<"/[locale]/kurumsal/hak
 
   return (
     <>
-      <div className="bg-brand-950 text-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+      <div className="relative overflow-hidden bg-brand-950 text-white">
+        <Image
+          src="/about_hero.png"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-brand-950/80 via-brand-950/45 to-brand-950/10 pointer-events-none" />
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
           <div className="text-sm font-semibold uppercase tracking-wider text-accent-400">
             {dict.about.eyebrow}
           </div>
