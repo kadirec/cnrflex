@@ -93,13 +93,24 @@ export default async function AboutPage(props: PageProps<"/[locale]/kurumsal/hak
       <StatsCounter locale={locale} />
 
       <section className="bg-white">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-20 space-y-12">
-          {content.sections.map((section) => (
-            <article key={section.title}>
-              <h2 className="text-2xl lg:text-3xl font-bold text-brand-950">{section.title}</h2>
-              <p className="mt-4 text-lg text-brand-700 leading-relaxed">{section.body}</p>
-            </article>
-          ))}
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 grid gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16 items-start">
+          <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl lg:sticky lg:top-24">
+            <Image
+              src="/about_detail.jpg"
+              alt=""
+              fill
+              sizes="(min-width: 1024px) 40vw, 100vw"
+              className="object-cover"
+            />
+          </div>
+          <div className="space-y-12">
+            {content.sections.map((section) => (
+              <article key={section.title}>
+                <h2 className="text-2xl lg:text-3xl font-bold text-brand-950">{section.title}</h2>
+                <p className="mt-4 text-lg text-brand-700 leading-relaxed">{section.body}</p>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
