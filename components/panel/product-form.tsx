@@ -114,6 +114,10 @@ export function ProductForm({ product, categories, action, mode, defaultCategory
   return (
     <form action={formAction} className="space-y-6">
       <input type="hidden" name="categoryId" value={categoryId} />
+      <input type="hidden" name="nameTr" value={nameTr} />
+      <input type="hidden" name="nameEn" value={nameEn} />
+      <input type="hidden" name="descriptionTr" value={descriptionTr} />
+      <input type="hidden" name="descriptionEn" value={descriptionEn} />
 
       <Card>
         <CardHeader>
@@ -145,7 +149,6 @@ export function ProductForm({ product, categories, action, mode, defaultCategory
                 <TabsContent value="tr" className="space-y-4 pt-4">
                   <Field label="Ürün adı (TR)" error={fe.nameTr}>
                     <Input
-                      name="nameTr"
                       value={nameTr}
                       onChange={(e) => setNameTr(e.target.value)}
                       required
@@ -154,7 +157,6 @@ export function ProductForm({ product, categories, action, mode, defaultCategory
                   </Field>
                   <Field label="Açıklama (TR)" error={fe.descriptionTr}>
                     <RichTextEditor
-                      name="descriptionTr"
                       value={descriptionTr}
                       onChange={setDescriptionTr}
                       placeholder="Ürün hakkında detaylı açıklama…"
@@ -175,7 +177,6 @@ export function ProductForm({ product, categories, action, mode, defaultCategory
                     }
                   >
                     <Input
-                      name="nameEn"
                       value={nameEn}
                       onChange={(e) => setNameEn(e.target.value)}
                       placeholder="Boş bırakılırsa TR değeri kullanılır"
@@ -193,7 +194,6 @@ export function ProductForm({ product, categories, action, mode, defaultCategory
                     }
                   >
                     <RichTextEditor
-                      name="descriptionEn"
                       value={descriptionEn}
                       onChange={setDescriptionEn}
                       placeholder="Detailed product description…"

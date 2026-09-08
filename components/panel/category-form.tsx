@@ -53,6 +53,11 @@ function SubmitButton() {
 export function CategoryForm({ category, action, mode, parentOptions, defaultParentId }: Props) {
   const [state, formAction] = useActionState<CategoryFormState, FormData>(action, { ok: false });
   const [nameTr, setNameTr] = useState(category?.nameTr ?? "");
+  const [nameEn, setNameEn] = useState(category?.nameEn ?? "");
+  const [shortDescriptionTr, setShortDescriptionTr] = useState(category?.shortDescriptionTr ?? "");
+  const [shortDescriptionEn, setShortDescriptionEn] = useState(category?.shortDescriptionEn ?? "");
+  const [descriptionTr, setDescriptionTr] = useState(category?.descriptionTr ?? "");
+  const [descriptionEn, setDescriptionEn] = useState(category?.descriptionEn ?? "");
   const [slug, setSlug] = useState(category?.slug ?? "");
   const [slugTouched, setSlugTouched] = useState(!!category);
   const initialParent = category?.parentId ?? defaultParentId ?? null;
@@ -74,6 +79,12 @@ export function CategoryForm({ category, action, mode, parentOptions, defaultPar
   return (
     <form action={formAction} className="space-y-6">
       <input type="hidden" name="parentId" value={parentId === "none" ? "" : parentId} />
+      <input type="hidden" name="nameTr" value={nameTr} />
+      <input type="hidden" name="nameEn" value={nameEn} />
+      <input type="hidden" name="shortDescriptionTr" value={shortDescriptionTr} />
+      <input type="hidden" name="shortDescriptionEn" value={shortDescriptionEn} />
+      <input type="hidden" name="descriptionTr" value={descriptionTr} />
+      <input type="hidden" name="descriptionEn" value={descriptionEn} />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <Card>
@@ -90,7 +101,6 @@ export function CategoryForm({ category, action, mode, parentOptions, defaultPar
                 <TabsContent value="tr" className="space-y-4 pt-4">
                   <Field label="Kategori adı (TR)" error={fe.nameTr}>
                     <Input
-                      name="nameTr"
                       value={nameTr}
                       onChange={(e) => setNameTr(e.target.value)}
                       required
@@ -99,17 +109,17 @@ export function CategoryForm({ category, action, mode, parentOptions, defaultPar
                   </Field>
                   <Field label="Kısa açıklama (TR)" error={fe.shortDescriptionTr}>
                     <Textarea
-                      name="shortDescriptionTr"
                       rows={2}
-                      defaultValue={category?.shortDescriptionTr ?? ""}
+                      value={shortDescriptionTr}
+                      onChange={(e) => setShortDescriptionTr(e.target.value)}
                       placeholder="Bir cümlelik özet"
                     />
                   </Field>
                   <Field label="Uzun açıklama (TR)" error={fe.descriptionTr}>
                     <Textarea
-                      name="descriptionTr"
                       rows={6}
-                      defaultValue={category?.descriptionTr ?? ""}
+                      value={descriptionTr}
+                      onChange={(e) => setDescriptionTr(e.target.value)}
                     />
                   </Field>
                 </TabsContent>
@@ -117,23 +127,23 @@ export function CategoryForm({ category, action, mode, parentOptions, defaultPar
                 <TabsContent value="en" className="space-y-4 pt-4">
                   <Field label="Category name (EN)" error={fe.nameEn}>
                     <Input
-                      name="nameEn"
-                      defaultValue={category?.nameEn ?? ""}
+                      value={nameEn}
+                      onChange={(e) => setNameEn(e.target.value)}
                       placeholder="Boş bırakılırsa TR değeri kullanılır"
                     />
                   </Field>
                   <Field label="Short description (EN)" error={fe.shortDescriptionEn}>
                     <Textarea
-                      name="shortDescriptionEn"
                       rows={2}
-                      defaultValue={category?.shortDescriptionEn ?? ""}
+                      value={shortDescriptionEn}
+                      onChange={(e) => setShortDescriptionEn(e.target.value)}
                     />
                   </Field>
                   <Field label="Long description (EN)" error={fe.descriptionEn}>
                     <Textarea
-                      name="descriptionEn"
                       rows={6}
-                      defaultValue={category?.descriptionEn ?? ""}
+                      value={descriptionEn}
+                      onChange={(e) => setDescriptionEn(e.target.value)}
                     />
                   </Field>
                 </TabsContent>

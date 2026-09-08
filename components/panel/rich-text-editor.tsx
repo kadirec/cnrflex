@@ -25,7 +25,7 @@ import {
 import { cn } from "@/lib/utils";
 
 type Props = {
-  name: string;
+  name?: string;
   defaultValue?: string;
   value?: string;
   onChange?: (html: string) => void;
@@ -91,7 +91,7 @@ export function RichTextEditor({
     <div className="rounded-lg border border-input bg-white overflow-hidden">
       <Toolbar editor={editor} />
       <EditorContent editor={editor} />
-      <input type="hidden" name={name} value={html} />
+      {name ? <input type="hidden" name={name} value={html} /> : null}
     </div>
   );
 }
