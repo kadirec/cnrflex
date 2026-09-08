@@ -287,19 +287,6 @@ export function Header({ locale, dict, categoryLinks, searchProducts }: Props) {
             >
               {dict.nav.getQuote}
             </Link>
-            <button
-              type="button"
-              onClick={() => setSearchOpen((v) => !v)}
-              aria-label={dict.nav.search}
-              aria-expanded={searchOpen}
-              className={cn(
-                "inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold text-brand-800 transition hover:text-accent-600",
-                searchOpen && "text-accent-600",
-              )}
-            >
-              <Search className="h-4 w-4" />
-              {dict.nav.search}
-            </button>
             <CartMenu locale={locale} variant="desktop" />
             <div className="flex items-center gap-1 rounded-full bg-brand-50 p-1 ring-1 ring-brand-100">
               {locales.map((l) => (
@@ -319,6 +306,19 @@ export function Header({ locale, dict, categoryLinks, searchProducts }: Props) {
                 </Link>
               ))}
             </div>
+            <button
+              type="button"
+              onClick={() => setSearchOpen((v) => !v)}
+              aria-label={dict.nav.search}
+              aria-expanded={searchOpen}
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold text-brand-800 transition hover:text-accent-600",
+                searchOpen && "text-accent-600",
+              )}
+            >
+              <Search className="h-4 w-4" />
+              {dict.nav.search}
+            </button>
           </div>
 
           <div className="lg:hidden inline-flex items-center gap-0.5 rounded-full bg-brand-50 p-0.5 ring-1 ring-brand-100">
