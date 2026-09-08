@@ -12,7 +12,7 @@ import { QuoteCartProvider } from "@/components/cart/QuoteCartContext";
 import { getDictionary, hasLocale } from "./dictionaries";
 import { locales, siteConfig } from "@/lib/site";
 import { getSiteSettings } from "@/lib/settings";
-import { getAllCategories } from "@/lib/products";
+import { getAllCategories, getPickerProducts } from "@/lib/products";
 import { buildAlternates, canonicalUrl } from "@/lib/seo";
 
 const inter = Inter({
@@ -76,7 +76,10 @@ export default async function LocaleLayout(props: LayoutProps<"/[locale]">) {
 
   const dict = await getDictionary(locale);
   const settings = await getSiteSettings();
-  const categories = await getAllCategories();
+  const [categories, pickerProducts] = await Promise.all([
+    getAllCategories(),
+    getPickerProducts(),
+  ]);
   const categoryLinks = categories.map((c) => ({
     slug: c.slug,
     label: c.name[locale],
@@ -86,6 +89,13 @@ export default async function LocaleLayout(props: LayoutProps<"/[locale]">) {
       label: ch.name[locale],
       image: ch.image ?? null,
     })),
+  }));
+  const searchProducts = pickerProducts.map((p) => ({
+    code: p.code,
+    name: p.name[locale],
+    slug: p.slug,
+    categorySlug: p.categorySlug,
+    image: p.image,
   }));
 
   return (
@@ -138,7 +148,12 @@ export default async function LocaleLayout(props: LayoutProps<"/[locale]">) {
         )}
         <OrganizationJsonLd locale={locale} />
         <QuoteCartProvider>
-          <Header locale={locale} dict={dict} categoryLinks={categoryLinks} />
+          <Header
+            locale={locale}
+            dict={dict}
+            categoryLinks={categoryLinks}
+            searchProducts={searchProducts}
+          />
           <main className="flex-1">{props.children}</main>
           <Footer locale={locale} dict={dict} />
           <WhatsAppButton phone={settings.contactWhatsapp} label={dict.common.whatsapp} />

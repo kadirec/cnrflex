@@ -9,7 +9,8 @@
     "catalog": "Catalog",
     "contact": "Contact",
     "getQuote": "Get a Quote",
-    "view": "View"
+    "view": "View",
+    "search": "Search"
   },
   "hero": {
     "eyebrow": "Technical Seals • Extrusion Profiles • Custom Profile Development",
@@ -135,6 +136,9 @@
     "downloadCatalog": "Download Catalog",
     "whatsapp": "WhatsApp",
     "back": "Back",
-    "language": "Language"
+    "language": "Language",
+    "searchPlaceholder": "Search by product name or code…",
+    "searchNoResults": "No results",
+    "searchClose": "Close"
   }
 }

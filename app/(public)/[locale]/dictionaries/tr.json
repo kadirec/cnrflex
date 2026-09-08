@@ -9,7 +9,8 @@
     "catalog": "Katalog",
     "contact": "İletişim",
     "getQuote": "Teklif Al",
-    "view": "Görüntüle"
+    "view": "Görüntüle",
+    "search": "Ara"
   },
   "hero": {
     "eyebrow": "Teknik Fitil • Ekstrüzyon Profilleri • Özel Profil Geliştirme",
@@ -135,6 +136,9 @@
     "downloadCatalog": "Katalog İndir",
     "whatsapp": "WhatsApp",
     "back": "Geri",
-    "language": "Dil"
+    "language": "Dil",
+    "searchPlaceholder": "Ürün adı veya kodu ara…",
+    "searchNoResults": "Sonuç bulunamadı",
+    "searchClose": "Kapat"
   }
 }

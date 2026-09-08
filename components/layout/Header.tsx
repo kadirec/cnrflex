@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { Menu, X, ChevronDown, ArrowUpRight } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Menu, X, ChevronDown, ArrowUpRight, Search } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { siteConfig, type Locale, locales, localePath, localePrefix } from "@/lib/site";
@@ -18,10 +18,19 @@ type CategoryLink = {
   children: { slug: string; label: string; image?: string | null }[];
 };
 
+export type HeaderSearchProduct = {
+  code: string;
+  name: string;
+  slug: string;
+  categorySlug: string;
+  image: string | null;
+};
+
 type Props = {
   locale: Locale;
   dict: Dictionary;
   categoryLinks: CategoryLink[];
+  searchProducts: HeaderSearchProduct[];
 };
 
 type NavChild = {
@@ -44,19 +53,65 @@ const flagMap: Record<Locale, string> = {
   en: "🇬🇧",
 };
 
-export function Header({ locale, dict, categoryLinks }: Props) {
+export function Header({ locale, dict, categoryLinks, searchProducts }: Props) {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [megaOpen, setMegaOpen] = useState(false);
   const [mobileSection, setMobileSection] = useState<string | null>(null);
   const [mobileCategory, setMobileCategory] = useState<string | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
   const megaCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const closeMobile = () => {
     setOpen(false);
     setMobileSection(null);
     setMobileCategory(null);
+  };
+
+  const closeSearch = () => {
+    setSearchOpen(false);
+    setSearchQuery("");
+  };
+
+  useEffect(() => {
+    if (!searchOpen) return;
+    const timer = setTimeout(() => searchInputRef.current?.focus(), 20);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeSearch();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [searchOpen]);
+
+  const [lastPath, setLastPath] = useState(pathname);
+  if (lastPath !== pathname) {
+    setLastPath(pathname);
+    setSearchOpen(false);
+    setSearchQuery("");
+  }
+
+  const searchResults = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return [];
+    return searchProducts
+      .filter(
+        (p) => p.name.toLowerCase().includes(q) || p.code.toLowerCase().includes(q),
+      )
+      .slice(0, 12);
+  }, [searchQuery, searchProducts]);
+
+  const goToFirstResult = () => {
+    const first = searchResults[0];
+    if (!first) return;
+    router.push(`${localePrefix(locale)}/urunler/${first.categorySlug}/${first.slug}`);
+    closeSearch();
   };
 
   useEffect(() => {
@@ -232,6 +287,19 @@ export function Header({ locale, dict, categoryLinks }: Props) {
             >
               {dict.nav.getQuote}
             </Link>
+            <button
+              type="button"
+              onClick={() => setSearchOpen((v) => !v)}
+              aria-label={dict.nav.search}
+              aria-expanded={searchOpen}
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold text-brand-800 transition hover:text-accent-600",
+                searchOpen && "text-accent-600",
+              )}
+            >
+              <Search className="h-4 w-4" />
+              {dict.nav.search}
+            </button>
             <CartMenu locale={locale} variant="desktop" />
             <div className="flex items-center gap-1 rounded-full bg-brand-50 p-1 ring-1 ring-brand-100">
               {locales.map((l) => (
@@ -271,6 +339,17 @@ export function Header({ locale, dict, categoryLinks }: Props) {
           </div>
 
           <div className="flex items-center gap-2 lg:hidden">
+            <button
+              type="button"
+              aria-label={dict.nav.search}
+              onClick={() => setSearchOpen((v) => !v)}
+              className={cn(
+                "inline-flex items-center justify-center rounded-md p-2 text-brand-900 hover:bg-brand-50 transition",
+                searchOpen && "bg-brand-100 text-brand-950",
+              )}
+            >
+              <Search className="h-6 w-6" />
+            </button>
             <CartMenu locale={locale} variant="mobile" />
             <button
               type="button"
@@ -285,6 +364,83 @@ export function Header({ locale, dict, categoryLinks }: Props) {
             </button>
           </div>
         </div>
+
+        {searchOpen && (
+          <div className="border-t border-brand-100 bg-white">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-brand-400" />
+                <input
+                  ref={searchInputRef}
+                  type="search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      goToFirstResult();
+                    }
+                  }}
+                  placeholder={dict.common.searchPlaceholder}
+                  className="w-full h-12 rounded-lg border border-brand-200 bg-white pl-11 pr-24 text-sm text-brand-900 placeholder:text-brand-400 focus:border-accent-500 focus:outline-none focus:ring-2 focus:ring-accent-100"
+                />
+                <button
+                  type="button"
+                  onClick={closeSearch}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium text-brand-500 hover:text-brand-800 hover:bg-brand-50 transition"
+                  aria-label={dict.common.searchClose}
+                >
+                  <X className="h-4 w-4" />
+                  {dict.common.searchClose}
+                </button>
+              </div>
+
+              {searchQuery.trim() && (
+                <div className="mt-3 rounded-lg border border-brand-100 bg-white shadow-sm max-h-[60vh] overflow-y-auto">
+                  {searchResults.length === 0 ? (
+                    <div className="px-4 py-6 text-center text-sm text-brand-500">
+                      {dict.common.searchNoResults}
+                    </div>
+                  ) : (
+                    <ul className="divide-y divide-brand-100">
+                      {searchResults.map((p) => (
+                        <li key={`${p.categorySlug}/${p.slug}`}>
+                          <Link
+                            href={`${localePrefix(locale)}/urunler/${p.categorySlug}/${p.slug}`}
+                            onClick={closeSearch}
+                            className="flex items-center gap-3 px-3 py-2.5 hover:bg-brand-50 transition"
+                          >
+                            <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md bg-brand-100 ring-1 ring-brand-100">
+                              {p.image && (
+                                <Image
+                                  src={p.image}
+                                  alt={p.name}
+                                  fill
+                                  sizes="48px"
+                                  className="object-cover"
+                                  unoptimized
+                                />
+                              )}
+                            </span>
+                            <span className="min-w-0 flex-1">
+                              <span className="block text-sm font-semibold text-brand-900 truncate">
+                                {p.name}
+                              </span>
+                              <span className="mt-0.5 block text-xs font-medium uppercase tracking-wider text-accent-600">
+                                {p.code}
+                              </span>
+                            </span>
+                            <ArrowUpRight className="h-4 w-4 text-brand-400 shrink-0" />
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {megaOpen && (
           <div
