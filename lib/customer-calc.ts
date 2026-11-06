@@ -221,3 +221,81 @@ export function customerToDraft(c: {
     notes: c.notes ?? "",
   };
 }
+
+export type SideLabels = {
+  side: string;
+  customers: string;
+  customersDesc: string;
+  docs: string;
+  doc: string;
+  newDoc: string;
+  totalDocs: string;
+  paid: string;
+  paymentsTab: string;
+  paymentsDesc: string;
+  addPayment: string;
+  paymentTitle: string;
+  debitCol: string;
+  creditCol: string;
+  balancePos: string;
+  balanceNeg: string;
+  newCustomer: string;
+  status: Record<SaleStatus, string>;
+  orderHint: string;
+};
+
+const STATUS_SALE: Record<SaleStatus, string> = SALE_STATUS_LABELS;
+const STATUS_PURCHASE: Record<SaleStatus, string> = {
+  order: "Sipariş (teslim alınmadı)",
+  delivered: "Teslim alındı",
+  cancelled: "İptal",
+};
+
+export function sideLabels(kind: "customer" | "supplier"): SideLabels {
+  if (kind === "supplier") {
+    return {
+      side: "Alış",
+      customers: "Alış Carileri",
+      customersDesc: "Tedarikçiler ve onlara olan borcumuz",
+      docs: "Alışlar",
+      doc: "Alış",
+      newDoc: "Alış / Sipariş",
+      totalDocs: "Toplam Alış",
+      paid: "Ödenen",
+      paymentsTab: "Ödemeler",
+      paymentsDesc: "Tedarikçilere yaptığımız ödemeler",
+      addPayment: "Ödeme Yap",
+      paymentTitle: "Tedarikçiye Ödeme",
+      debitCol: "Alış Tutarı",
+      creditCol: "Ödenen",
+      balancePos: "Borcumuz",
+      balanceNeg: "Alacağımız",
+      newCustomer: "Yeni Alış Carisi",
+      status: STATUS_PURCHASE,
+      orderHint:
+        "Sipariş durumundaki alışlar ürün teslim alınana kadar borcumuza yansımaz. Teslim alındığında durumu \"Teslim alındı\" yapın.",
+    };
+  }
+  return {
+    side: "Satış",
+    customers: "Satış Carileri",
+    customersDesc: "Müşteriler, bakiyeleri ve hesap hareketleri",
+    docs: "Satışlar",
+    doc: "Satış",
+    newDoc: "Satış / Sipariş",
+    totalDocs: "Toplam Satış",
+    paid: "Tahsilat",
+    paymentsTab: "Tahsilatlar",
+    paymentsDesc: "Carilerden alınan tahsilatlar",
+    addPayment: "Tahsilat Ekle",
+    paymentTitle: "Ödeme / Tahsilat Ekle",
+    debitCol: "Borçlu",
+    creditCol: "Alacaklı",
+    balancePos: "Borç",
+    balanceNeg: "Alacak",
+    newCustomer: "Yeni Satış Carisi",
+    status: STATUS_SALE,
+    orderHint:
+      "Sipariş durumundaki kayıtlar ürün gönderilene kadar bakiyeye yansımaz. Gönderildiğinde durumu \"Teslim edildi\" yapın.",
+  };
+}

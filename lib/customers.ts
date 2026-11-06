@@ -90,11 +90,11 @@ export async function getCustomer(id: number): Promise<Customer | undefined> {
 
 export type CustomerOption = { id: number; name: string; code: string | null };
 
-export async function listCustomerOptions(): Promise<CustomerOption[]> {
+export async function listCustomerOptions(kind: CustomerKind = "customer"): Promise<CustomerOption[]> {
   return getDb()
     .select({ id: customers.id, name: customers.name, code: customers.code })
     .from(customers)
-    .where(eq(customers.kind, "customer"))
+    .where(eq(customers.kind, kind))
     .orderBy(asc(customers.name));
 }
 
@@ -136,8 +136,10 @@ export async function getSale(id: number): Promise<CustomerSale | undefined> {
 
 export type SaleListRow = CustomerSale & { customerName: string; customerCode: string | null };
 
-export async function listAllSales(input: { q?: string; status?: SaleStatus } = {}): Promise<SaleListRow[]> {
-  const conds: SQL[] = [];
+export async function listAllSales(
+  input: { q?: string; status?: SaleStatus; kind?: CustomerKind } = {},
+): Promise<SaleListRow[]> {
+  const conds: SQL[] = [eq(customers.kind, input.kind ?? "customer")];
   if (input.status) conds.push(eq(customerSales.status, input.status));
   if (input.q) {
     const like = `%${input.q}%`;
@@ -149,7 +151,7 @@ export async function listAllSales(input: { q?: string; status?: SaleStatus } = 
     .select({ sale: customerSales, customerName: customers.name, customerCode: customers.code })
     .from(customerSales)
     .innerJoin(customers, eq(customerSales.customerId, customers.id))
-    .where(conds.length ? and(...conds) : undefined)
+    .where(and(...conds))
     .orderBy(desc(customerSales.saleDate), desc(customerSales.createdAt))
     .limit(500);
   return rows.map((r) => ({ ...r.sale, customerName: r.customerName, customerCode: r.customerCode }));
@@ -157,15 +159,21 @@ export async function listAllSales(input: { q?: string; status?: SaleStatus } = 
 
 export type PaymentListRow = CustomerPayment & { customerName: string; customerCode: string | null };
 
-export async function listAllPayments(input: { q?: string } = {}): Promise<PaymentListRow[]> {
+export async function listAllPayments(
+  input: { q?: string; kind?: CustomerKind } = {},
+): Promise<PaymentListRow[]> {
+  const kindCond = eq(customers.kind, input.kind ?? "customer");
   const where = input.q
-    ? or(
-        ilike(customers.name, `%${input.q}%`),
-        ilike(customers.code, `%${input.q}%`),
-        ilike(customerPayments.description, `%${input.q}%`),
-        ilike(customerPayments.documentNo, `%${input.q}%`),
+    ? and(
+        kindCond,
+        or(
+          ilike(customers.name, `%${input.q}%`),
+          ilike(customers.code, `%${input.q}%`),
+          ilike(customerPayments.description, `%${input.q}%`),
+          ilike(customerPayments.documentNo, `%${input.q}%`),
+        ),
       )
-    : undefined;
+    : kindCond;
   const rows = await getDb()
     .select({ payment: customerPayments, customerName: customers.name, customerCode: customers.code })
     .from(customerPayments)
@@ -176,11 +184,22 @@ export async function listAllPayments(input: { q?: string } = {}): Promise<Payme
   return rows.map((r) => ({ ...r.payment, customerName: r.customerName, customerCode: r.customerCode }));
 }
 
-export async function countSalesAndPayments(): Promise<{ sales: number; payments: number }> {
+export async function countSalesAndPayments(
+  kind: CustomerKind = "customer",
+): Promise<{ sales: number; payments: number }> {
   try {
+    const db = getDb();
     const [[s], [p]] = await Promise.all([
-      getDb().select({ n: sql<number>`count(*)::int` }).from(customerSales),
-      getDb().select({ n: sql<number>`count(*)::int` }).from(customerPayments),
+      db
+        .select({ n: sql<number>`count(*)::int` })
+        .from(customerSales)
+        .innerJoin(customers, eq(customerSales.customerId, customers.id))
+        .where(eq(customers.kind, kind)),
+      db
+        .select({ n: sql<number>`count(*)::int` })
+        .from(customerPayments)
+        .innerJoin(customers, eq(customerPayments.customerId, customers.id))
+        .where(eq(customers.kind, kind)),
     ]);
     return { sales: s?.n ?? 0, payments: p?.n ?? 0 };
   } catch (e) {

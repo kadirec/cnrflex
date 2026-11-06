@@ -40,6 +40,16 @@ export function CustomerForm({ customerId, initial }: { customerId?: number; ini
             <Field label="Firma Adı *">
               <Input value={d.name} onChange={(e) => set("name", e.target.value)} placeholder="ör. GÜVENİŞ KEPENK" />
             </Field>
+            <Field label="Cari Türü">
+              <select
+                value={d.kind}
+                onChange={(e) => set("kind", e.target.value as Draft["kind"])}
+                className="h-8 w-full rounded-lg border border-input bg-transparent px-2 text-sm"
+              >
+                <option value="customer">Satış carisi (müşteri)</option>
+                <option value="supplier">Alış carisi (tedarikçi)</option>
+              </select>
+            </Field>
             <Field label="Cari Kodu">
               <Input value={d.code} onChange={(e) => set("code", e.target.value)} placeholder="ör. GÜVENİŞ KEPENK-4" />
             </Field>

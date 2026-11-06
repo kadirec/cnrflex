@@ -4,7 +4,7 @@ import { SaleForm } from "@/components/panel/sale-form";
 import { CustomerDeleteButton } from "@/components/panel/customer-delete-button";
 import { getCustomer, getSale } from "@/lib/customers";
 import { listOfferProducts } from "@/lib/offers";
-import { formatDateTr, formatSaleNo, SALE_KIND_LABELS } from "@/lib/customer-calc";
+import { formatDateTr, formatSaleNo, sideLabels } from "@/lib/customer-calc";
 
 export const metadata = { title: "Satış — Panel" };
 
@@ -20,7 +20,7 @@ export default async function EditSalePage({ params }: { params: Promise<{ id: s
   return (
     <div className="max-w-7xl mx-auto">
       <PageHeader
-        title={`${no} · ${SALE_KIND_LABELS[sale.kind]}`}
+        title={`${no} · ${sale.kind === "return" ? "İade" : sideLabels(customer.kind).doc}`}
         description={`${customer.name} · ${formatDateTr(sale.saleDate)}`}
         backHref={`/panel/customers/${id}`}
         actions={<CustomerDeleteButton target="sale" id={sale.id} name={no} redirectTo={`/panel/customers/${id}`} />}
@@ -29,6 +29,7 @@ export default async function EditSalePage({ params }: { params: Promise<{ id: s
         key={sale.updatedAt.toISOString()}
         customerId={id}
         saleId={sale.id}
+        side={customer.kind}
         products={products}
         initial={{
           saleDate: sale.saleDate,

@@ -8,9 +8,9 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DecimalInput, Field } from "@/components/panel/offer-settings-fields";
-import type { CustomerPayment, PaymentMethod } from "@/lib/db/schema";
+import type { CustomerKind, CustomerPayment, PaymentMethod } from "@/lib/db/schema";
 import { savePayment } from "@/lib/actions-customers";
-import { DEFERRED_METHODS, PAYMENT_METHODS, PAYMENT_METHOD_LABELS, todayIso } from "@/lib/customer-calc";
+import { DEFERRED_METHODS, PAYMENT_METHODS, PAYMENT_METHOD_LABELS, sideLabels, todayIso } from "@/lib/customer-calc";
 
 const selectCls = "h-8 w-full rounded-lg border border-input bg-transparent px-2 text-sm";
 
@@ -20,9 +20,12 @@ type Props = {
   /** Cari seçimi (genel ödemeler listesi) */
   customers?: { id: number; name: string; code: string | null }[];
   payment?: CustomerPayment;
+  /** Satış carisi (tahsilat) veya alış carisi (tedarikçiye ödeme) */
+  side?: CustomerKind;
 };
 
-export function PaymentDialog({ customerId, customers, payment }: Props) {
+export function PaymentDialog({ customerId, customers, payment, side = "customer" }: Props) {
+  const L = sideLabels(side);
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -72,12 +75,12 @@ export function PaymentDialog({ customerId, customers, payment }: Props) {
         </button>
       ) : (
         <Button type="button" size="lg" variant="outline" onClick={() => setOpen(true)}>
-          <Wallet /> Ödeme Ekle
+          <Wallet /> {L.addPayment}
         </Button>
       )}
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{payment ? "Ödemeyi Düzenle" : "Ödeme / Tahsilat Ekle"}</DialogTitle>
+          <DialogTitle>{payment ? "Ödemeyi Düzenle" : L.paymentTitle}</DialogTitle>
         </DialogHeader>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {customers && !payment && (

@@ -12,15 +12,15 @@ import { cn } from "@/lib/utils";
 import { DecimalInput, Field } from "@/components/panel/offer-settings-fields";
 import { ProductPicker } from "@/components/panel/offer-form";
 import type { OfferProductOption } from "@/lib/offers";
-import type { SaleItem, SaleKind, SaleStatus } from "@/lib/db/schema";
+import type { CustomerKind, SaleItem, SaleKind, SaleStatus } from "@/lib/db/schema";
 import { saveSale } from "@/lib/actions-customers";
 import {
   computeSale,
   formatMoney,
   SALE_STATUSES,
-  SALE_STATUS_LABELS,
   SALE_STATUS_STYLES,
   SALE_UNITS,
+  sideLabels,
 } from "@/lib/customer-calc";
 
 export type SaleDraft = {
@@ -39,13 +39,16 @@ export function SaleForm({
   saleId,
   initial,
   products,
+  side = "customer",
 }: {
+  side?: CustomerKind;
   customerId: number;
   saleId?: number;
   initial: SaleDraft;
   products: OfferProductOption[];
 }) {
   const router = useRouter();
+  const L = sideLabels(side);
   const [pending, startTransition] = useTransition();
   const [d, setD] = useState<SaleDraft>(initial);
   const set = <K extends keyof SaleDraft>(k: K, v: SaleDraft[K]) => setD((x) => ({ ...x, [k]: v }));
@@ -75,8 +78,8 @@ export function SaleForm({
           </Field>
           <Field label="Tür">
             <select value={d.kind} onChange={(e) => set("kind", e.target.value as SaleKind)} className={selectCls}>
-              <option value="sale">Satış</option>
-              <option value="return">İade (bakiyeden düşer)</option>
+              <option value="sale">{L.doc}</option>
+              <option value="return">İade ({side === "supplier" ? "borcumuzdan düşer" : "bakiyeden düşer"})</option>
             </select>
           </Field>
           <Field label="KDV (%) — fiyatlar KDV hariç ise">
@@ -97,15 +100,14 @@ export function SaleForm({
                       : "border-slate-200 bg-white text-slate-600 hover:border-slate-300",
                   )}
                 >
-                  {SALE_STATUS_LABELS[s]}
+                  {L.status[s]}
                 </button>
               ))}
             </div>
           </div>
           {d.status === "order" && (
             <p className="sm:col-span-4 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-              Sipariş durumundaki kayıtlar ürün gönderilene kadar bakiyeye yansımaz. Gönderildiğinde durumu
-              &quot;Teslim edildi&quot; yapın.
+              {L.orderHint}
             </p>
           )}
         </CardContent>

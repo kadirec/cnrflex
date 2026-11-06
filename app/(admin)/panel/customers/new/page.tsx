@@ -1,14 +1,22 @@
 import { PageHeader } from "@/components/panel/page-header";
 import { CustomerForm } from "@/components/panel/customer-form";
-import { EMPTY_CUSTOMER } from "@/lib/customer-calc";
+import { EMPTY_CUSTOMER, sideLabels } from "@/lib/customer-calc";
+import { customersHref } from "../customer-tabs";
 
 export const metadata = { title: "Yeni Cari — Panel" };
 
-export default function NewCustomerPage() {
+export default async function NewCustomerPage({ searchParams }: { searchParams: Promise<{ kind?: string }> }) {
+  const { kind: k } = await searchParams;
+  const kind = k === "supplier" ? "supplier" : "customer";
+  const L = sideLabels(kind);
   return (
     <div className="max-w-7xl mx-auto">
-      <PageHeader title="Yeni Cari" description="Satış carisi ekleyin" backHref="/panel/customers" />
-      <CustomerForm initial={EMPTY_CUSTOMER} />
+      <PageHeader
+        title={L.newCustomer}
+        description={kind === "supplier" ? "Tedarikçi / hizmet aldığımız firma" : "Müşteri firma"}
+        backHref={customersHref(kind, "list")}
+      />
+      <CustomerForm initial={{ ...EMPTY_CUSTOMER, kind }} />
     </div>
   );
 }

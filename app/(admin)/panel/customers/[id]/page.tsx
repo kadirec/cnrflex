@@ -8,7 +8,16 @@ import { PaymentDialog } from "@/components/panel/payment-dialog";
 import { CustomerDeleteButton } from "@/components/panel/customer-delete-button";
 import { cn } from "@/lib/utils";
 import { getCustomer, getCustomerAccount } from "@/lib/customers";
-import { buildLedger, formatDateTr, formatMoney, formatSaleNo, type LedgerRow } from "@/lib/customer-calc";
+import {
+  buildLedger,
+  formatDateTr,
+  formatMoney,
+  formatSaleNo,
+  sideLabels,
+  type LedgerRow,
+  type SideLabels,
+} from "@/lib/customer-calc";
+import { customersHref } from "../customer-tabs";
 import { PrintButton } from "./print-button";
 
 export const metadata = { title: "Cari — Panel" };
@@ -22,6 +31,8 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
   if (!customer) notFound();
 
   const { summary, sales } = account;
+  const L = sideLabels(customer.kind);
+  const backHref = customersHref(customer.kind, "list");
   const ledger = buildLedger(sales, account.payments);
   const notesBySale = new Map(sales.filter((s) => s.notes).map((s) => [s.id, s.notes!]));
 
@@ -29,29 +40,29 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
     <div className="max-w-7xl mx-auto space-y-6">
       <PageHeader
         title={customer.name}
-        description={[customer.code, customer.city].filter(Boolean).join(" · ") || "Cari hesap ekstresi"}
-        backHref="/panel/customers"
+        description={[`${L.side} carisi`, customer.code, customer.city].filter(Boolean).join(" · ")}
+        backHref={backHref}
         actions={
           <>
             <Link href={`/panel/customers/${id}/edit`} className={buttonVariants({ variant: "outline", size: "lg" })}>
               <Pencil /> Düzenle
             </Link>
-            <PaymentDialog customerId={id} />
+            <PaymentDialog customerId={id} side={customer.kind} />
             <Link href={`/panel/customers/${id}/sales/new`} className={buttonVariants({ size: "lg" })}>
-              <ShoppingCart /> Satış / Sipariş
+              <ShoppingCart /> {L.newDoc}
             </Link>
-            <CustomerDeleteButton target="customer" id={id} name={customer.name} redirectTo="/panel/customers" />
+            <CustomerDeleteButton target="customer" id={id} name={customer.name} redirectTo={backHref} />
           </>
         }
       />
 
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        <Stat label="Toplam Satış" value={summary.salesTotal} />
+        <Stat label={L.totalDocs} value={summary.salesTotal} />
         <Stat label="İade" value={summary.returnsTotal} />
-        <Stat label="Tahsilat" value={summary.paymentsTotal} tone="green" />
+        <Stat label={L.paid} value={summary.paymentsTotal} tone="green" />
         <Stat label="Bekleyen Sipariş" value={summary.pendingOrdersTotal} tone="amber" hint="Bakiyeye dahil değil" />
         <Stat
-          label={summary.balance > 0.009 ? "Bakiye (Borç)" : summary.balance < -0.009 ? "Bakiye (Alacak)" : "Bakiye"}
+          label={summary.balance > 0.009 ? `Bakiye (${L.balancePos})` : summary.balance < -0.009 ? `Bakiye (${L.balanceNeg})` : "Bakiye"}
           value={Math.abs(summary.balance)}
           tone={summary.balance > 0.009 ? "red" : "green"}
           strong
@@ -108,7 +119,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
           <CardContent>
             {ledger.length === 0 ? (
               <div className="py-10 text-center text-sm text-slate-500 border border-dashed rounded-lg">
-                Henüz hareket yok. Satış/sipariş veya ödeme ekleyin.
+                Henüz hareket yok. {L.doc}/sipariş veya ödeme ekleyin.
               </div>
             ) : (
               <div className="overflow-x-auto -mx-2">
@@ -119,8 +130,8 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                       <th className="px-2 py-2">Ürün Kodu / Açıklama</th>
                       <th className="px-2 py-2 w-24 text-right">Miktar</th>
                       <th className="px-2 py-2 w-24 text-right">Birim Fiyat</th>
-                      <th className="px-2 py-2 w-28 text-right">Borçlu</th>
-                      <th className="px-2 py-2 w-28 text-right">Alacaklı</th>
+                      <th className="px-2 py-2 w-28 text-right">{L.debitCol}</th>
+                      <th className="px-2 py-2 w-28 text-right">{L.creditCol}</th>
                       <th className="px-2 py-2 w-32 text-right">Bakiye</th>
                       <th className="px-2 py-2 w-20 print:hidden"></th>
                     </tr>
@@ -134,6 +145,8 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                           key={r.key}
                           row={r}
                           customerId={id}
+                          labels={L}
+                          side={customer.kind}
                           note={lastOfSale ? notesBySale.get(r.saleId!) : undefined}
                         />
                       );
@@ -174,7 +187,19 @@ const ROW_TONE: Record<LedgerRow["type"], string> = {
   payment: "bg-emerald-50/40",
 };
 
-function LedgerLine({ row: r, customerId, note }: { row: LedgerRow; customerId: number; note?: string }) {
+function LedgerLine({
+  row: r,
+  customerId,
+  labels: L,
+  side,
+  note,
+}: {
+  row: LedgerRow;
+  customerId: number;
+  labels: SideLabels;
+  side: "customer" | "supplier";
+  note?: string;
+}) {
   return (
     <>
       <tr className={cn("border-b border-slate-100", ROW_TONE[r.type])}>
@@ -182,7 +207,7 @@ function LedgerLine({ row: r, customerId, note }: { row: LedgerRow; customerId: 
         <td className="px-2 py-2">
           <div className="flex items-center gap-2">
             <span className={cn("font-medium", r.type === "payment" ? "text-emerald-800" : "text-slate-900")}>{r.title}</span>
-            {r.first && r.type === "order" && <Tag className="border-amber-300 bg-amber-100 text-amber-800">Sipariş · gönderilmedi</Tag>}
+            {r.first && r.type === "order" && <Tag className="border-amber-300 bg-amber-100 text-amber-800">{L.status.order}</Tag>}
             {r.first && r.type === "return" && <Tag className="border-rose-200 bg-rose-100 text-rose-700">İade</Tag>}
             {r.first && r.type === "cancelled" && <Tag className="border-slate-300 bg-slate-100 text-slate-600 no-underline">İptal</Tag>}
           </div>
@@ -212,7 +237,7 @@ function LedgerLine({ row: r, customerId, note }: { row: LedgerRow; customerId: 
                 </>
               ) : r.payment ? (
                 <>
-                  <PaymentDialog payment={r.payment} />
+                  <PaymentDialog payment={r.payment} side={side} />
                   <CustomerDeleteButton target="payment" id={r.payment.id} name={`${formatDateTr(r.date)} tarihli`} />
                 </>
               ) : null}

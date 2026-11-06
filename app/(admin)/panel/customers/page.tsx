@@ -21,53 +21,70 @@ import {
   isSaleStatus,
   PAYMENT_METHOD_LABELS,
   SALE_STATUSES,
-  SALE_STATUS_LABELS,
   SALE_STATUS_STYLES,
+  sideLabels,
 } from "@/lib/customer-calc";
-import { CustomerTabs, type CustomerView } from "./customer-tabs";
+import { CustomerTabs, customersHref, type CustomerView } from "./customer-tabs";
+import type { CustomerKind } from "@/lib/db/schema";
 
 export const metadata = { title: "Cariler — Panel" };
 
-type Search = { view?: string; q?: string; status?: string; debt?: string };
+type Search = { side?: string; view?: string; q?: string; status?: string; debt?: string };
+
+type Counts = { counts: Record<CustomerView, number>; sideCounts: Record<CustomerKind, number> };
 
 export default async function CustomersPage({ searchParams }: { searchParams: Promise<Search> }) {
   const sp = await searchParams;
   const view: CustomerView = sp.view === "sales" || sp.view === "payments" ? sp.view : "list";
   const q = sp.q?.trim() || undefined;
+  const kind: CustomerKind = sp.side === "alis" ? "supplier" : "customer";
+  const L = sideLabels(kind);
 
-  const [customerCount, other] = await Promise.all([countCustomers(), countSalesAndPayments()]);
-  const counts = { list: customerCount, sales: other.sales, payments: other.payments };
+  const [customerCount, supplierCount, other] = await Promise.all([
+    countCustomers("customer"),
+    countCustomers("supplier"),
+    countSalesAndPayments(kind),
+  ]);
+  const c: Counts = {
+    counts: { list: kind === "customer" ? customerCount : supplierCount, sales: other.sales, payments: other.payments },
+    sideCounts: { customer: customerCount, supplier: supplierCount },
+  };
 
   if (view === "sales") {
     const status = sp.status && isSaleStatus(sp.status) ? sp.status : undefined;
-    return <SalesView q={q} status={status} counts={counts} />;
+    return <SalesView kind={kind} q={q} status={status} c={c} />;
   }
-  if (view === "payments") return <PaymentsView q={q} counts={counts} />;
+  if (view === "payments") return <PaymentsView kind={kind} q={q} c={c} />;
 
   const onlyDebtors = sp.debt === "1";
-  const rows = await listCustomers({ q, onlyDebtors });
+  const rows = await listCustomers({ q, onlyDebtors, kind });
   const totalBalance = rows.reduce((s, r) => s + r.balance, 0);
   const totalPending = rows.reduce((s, r) => s + r.pendingOrdersTotal, 0);
 
   return (
     <div className="max-w-7xl mx-auto">
       <PageHeader
-        title="Cariler"
-        description={`Satış carileri, bakiyeleri ve hesap hareketleri · ${rows.length} cari${q || onlyDebtors ? " (filtrelenmiş)" : ""}`}
+        title={L.customers}
+        description={`${L.customersDesc} · ${rows.length} cari${q || onlyDebtors ? " (filtrelenmiş)" : ""}`}
         actions={
-          <Link href="/panel/customers/new" className={buttonVariants({ size: "lg" })}>
-            <Plus /> Yeni Cari
+          <Link href={`/panel/customers/new${kind === "supplier" ? "?kind=supplier" : ""}`} className={buttonVariants({ size: "lg" })}>
+            <Plus /> {L.newCustomer}
           </Link>
         }
       />
       <div className="mb-4 space-y-3">
-        <CustomerTabs view="list" counts={counts} defaultQuery={q} extraParams={{ debt: sp.debt }} />
+        <CustomerTabs kind={kind} view="list" {...c} defaultQuery={q} extraParams={{ debt: sp.debt }} />
         <div className="flex flex-wrap items-center gap-2">
-          <FilterChip href="/panel/customers" active={!onlyDebtors} label="Tümü" />
-          <FilterChip href="/panel/customers?debt=1" active={onlyDebtors} label="Borcu olanlar" />
+          <FilterChip href={customersHref(kind, "list")} active={!onlyDebtors} label="Tümü" />
+          <FilterChip
+            href={customersHref(kind, "list", { debt: "1" })}
+            active={onlyDebtors}
+            label={kind === "supplier" ? "Borçlu olduklarımız" : "Borcu olanlar"}
+          />
           <div className="ml-auto flex flex-wrap gap-2 text-xs">
             <span className="rounded-lg bg-white border border-slate-200 px-3 py-1.5">
-              Toplam bakiye: <strong className="tabular-nums">{formatMoney(totalBalance)}</strong>
+              {kind === "supplier" ? "Toplam borcumuz" : "Toplam alacağımız"}:{" "}
+              <strong className="tabular-nums">{formatMoney(totalBalance)}</strong>
             </span>
             {totalPending > 0 && (
               <span className="rounded-lg bg-amber-50 border border-amber-200 text-amber-800 px-3 py-1.5">
@@ -85,7 +102,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
           ) : (
             <>
               Henüz cari yok.{" "}
-              <Link href="/panel/customers/new" className="text-brand-900 font-medium underline">
+              <Link href={`/panel/customers/new${kind === "supplier" ? "?kind=supplier" : ""}`} className="text-brand-900 font-medium underline">
                 İlk cariyi ekleyin
               </Link>
             </>
@@ -95,7 +112,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
         <Table
           minWidth={900}
           cols="grid-cols-[1fr_200px_130px_130px_130px_140px_100px]"
-          head={["Cari", "Yetkili / Telefon", "Satış", "Tahsilat", "Bekleyen Sipariş", "Bakiye", "Son İşlem"]}
+          head={["Cari", "Yetkili / Telefon", L.doc, L.paid, "Bekleyen Sipariş", "Bakiye", "Son İşlem"]}
           alignRight={[2, 3, 4, 5]}
         >
           {rows.map((r) => (
@@ -123,7 +140,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
               <Money value={r.salesTotal - r.returnsTotal} />
               <Money value={r.paymentsTotal} />
               <Money value={r.pendingOrdersTotal} muted />
-              <BalanceCell value={r.balance} />
+              <BalanceCell value={r.balance} pos={L.balancePos} neg={L.balanceNeg} />
               <div className="text-xs text-slate-600">{r.lastActivity ? formatDateTr(r.lastActivity) : "—"}</div>
             </Link>
           ))}
@@ -134,30 +151,33 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
 }
 
 async function SalesView({
+  kind,
   q,
   status,
-  counts,
+  c,
 }: {
+  kind: CustomerKind;
   q?: string;
   status?: (typeof SALE_STATUSES)[number];
-  counts: Record<CustomerView, number>;
+  c: Counts;
 }) {
-  const rows = await listAllSales({ q, status });
+  const L = sideLabels(kind);
+  const rows = await listAllSales({ q, status, kind });
   const total = rows.reduce((s, r) => s + (r.kind === "return" ? -r.total : r.total), 0);
-  const base = (s?: string) => `/panel/customers?view=sales${s ? `&status=${s}` : ""}${q ? `&q=${encodeURIComponent(q)}` : ""}`;
+  const base = (s?: string) => customersHref(kind, "sales", { status: s, q });
 
   return (
     <div className="max-w-7xl mx-auto">
       <PageHeader
-        title="Satışlar"
-        description={`Tüm carilere ait satış, sipariş ve iade kayıtları · ${rows.length} kayıt`}
+        title={L.docs}
+        description={`Tüm ${L.side.toLocaleLowerCase("tr")} carilerine ait ${L.doc.toLocaleLowerCase("tr")}, sipariş ve iade kayıtları · ${rows.length} kayıt`}
       />
       <div className="mb-4 space-y-3">
-        <CustomerTabs view="sales" counts={counts} defaultQuery={q} extraParams={{ status }} />
+        <CustomerTabs kind={kind} view="sales" {...c} defaultQuery={q} extraParams={{ status }} />
         <div className="flex flex-wrap items-center gap-2">
           <FilterChip href={base()} active={!status} label="Tümü" />
           {SALE_STATUSES.map((s) => (
-            <FilterChip key={s} href={base(s)} active={status === s} label={SALE_STATUS_LABELS[s]} activeClass={SALE_STATUS_STYLES[s]} />
+            <FilterChip key={s} href={base(s)} active={status === s} label={L.status[s]} activeClass={SALE_STATUS_STYLES[s]} />
           ))}
           <span className="ml-auto rounded-lg bg-white border border-slate-200 px-3 py-1.5 text-xs">
             Listelenen toplam: <strong className="tabular-nums">{formatMoney(total)}</strong>
@@ -165,7 +185,7 @@ async function SalesView({
         </div>
       </div>
       {rows.length === 0 ? (
-        <Empty>Kayıt bulunamadı. Satışlar cari detay sayfasından eklenir.</Empty>
+        <Empty>Kayıt bulunamadı. {L.docs} cari detay sayfasından eklenir.</Empty>
       ) : (
         <Table
           minWidth={900}
@@ -187,7 +207,7 @@ async function SalesView({
               <div className="min-w-0 text-xs text-slate-600 truncate">
                 {r.items.map((it) => it.code || it.name).join(", ")}
               </div>
-              <SaleStatusBadge status={r.status} kind={r.kind} />
+              <SaleStatusBadge status={r.status} kind={r.kind} side={kind} />
               <Money value={r.kind === "return" ? -r.total : r.total} />
               <div className="text-xs text-slate-600">{formatDateTr(r.saleDate)}</div>
             </Link>
@@ -198,19 +218,20 @@ async function SalesView({
   );
 }
 
-async function PaymentsView({ q, counts }: { q?: string; counts: Record<CustomerView, number> }) {
-  const [rows, options] = await Promise.all([listAllPayments({ q }), listCustomerOptions()]);
+async function PaymentsView({ kind, q, c }: { kind: CustomerKind; q?: string; c: Counts }) {
+  const L = sideLabels(kind);
+  const [rows, options] = await Promise.all([listAllPayments({ q, kind }), listCustomerOptions(kind)]);
   const total = rows.reduce((s, r) => s + r.amount, 0);
 
   return (
     <div className="max-w-7xl mx-auto">
       <PageHeader
-        title="Ödemeler"
-        description={`Carilerden alınan tahsilatlar · ${rows.length} kayıt`}
-        actions={options.length > 0 && <PaymentDialog customers={options} />}
+        title={L.paymentsTab}
+        description={`${L.paymentsDesc} · ${rows.length} kayıt`}
+        actions={options.length > 0 && <PaymentDialog customers={options} side={kind} />}
       />
       <div className="mb-4 space-y-3">
-        <CustomerTabs view="payments" counts={counts} defaultQuery={q} />
+        <CustomerTabs kind={kind} view="payments" {...c} defaultQuery={q} />
         <div className="flex justify-end">
           <span className="rounded-lg bg-white border border-slate-200 px-3 py-1.5 text-xs">
             Listelenen toplam: <strong className="tabular-nums">{formatMoney(total)}</strong>
@@ -331,14 +352,14 @@ function Money({ value, muted }: { value: number; muted?: boolean }) {
   );
 }
 
-function BalanceCell({ value }: { value: number }) {
+function BalanceCell({ value, pos, neg }: { value: number; pos: string; neg: string }) {
   if (Math.abs(value) < 0.01) return <div className="text-right text-sm text-slate-400">Kapalı</div>;
   return (
     <div className="text-right">
       <div className={cn("text-sm font-semibold tabular-nums", value > 0 ? "text-red-700" : "text-emerald-700")}>
         {formatMoney(Math.abs(value))}
       </div>
-      <div className="text-[10px] uppercase tracking-wider text-slate-400">{value > 0 ? "Borç" : "Alacak"}</div>
+      <div className="text-[10px] uppercase tracking-wider text-slate-400">{value > 0 ? pos : neg}</div>
     </div>
   );
 }
