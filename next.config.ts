@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.resolve(__dirname),
   },
+  outputFileTracingIncludes: {
+    "/panel/quotes/offers/*/pdf": ["./lib/pdf/fonts/**/*", "./public/logo-white.png"],
+  },
   experimental: {
     serverActions: {
       bodySizeLimit: "6mb",

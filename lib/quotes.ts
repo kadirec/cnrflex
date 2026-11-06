@@ -3,6 +3,8 @@ import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import { getDb, quotes, type Quote, type QuoteStatus, type QuoteType } from "@/lib/db";
 
 export type QuoteGroup = "list" | "custom";
+/** Teklifler sayfasındaki sekmeler: gelen talepler + panelden verilen teklifler */
+export type QuotePageGroup = QuoteGroup | "offers";
 
 const GROUP_TYPES: Record<QuoteGroup, QuoteType[]> = {
   list: ["quote", "contact"],

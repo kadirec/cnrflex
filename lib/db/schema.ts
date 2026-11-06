@@ -1,4 +1,4 @@
-import { pgTable, serial, text, integer, timestamp, jsonb, boolean, uniqueIndex, type AnyPgColumn } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, integer, timestamp, jsonb, boolean, uniqueIndex, date, type AnyPgColumn } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
 
 export const categories = pgTable("categories", {
@@ -188,3 +188,72 @@ export const blogPosts = pgTable("blog_posts", {
 
 export type BlogPost = typeof blogPosts.$inferSelect;
 export type NewBlogPost = typeof blogPosts.$inferInsert;
+
+export type OfferItem = {
+  productId?: number | null;
+  code: string;
+  name: string;
+  image?: string | null;
+  /** Sipariş miktarı (metre) */
+  quantity: number;
+  /** Paket içerik bilgisi (metre) */
+  packageSize?: number | null;
+  /** KDV hariç peşin birim fiyat */
+  unitPrice: number;
+  /** Taksit sayısına göre elle girilmiş kart birim fiyatı (boşsa orandan hesaplanır) */
+  cardPrices?: Record<string, number>;
+};
+
+export type OfferInstallment = {
+  count: number;
+  /** Peşin fiyata eklenecek yüzde */
+  rate: number;
+};
+
+export type OfferDeferredLabel = "Senet" | "Çek";
+
+export type OfferSettings = {
+  vatRate: number;
+  showCard: boolean;
+  installments: OfferInstallment[];
+  showDeferred: boolean;
+  deferredLabel: OfferDeferredLabel;
+  monthlyRate: number;
+  downPaymentRate: number;
+  termDays: number[];
+  transferDiscount: number;
+};
+
+export const offers = pgTable("offers", {
+  id: serial("id").primaryKey(),
+  offerDate: date("offer_date", { mode: "string" }).notNull(),
+  customerName: text("customer_name").notNull(),
+  contactPerson: text("contact_person"),
+  phone: text("phone"),
+  email: text("email"),
+  address: text("address"),
+  taxOffice: text("tax_office"),
+  taxNumber: text("tax_number"),
+  items: jsonb("items")
+    .$type<OfferItem[]>()
+    .notNull()
+    .default(sql`'[]'::jsonb`),
+  settings: jsonb("settings").$type<OfferSettings>().notNull(),
+  notes: text("notes"),
+  sourceQuoteId: integer("source_quote_id").references(() => quotes.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type Offer = typeof offers.$inferSelect;
+export type NewOffer = typeof offers.$inferInsert;
+
+/** Yeni tekliflerin başlangıç değerleri (tek satır, id = 1) */
+export const offerDefaults = pgTable("offer_defaults", {
+  id: integer("id").primaryKey().default(1),
+  settings: jsonb("settings").$type<OfferSettings>().notNull(),
+  notes: text("notes"),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type OfferDefaults = typeof offerDefaults.$inferSelect;

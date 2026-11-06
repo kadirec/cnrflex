@@ -1,7 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { Mail, Phone, Globe, MapPin, Package, Hash, Building2, ShoppingCart } from "lucide-react";
+import { Mail, Phone, Globe, MapPin, Package, Hash, Building2, ShoppingCart, FileText } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
 
 import { PageHeader } from "@/components/panel/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,6 +52,11 @@ export default async function QuoteDetailPage({
         backHref="/panel/quotes"
         actions={
           <div className="flex items-center gap-2">
+            {quote.type !== "contact" && (
+              <Link href={`/panel/quotes/offers/new?from=${quote.id}`} className={buttonVariants({ size: "sm" })}>
+                <FileText /> Teklif Hazırla
+              </Link>
+            )}
             <ReadToggle id={quote.id} isRead={quote.isRead} />
             <DeleteQuoteButton id={quote.id} name={quote.name} />
           </div>

@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { Search, Inbox, Package, PenSquare } from "lucide-react";
+import { Search, Inbox, Package, PenSquare, FileText } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -13,11 +13,11 @@ import {
   QUOTE_STATUS_STYLES,
 } from "@/lib/quote-status";
 import type { QuoteStatus } from "@/lib/db";
-import type { QuoteGroup } from "@/lib/quotes";
+import type { QuotePageGroup } from "@/lib/quotes";
 
 type Props = {
-  group: QuoteGroup;
-  groupCounts: Record<QuoteGroup, number>;
+  group: QuotePageGroup;
+  groupCounts: Record<QuotePageGroup, number>;
   defaultStatus?: QuoteStatus;
   defaultUnread?: boolean;
   defaultQuery?: string;
@@ -53,7 +53,7 @@ export function QuoteFilters({
     return s ? `/panel/quotes?${s}` : "/panel/quotes";
   };
 
-  const buildGroupHref = (g: QuoteGroup) => {
+  const buildGroupHref = (g: QuotePageGroup) => {
     const params = new URLSearchParams();
     if (g !== "list") params.set("group", g);
     const s = params.toString();
@@ -84,7 +84,16 @@ export function QuoteFilters({
           count={groupCounts.custom}
           accent
         />
+        <GroupTab
+          href={buildGroupHref("offers")}
+          active={group === "offers"}
+          icon={FileText}
+          label="Verilen Teklifler"
+          count={groupCounts.offers}
+        />
       </div>
+
+      {group !== "offers" && (
 
       <div className="flex flex-wrap items-center gap-2">
         <Link
@@ -127,6 +136,7 @@ export function QuoteFilters({
           </Link>
         ))}
       </div>
+      )}
 
       <div className="bg-white border border-slate-200 rounded-xl p-3 flex gap-2">
         <div className="relative flex-1">
@@ -134,7 +144,7 @@ export function QuoteFilters({
           <Input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="İsim, e-posta, firma veya mesajda ara…"
+            placeholder={group === "offers" ? "Müşteri, yetkili, telefon veya e-postada ara…" : "İsim, e-posta, firma veya mesajda ara…"}
             className="pl-9"
             onKeyDown={(e) => {
               if (e.key === "Enter") applySearch();

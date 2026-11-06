@@ -5,6 +5,10 @@ import { QuoteStatusBadge } from "@/components/panel/quote-status-badge";
 import { QuoteFilters } from "./filters";
 import { DeleteQuoteButton } from "./delete-button";
 import { listQuotes, countByStatus, countByGroup, isQuoteGroup, type QuoteGroup } from "@/lib/quotes";
+import { countOffers, listOffers } from "@/lib/offers";
+import { OffersList } from "./offers/offers-list";
+import { buttonVariants } from "@/components/ui/button";
+import { Plus, Settings2 } from "lucide-react";
 import { isQuoteStatus, QUOTE_TYPE_LABELS } from "@/lib/quote-status";
 import type { QuoteStatus } from "@/lib/db";
 
@@ -39,16 +43,19 @@ export default async function QuotesListPage({
   searchParams: Promise<Search>;
 }) {
   const sp = await searchParams;
+  if (sp.group === "offers") return <OffersTab q={sp.q?.trim() || undefined} />;
+
   const group: QuoteGroup = sp.group && isQuoteGroup(sp.group) ? sp.group : "list";
   const statusFilter: QuoteStatus | undefined =
     sp.status && isQuoteStatus(sp.status) ? sp.status : undefined;
   const onlyUnread = sp.unread === "1";
   const q = sp.q?.trim() || undefined;
 
-  const [rows, counts, groupCounts] = await Promise.all([
+  const [rows, counts, groupCounts, offerCount] = await Promise.all([
     listQuotes({ group, status: statusFilter, onlyUnread, q }),
     countByStatus(group),
     countByGroup(),
+    countOffers(),
   ]);
 
   const meta = GROUP_META[group];
@@ -63,7 +70,7 @@ export default async function QuotesListPage({
       <div className="mb-4">
         <QuoteFilters
           group={group}
-          groupCounts={groupCounts}
+          groupCounts={{ ...groupCounts, offers: offerCount }}
           defaultStatus={statusFilter}
           defaultUnread={onlyUnread}
           defaultQuery={q}
@@ -137,6 +144,43 @@ export default async function QuotesListPage({
           })}
         </div>
       )}
+    </div>
+  );
+}
+
+async function OffersTab({ q }: { q?: string }) {
+  const [rows, groupCounts, counts, offerCount] = await Promise.all([
+    listOffers({ q }),
+    countByGroup(),
+    countByStatus("list"),
+    countOffers(),
+  ]);
+
+  return (
+    <div className="max-w-7xl mx-auto">
+      <PageHeader
+        title="Verilen Teklifler"
+        description={`Panelden hazırlanan fiyat teklifleri · ${rows.length} kayıt${q ? " (filtrelenmiş)" : ""}`}
+        actions={
+          <>
+            <Link href="/panel/quotes/offers/settings" className={buttonVariants({ variant: "outline", size: "lg" })}>
+              <Settings2 /> Teklif Ayarları
+            </Link>
+            <Link href="/panel/quotes/offers/new" className={buttonVariants({ size: "lg" })}>
+              <Plus /> Yeni Teklif
+            </Link>
+          </>
+        }
+      />
+      <div className="mb-4">
+        <QuoteFilters
+          group="offers"
+          groupCounts={{ ...groupCounts, offers: offerCount }}
+          defaultQuery={q}
+          counts={counts}
+        />
+      </div>
+      <OffersList rows={rows} />
     </div>
   );
 }
