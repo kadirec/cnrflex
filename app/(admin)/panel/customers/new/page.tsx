@@ -1,7 +1,6 @@
 import { PageHeader } from "@/components/panel/page-header";
 import { CustomerForm } from "@/components/panel/customer-form";
-import { EMPTY_CUSTOMER, sideLabels } from "@/lib/customer-calc";
-import { customersHref } from "../customer-tabs";
+import { customersHref, EMPTY_CUSTOMER, sideLabels } from "@/lib/customer-calc";
 
 export const metadata = { title: "Yeni Cari — Panel" };
 

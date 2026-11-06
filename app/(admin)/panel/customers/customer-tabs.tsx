@@ -8,19 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { CustomerKind } from "@/lib/db/schema";
-import { sideLabels } from "@/lib/customer-calc";
+import { customersHref, sideLabels, type CustomerView } from "@/lib/customer-calc";
 
-export type CustomerView = "list" | "sales" | "payments";
-
-/** Satış/alış ve görünüm için liste URL'i */
-export function customersHref(kind: CustomerKind, view: CustomerView, params: Record<string, string | undefined> = {}) {
-  const sp = new URLSearchParams();
-  if (kind === "supplier") sp.set("side", "alis");
-  if (view !== "list") sp.set("view", view);
-  for (const [k, v] of Object.entries(params)) if (v) sp.set(k, v);
-  const s = sp.toString();
-  return s ? `/panel/customers?${s}` : "/panel/customers";
-}
+export type { CustomerView };
 
 export function CustomerTabs({
   kind,

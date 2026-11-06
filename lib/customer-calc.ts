@@ -299,3 +299,15 @@ export function sideLabels(kind: "customer" | "supplier"): SideLabels {
       "Sipariş durumundaki kayıtlar ürün gönderilene kadar bakiyeye yansımaz. Gönderildiğinde durumu \"Teslim edildi\" yapın.",
   };
 }
+
+export type CustomerView = "list" | "sales" | "payments";
+
+/** Satış/alış ve görünüm için liste URL'i */
+export function customersHref(kind: "customer" | "supplier", view: CustomerView, params: Record<string, string | undefined> = {}) {
+  const sp = new URLSearchParams();
+  if (kind === "supplier") sp.set("side", "alis");
+  if (view !== "list") sp.set("view", view);
+  for (const [k, v] of Object.entries(params)) if (v) sp.set(k, v);
+  const s = sp.toString();
+  return s ? `/panel/customers?${s}` : "/panel/customers";
+}

@@ -23,8 +23,9 @@ import {
   SALE_STATUSES,
   SALE_STATUS_STYLES,
   sideLabels,
+  customersHref,
 } from "@/lib/customer-calc";
-import { CustomerTabs, customersHref, type CustomerView } from "./customer-tabs";
+import { CustomerTabs, type CustomerView } from "./customer-tabs";
 import type { CustomerKind } from "@/lib/db/schema";
 
 export const metadata = { title: "Cariler — Panel" };

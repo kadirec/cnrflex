@@ -14,10 +14,10 @@ import {
   formatMoney,
   formatSaleNo,
   sideLabels,
+  customersHref,
   type LedgerRow,
   type SideLabels,
 } from "@/lib/customer-calc";
-import { customersHref } from "../customer-tabs";
 import { PrintButton } from "./print-button";
 
 export const metadata = { title: "Cari — Panel" };
