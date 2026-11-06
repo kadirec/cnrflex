@@ -13,7 +13,8 @@
     "db:seed-settings": "dotenv -e .env.local -- tsx scripts/seed-settings.ts",
     "db:migrate-hierarchy": "dotenv -e .env.local -- tsx scripts/migrate-hierarchy.ts",
     "admin:generate": "tsx scripts/generate-admin.ts",
-    "db:create-offers": "dotenv -e .env.local -- tsx scripts/create-offers-table.ts"
+    "db:create-offers": "dotenv -e .env.local -- tsx scripts/create-offers-table.ts",
+    "db:create-customers": "dotenv -e .env.local -- tsx scripts/create-customers-tables.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

@@ -327,7 +327,7 @@ export function OfferForm({ offerId, initial, products }: Props) {
   );
 }
 
-function ProductPicker({
+export function ProductPicker({
   products,
   onPick,
 }: {

@@ -1,4 +1,4 @@
-import { pgTable, serial, text, integer, timestamp, jsonb, boolean, uniqueIndex, date, type AnyPgColumn } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, integer, timestamp, jsonb, boolean, uniqueIndex, index, numeric, date, type AnyPgColumn } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
 
 export const categories = pgTable("categories", {
@@ -257,3 +257,115 @@ export const offerDefaults = pgTable("offer_defaults", {
 });
 
 export type OfferDefaults = typeof offerDefaults.$inferSelect;
+
+/* ───────────── Cariler ───────────── */
+
+export type CustomerKind = "customer" | "supplier";
+
+export type CustomerContact = { name: string; phone: string };
+
+export const customers = pgTable("customers", {
+  id: serial("id").primaryKey(),
+  /** Satış carisi (müşteri) veya alış carisi (tedarikçi) */
+  kind: text("kind").$type<CustomerKind>().notNull().default("customer"),
+  /** Cari kodu, örn. "GÜVENİŞ KEPENK-4" */
+  code: text("code"),
+  name: text("name").notNull(),
+  contacts: jsonb("contacts")
+    .$type<CustomerContact[]>()
+    .notNull()
+    .default(sql`'[]'::jsonb`),
+  email: text("email"),
+  city: text("city"),
+  address: text("address"),
+  taxOffice: text("tax_office"),
+  taxNumber: text("tax_number"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type Customer = typeof customers.$inferSelect;
+export type NewCustomer = typeof customers.$inferInsert;
+
+export type SaleKind = "sale" | "return";
+/** order: sipariş alındı, henüz gönderilmedi (bakiyeye yansımaz) · delivered: teslim edildi · cancelled: iptal */
+export type SaleStatus = "order" | "delivered" | "cancelled";
+export type SaleUnit = "MT" | "ADET" | "KG" | "TOP";
+
+export type SaleItem = {
+  productId?: number | null;
+  code: string;
+  name: string;
+  unit: SaleUnit;
+  quantity: number;
+  /** KDV hariç birim fiyat */
+  unitPrice: number;
+};
+
+export const customerSales = pgTable(
+  "customer_sales",
+  {
+    id: serial("id").primaryKey(),
+    customerId: integer("customer_id")
+      .notNull()
+      .references(() => customers.id, { onDelete: "cascade" }),
+    saleDate: date("sale_date", { mode: "string" }).notNull(),
+    kind: text("kind").$type<SaleKind>().notNull().default("sale"),
+    status: text("status").$type<SaleStatus>().notNull().default("delivered"),
+    items: jsonb("items")
+      .$type<SaleItem[]>()
+      .notNull()
+      .default(sql`'[]'::jsonb`),
+    vatRate: numeric("vat_rate", { precision: 5, scale: 2, mode: "number" }).notNull().default(0),
+    subtotal: numeric("subtotal", { precision: 14, scale: 2, mode: "number" }).notNull().default(0),
+    vatTotal: numeric("vat_total", { precision: 14, scale: 2, mode: "number" }).notNull().default(0),
+    total: numeric("total", { precision: 14, scale: 2, mode: "number" }).notNull().default(0),
+    notes: text("notes"),
+    sourceOfferId: integer("source_offer_id").references(() => offers.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("customer_sales_customer_idx").on(t.customerId, t.saleDate)],
+);
+
+export type CustomerSale = typeof customerSales.$inferSelect;
+export type NewCustomerSale = typeof customerSales.$inferInsert;
+
+export type PaymentMethod = "transfer" | "cash" | "card" | "check" | "note" | "other";
+
+export const customerPayments = pgTable(
+  "customer_payments",
+  {
+    id: serial("id").primaryKey(),
+    customerId: integer("customer_id")
+      .notNull()
+      .references(() => customers.id, { onDelete: "cascade" }),
+    paymentDate: date("payment_date", { mode: "string" }).notNull(),
+    amount: numeric("amount", { precision: 14, scale: 2, mode: "number" }).notNull(),
+    method: text("method").$type<PaymentMethod>().notNull().default("transfer"),
+    /** Çek / senet vadesi */
+    dueDate: date("due_date", { mode: "string" }),
+    documentNo: text("document_no"),
+    description: text("description"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("customer_payments_customer_idx").on(t.customerId, t.paymentDate)],
+);
+
+export type CustomerPayment = typeof customerPayments.$inferSelect;
+export type NewCustomerPayment = typeof customerPayments.$inferInsert;
+
+export const customersRelations = relations(customers, ({ many }) => ({
+  sales: many(customerSales),
+  payments: many(customerPayments),
+}));
+
+export const customerSalesRelations = relations(customerSales, ({ one }) => ({
+  customer: one(customers, { fields: [customerSales.customerId], references: [customers.id] }),
+}));
+
+export const customerPaymentsRelations = relations(customerPayments, ({ one }) => ({
+  customer: one(customers, { fields: [customerPayments.customerId], references: [customers.id] }),
+}));
