@@ -61,10 +61,9 @@ export type LedgerRow = {
   key: string;
   date: string;
   type: "sale" | "return" | "order" | "cancelled" | "payment";
+  /** Belge no (satış) veya "ÖDEME" */
   title: string;
   description: string;
-  quantityLabel: string;
-  unitPriceLabel: string;
   debit: number;
   credit: number;
   /** Bu satır bakiyeye dahil mi */
@@ -72,54 +71,39 @@ export type LedgerRow = {
   balance: number;
   saleId?: number;
   payment?: CustomerPayment;
-  /** Aynı belgenin ilk satırı mı (düzenleme/silme butonu burada) */
-  first: boolean;
 };
 
-/** Excel'deki cari ekstresi: tarih sırasına göre satış kalemleri ve ödemeler, yürüyen bakiye ile. */
+/** Kalemlerin kısa özeti: "DÜZ DİKME FİTİLİ (200 MT), 120 LİK TAPA (2.400 ADET) +1 kalem" */
+export function summarizeItems(items: SaleItem[], max = 2): string {
+  const nf = new Intl.NumberFormat("tr-TR");
+  const head = items.slice(0, max).map((it) => `${it.name || it.code} (${nf.format(it.quantity)} ${it.unit})`);
+  const rest = items.length - max;
+  return head.join(", ") + (rest > 0 ? ` +${rest} kalem` : "");
+}
+
+/** Cari ekstresi: belge bazında (satış/sipariş/iade ve ödemeler), tarih sırasıyla yürüyen bakiye. */
 export function buildLedger(sales: CustomerSale[], payments: CustomerPayment[]): LedgerRow[] {
-  type Ev = { date: string; created: number; rows: Omit<LedgerRow, "balance">[] };
+  type Ev = { created: number; row: Omit<LedgerRow, "balance"> };
   const events: Ev[] = [];
 
   for (const s of sales) {
     const type: LedgerRow["type"] =
       s.status === "cancelled" ? "cancelled" : s.status === "order" ? "order" : s.kind === "return" ? "return" : "sale";
-    const counts = s.status === "delivered";
-    const sign = s.kind === "return" ? -1 : 1;
-    const rows: Omit<LedgerRow, "balance">[] = s.items.map((it, i) => {
-      const amount = round2((it.quantity || 0) * (it.unitPrice || 0));
-      return {
-        key: `s${s.id}-${i}`,
+    const isReturn = s.kind === "return";
+    events.push({
+      created: s.createdAt.getTime(),
+      row: {
+        key: `s${s.id}`,
         date: s.saleDate,
         type,
-        title: it.code || it.name,
-        description: it.code ? it.name : "",
-        quantityLabel: `${new Intl.NumberFormat("tr-TR").format(it.quantity)} ${it.unit}`,
-        unitPriceLabel: new Intl.NumberFormat("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 4 }).format(it.unitPrice),
-        debit: sign > 0 ? amount : 0,
-        credit: sign < 0 ? amount : 0,
-        counts,
+        title: formatSaleNo(s.id, s.saleDate),
+        description: summarizeItems(s.items) + (s.vatTotal > 0 ? ` · KDV %${s.vatRate} dahil` : ""),
+        debit: isReturn ? 0 : s.total,
+        credit: isReturn ? s.total : 0,
+        counts: s.status === "delivered",
         saleId: s.id,
-        first: i === 0,
-      };
+      },
     });
-    if (s.vatTotal > 0) {
-      rows.push({
-        key: `s${s.id}-vat`,
-        date: s.saleDate,
-        type,
-        title: `KDV %${s.vatRate}`,
-        description: "",
-        quantityLabel: "",
-        unitPriceLabel: "",
-        debit: sign > 0 ? s.vatTotal : 0,
-        credit: sign < 0 ? s.vatTotal : 0,
-        counts,
-        saleId: s.id,
-        first: rows.length === 0,
-      });
-    }
-    if (rows.length > 0) events.push({ date: s.saleDate, created: s.createdAt.getTime(), rows });
   }
 
   for (const p of payments) {
@@ -127,38 +111,28 @@ export function buildLedger(sales: CustomerSale[], payments: CustomerPayment[]):
       .filter(Boolean)
       .join(" · ");
     events.push({
-      date: p.paymentDate,
       created: p.createdAt.getTime(),
-      rows: [
-        {
-          key: `p${p.id}`,
-          date: p.paymentDate,
-          type: "payment",
-          title: "ÖDEME",
-          description: desc,
-          quantityLabel: "",
-          unitPriceLabel: "",
-          debit: 0,
-          credit: p.amount,
-          counts: true,
-          payment: p,
-          first: true,
-        },
-      ],
+      row: {
+        key: `p${p.id}`,
+        date: p.paymentDate,
+        type: "payment",
+        title: "ÖDEME",
+        description: desc,
+        debit: 0,
+        credit: p.amount,
+        counts: true,
+        payment: p,
+      },
     });
   }
 
-  events.sort((a, b) => (a.date === b.date ? a.created - b.created : a.date < b.date ? -1 : 1));
+  events.sort((a, b) => (a.row.date === b.row.date ? a.created - b.created : a.row.date < b.row.date ? -1 : 1));
 
   let balance = 0;
-  const out: LedgerRow[] = [];
-  for (const ev of events) {
-    for (const r of ev.rows) {
-      if (r.counts) balance = round2(balance + r.debit - r.credit);
-      out.push({ ...r, balance });
-    }
-  }
-  return out;
+  return events.map(({ row }) => {
+    if (row.counts) balance = round2(balance + row.debit - row.credit);
+    return { ...row, balance };
+  });
 }
 
 function fmtDate(iso: string) {
