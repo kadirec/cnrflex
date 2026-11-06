@@ -5,7 +5,7 @@ import { OfferSettingsFields, DecimalInput, Field } from "@/components/panel/off
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Search, Trash2, Save, FileDown, PackagePlus, Settings2 } from "lucide-react";
+import { Search, Trash2, Save, FileDown, PackagePlus, Settings2, Eye } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -289,6 +289,22 @@ export function OfferForm({ offerId, initial, products }: Props) {
       </Card>
 
       <div className="sticky bottom-0 -mx-6 lg:-mx-8 px-6 lg:px-8 py-3 bg-white/90 backdrop-blur border-t border-slate-200 flex items-center justify-end gap-2">
+        {offerId && (
+          <a
+            href={`/panel/quotes/offers/${offerId}/pdf?inline=1`}
+            target="_blank"
+            rel="noopener"
+            onClick={(e) => {
+              if (dirty) {
+                e.preventDefault();
+                toast.warning("Kaydedilmemiş değişiklikler var. Önizleme için önce kaydedin.");
+              }
+            }}
+            className={buttonVariants({ variant: "outline", size: "lg" })}
+          >
+            <Eye /> Önizle
+          </a>
+        )}
         {offerId && (
           <a
             href={`/panel/quotes/offers/${offerId}/pdf`}

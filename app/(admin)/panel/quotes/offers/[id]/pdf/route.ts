@@ -29,7 +29,7 @@ async function loadImage(url: string | null | undefined): Promise<Buffer | null>
   }
 }
 
-export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> }) {
+export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
   const session = await getSession();
   if (!session.userId) return new Response("Yetkisiz", { status: 401 });
 
@@ -62,6 +62,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
   }) as unknown as React.ReactElement<DocumentProps>;
 
   const pdf = await renderToBuffer(element);
+  const inline = new URL(req.url).searchParams.get("inline") === "1";
 
   const filename = `${slugify(offer.customerName).toUpperCase().replace(/-/g, "_") || "TEKLIF"}_TEKLIF_${offer.offerDate
     .split("-")
@@ -71,7 +72,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
   return new Response(new Uint8Array(pdf), {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="${filename}"`,
+      "Content-Disposition": `${inline ? "inline" : "attachment"}; filename="${filename}"`,
       "Cache-Control": "private, no-store",
     },
   });

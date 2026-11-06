@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FileDown, Pencil } from "lucide-react";
+import { Eye, FileDown, Pencil } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Offer } from "@/lib/db";
 import {
@@ -11,7 +11,7 @@ import {
 } from "@/lib/offer-calc";
 import { DeleteOfferButton } from "./delete-offer-button";
 
-const GRID = "grid grid-cols-[120px_1fr_150px_90px_150px_110px_120px] gap-3";
+const GRID = "grid grid-cols-[120px_1fr_150px_90px_150px_110px_156px] gap-3";
 
 export function OffersList({ rows }: { rows: Offer[] }) {
   if (rows.length === 0) {
@@ -69,6 +69,16 @@ export function OffersList({ rows }: { rows: Offer[] }) {
               </div>
               <div className="text-xs text-slate-600">{formatOfferDate(r.offerDate)}</div>
               <div className="flex items-center justify-end gap-1">
+                <a
+                  href={`/panel/quotes/offers/${r.id}/pdf?inline=1`}
+                  target="_blank"
+                  rel="noopener"
+                  className="inline-flex items-center justify-center w-8 h-8 rounded-md text-slate-500 hover:text-brand-900 hover:bg-slate-100"
+                  title="Önizle"
+                  aria-label="Önizle"
+                >
+                  <Eye className="w-4 h-4" />
+                </a>
                 <a
                   href={`/panel/quotes/offers/${r.id}/pdf`}
                   className="inline-flex items-center justify-center w-8 h-8 rounded-md text-slate-500 hover:text-brand-900 hover:bg-slate-100"
