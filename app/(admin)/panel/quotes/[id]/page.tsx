@@ -7,6 +7,8 @@ import { buttonVariants } from "@/components/ui/button";
 import { PageHeader } from "@/components/panel/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getQuote } from "@/lib/quotes";
+import { offersBySourceQuote } from "@/lib/offers";
+import { formatOfferNo, formatOfferDate } from "@/lib/offer-calc";
 import { markQuoteRead } from "@/lib/actions-quotes";
 import { QUOTE_TYPE_LABELS } from "@/lib/quote-status";
 import { StatusPicker } from "./status-picker";
@@ -43,6 +45,7 @@ export default async function QuoteDetailPage({
   }
 
   const category = quote.customCategory || quote.categoryLabel;
+  const linkedOffers = (await offersBySourceQuote([quote.id])).get(quote.id) ?? [];
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -54,7 +57,7 @@ export default async function QuoteDetailPage({
           <div className="flex items-center gap-2">
             {quote.type !== "contact" && (
               <Link href={`/panel/quotes/offers/new?from=${quote.id}`} className={buttonVariants({ size: "sm" })}>
-                <FileText /> Teklif Hazırla
+                <FileText /> Teklife Dönüştür
               </Link>
             )}
             <ReadToggle id={quote.id} isRead={quote.isRead} />
@@ -160,6 +163,29 @@ export default async function QuoteDetailPage({
               <StatusPicker id={quote.id} current={quote.status} />
             </CardContent>
           </Card>
+
+          {linkedOffers.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Hazırlanan Teklifler</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {linkedOffers.map((o) => (
+                  <Link
+                    key={o.id}
+                    href={`/panel/quotes/offers/${o.id}`}
+                    className="flex items-center justify-between rounded-lg border border-slate-200 px-3 py-2 text-sm hover:border-brand-900 hover:bg-slate-50"
+                  >
+                    <span className="inline-flex items-center gap-2 font-mono text-xs text-slate-700">
+                      <FileText className="w-3.5 h-3.5 text-emerald-600" />
+                      {formatOfferNo(o.id, o.offerDate)}
+                    </span>
+                    <span className="text-xs text-slate-500">{formatOfferDate(o.offerDate)}</span>
+                  </Link>
+                ))}
+              </CardContent>
+            </Card>
+          )}
 
           <Card>
             <CardHeader>

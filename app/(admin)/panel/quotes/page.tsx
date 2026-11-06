@@ -5,10 +5,11 @@ import { QuoteStatusBadge } from "@/components/panel/quote-status-badge";
 import { QuoteFilters } from "./filters";
 import { DeleteQuoteButton } from "./delete-button";
 import { listQuotes, countByStatus, countByGroup, isQuoteGroup, type QuoteGroup } from "@/lib/quotes";
-import { countOffers, listOffers } from "@/lib/offers";
+import { countOffers, listOffers, offersBySourceQuote } from "@/lib/offers";
+import { formatOfferNo } from "@/lib/offer-calc";
 import { OffersList } from "./offers/offers-list";
 import { buttonVariants } from "@/components/ui/button";
-import { Plus, Settings2 } from "lucide-react";
+import { Plus, Settings2, FileText, FileCheck2 } from "lucide-react";
 import { isQuoteStatus, QUOTE_TYPE_LABELS } from "@/lib/quote-status";
 import type { QuoteStatus } from "@/lib/db";
 
@@ -58,6 +59,7 @@ export default async function QuotesListPage({
     countOffers(),
   ]);
 
+  const linked = await offersBySourceQuote(rows.map((r) => r.id));
   const meta = GROUP_META[group];
 
   return (
@@ -86,13 +88,14 @@ export default async function QuotesListPage({
         </Card>
       ) : (
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-          <div className="grid grid-cols-[24px_1fr_180px_140px_160px_120px_60px] gap-3 px-5 py-3 border-b border-slate-200 bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+          <div className="grid grid-cols-[24px_1fr_130px_120px_150px_90px_170px_48px] gap-3 px-5 py-3 border-b border-slate-200 bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider">
             <div></div>
             <div>Gönderen</div>
             <div>Kategori / Miktar</div>
             <div>Durum</div>
             <div>Tarih</div>
             <div>Tür</div>
+            <div>Teklif</div>
             <div className="text-right">Sil</div>
           </div>
           {rows.map((r) => {
@@ -100,7 +103,7 @@ export default async function QuotesListPage({
             return (
               <div
                 key={r.id}
-                className="grid grid-cols-[24px_1fr_180px_140px_160px_120px_60px] gap-3 px-5 py-3 border-b border-slate-100 last:border-b-0 items-center hover:bg-slate-50/60 transition"
+                className="grid grid-cols-[24px_1fr_130px_120px_150px_90px_170px_48px] gap-3 px-5 py-3 border-b border-slate-100 last:border-b-0 items-center hover:bg-slate-50/60 transition"
               >
                 <div className="flex items-center">
                   <span
@@ -136,6 +139,9 @@ export default async function QuotesListPage({
                 </div>
                 <div className="text-xs text-slate-600">{formatDate(r.createdAt)}</div>
                 <div className="text-xs text-slate-500">{QUOTE_TYPE_LABELS[r.type]}</div>
+                <div>
+                  <ConvertCell quoteId={r.id} type={r.type} offers={linked.get(r.id) ?? []} />
+                </div>
                 <div className="text-right">
                   <DeleteQuoteButton id={r.id} name={r.name} />
                 </div>
@@ -182,5 +188,40 @@ async function OffersTab({ q }: { q?: string }) {
       </div>
       <OffersList rows={rows} />
     </div>
+  );
+}
+
+function ConvertCell({
+  quoteId,
+  type,
+  offers,
+}: {
+  quoteId: number;
+  type: string;
+  offers: { id: number; offerDate: string }[];
+}) {
+  if (offers.length > 0) {
+    const latest = offers[0];
+    return (
+      <Link
+        href={`/panel/quotes/offers/${latest.id}`}
+        className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-100"
+        title={offers.length > 1 ? `${offers.length} teklif hazırlandı` : "Teklifi aç"}
+      >
+        <FileCheck2 className="w-3.5 h-3.5" />
+        {formatOfferNo(latest.id, latest.offerDate)}
+        {offers.length > 1 && <span className="opacity-70">+{offers.length - 1}</span>}
+      </Link>
+    );
+  }
+  if (type === "contact") return <span className="text-xs text-slate-300">—</span>;
+  return (
+    <Link
+      href={`/panel/quotes/offers/new?from=${quoteId}`}
+      className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-brand-900 hover:border-brand-900 hover:bg-brand-50"
+    >
+      <FileText className="w-3.5 h-3.5" />
+      Teklife Dönüştür
+    </Link>
   );
 }

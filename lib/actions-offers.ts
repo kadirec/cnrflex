@@ -1,11 +1,11 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import "@/lib/zod-tr";
 import { getSession } from "@/lib/auth";
-import { getDb, offers, offerDefaults } from "@/lib/db";
+import { getDb, offers, offerDefaults, quotes } from "@/lib/db";
 
 const num = (min: number, max: number) => z.number().finite().min(min).max(max);
 const optText = (max: number) =>
@@ -81,6 +81,20 @@ export async function saveOffer(input: OfferInput, id?: number): Promise<SaveOff
   } else {
     const [row] = await db.insert(offers).values(data).returning({ id: offers.id });
     savedId = row.id;
+
+    // Talepten dönüştürüldüyse talebi okundu + "Devam ediyor" yap
+    if (data.sourceQuoteId) {
+      await db
+        .update(quotes)
+        .set({ isRead: true, readAt: new Date(), updatedAt: new Date() })
+        .where(and(eq(quotes.id, data.sourceQuoteId), eq(quotes.isRead, false)));
+      await db
+        .update(quotes)
+        .set({ status: "in_progress", updatedAt: new Date() })
+        .where(and(eq(quotes.id, data.sourceQuoteId), eq(quotes.status, "new")));
+      revalidatePath(`/panel/quotes/${data.sourceQuoteId}`);
+      revalidatePath("/panel", "layout");
+    }
   }
 
   revalidatePath("/panel/quotes");

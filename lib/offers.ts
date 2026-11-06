@@ -1,5 +1,5 @@
 import "server-only";
-import { asc, desc, eq, ilike, or, sql } from "drizzle-orm";
+import { asc, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import {
   getDb,
   offers,
@@ -35,6 +35,30 @@ export async function getOffer(id: number): Promise<Offer | undefined> {
   const db = getDb();
   const [row] = await db.select().from(offers).where(eq(offers.id, id)).limit(1);
   return row;
+}
+
+export type LinkedOffer = { id: number; offerDate: string };
+
+/** Talep id → o talepten hazırlanan teklifler (yeniden eskiye). */
+export async function offersBySourceQuote(quoteIds: number[]): Promise<Map<number, LinkedOffer[]>> {
+  const out = new Map<number, LinkedOffer[]>();
+  if (quoteIds.length === 0) return out;
+  try {
+    const rows = await getDb()
+      .select({ id: offers.id, offerDate: offers.offerDate, sourceQuoteId: offers.sourceQuoteId })
+      .from(offers)
+      .where(inArray(offers.sourceQuoteId, quoteIds))
+      .orderBy(desc(offers.createdAt));
+    for (const r of rows) {
+      if (r.sourceQuoteId == null) continue;
+      const list = out.get(r.sourceQuoteId) ?? [];
+      list.push({ id: r.id, offerDate: r.offerDate });
+      out.set(r.sourceQuoteId, list);
+    }
+  } catch (e) {
+    console.error("bağlı teklifler okunamadı", e);
+  }
+  return out;
 }
 
 export async function countOffers(): Promise<number> {
@@ -118,6 +142,7 @@ export async function getOfferDefaults(): Promise<ResolvedOfferDefaults> {
 /** Yeni teklif için başlangıç değerleri: Teklif Ayarları + (varsa) gelen talepten müşteri/ürünler. */
 export async function buildOfferDraft(fromQuoteId?: number): Promise<OfferDraft> {
   const defaults = await getOfferDefaults();
+  const db = getDb();
 
   const draft: OfferDraft = {
     offerDate: todayIso(),
@@ -142,17 +167,27 @@ export async function buildOfferDraft(fromQuoteId?: number): Promise<OfferDraft>
       draft.contactPerson = quote.company ? quote.name : "";
       draft.phone = quote.phone ?? "";
       draft.email = quote.email ?? "";
-      draft.items = (quote.items ?? []).map((it) => {
-        const fromRolls =
-          it.rollCount && it.rollLength ? it.rollCount * it.rollLength : undefined;
-        const parsed = Number(String(it.quantity ?? "").replace(/[^\d.,]/g, "").replace(",", "."));
+      const quoteItems = quote.items ?? [];
+      const ids = quoteItems.map((it) => it.productId).filter((x): x is number => typeof x === "number");
+      const rollById = new Map<number, number | null>();
+      if (ids.length > 0) {
+        const rows = await db
+          .select({ id: products.id, rollLength: products.rollLength })
+          .from(products)
+          .where(inArray(products.id, ids));
+        for (const r of rows) rollById.set(r.id, r.rollLength);
+      }
+      draft.items = quoteItems.map((it) => {
+        const parsed = parseQuoteQuantity(it.quantity);
+        const fromRolls = it.rollCount && it.rollLength ? it.rollCount * it.rollLength : null;
         return {
           productId: it.productId ?? null,
           code: it.code,
           name: it.name,
           image: it.image ?? null,
-          quantity: fromRolls ?? (Number.isFinite(parsed) ? parsed : 0),
-          packageSize: it.rollLength ?? null,
+          quantity: fromRolls ?? parsed.total ?? 0,
+          packageSize:
+            it.rollLength ?? parsed.rollLength ?? (it.productId ? rollById.get(it.productId) ?? null : null),
           unitPrice: 0,
         };
       });
@@ -160,4 +195,28 @@ export async function buildOfferDraft(fromQuoteId?: number): Promise<OfferDraft>
   }
 
   return draft;
+}
+
+function toNumber(raw: string): number | null {
+  // "1.000" / "1.000,5" (TR) ve "1000.5" biçimlerini destekle
+  const t = raw.trim();
+  const n = t.includes(",")
+    ? Number(t.replace(/\./g, "").replace(",", "."))
+    : /^\d{1,3}(\.\d{3})+$/.test(t)
+      ? Number(t.replace(/\./g, ""))
+      : Number(t);
+  return Number.isFinite(n) ? n : null;
+}
+
+/**
+ * Sitedeki teklif formunun miktar metnini çözer.
+ * Örn. "5 top × 100 MT = 500 MT" → { total: 500, rollLength: 100 }; "2000 metre" → { total: 2000 }
+ */
+export function parseQuoteQuantity(q: string | null | undefined): { total: number | null; rollLength: number | null } {
+  if (!q) return { total: null, rollLength: null };
+  const nums = q.match(/\d[\d.,]*/g) ?? [];
+  const roll = q.match(/[×x*]\s*(\d[\d.,]*)/i);
+  const eq = q.match(/=\s*(\d[\d.,]*)/);
+  const total = eq ? toNumber(eq[1]) : nums[0] ? toNumber(nums[0]) : null;
+  return { total, rollLength: roll ? toNumber(roll[1]) : null };
 }
